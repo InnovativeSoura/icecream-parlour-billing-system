@@ -47,7 +47,7 @@ import CustomerLayout from "./components/CustomerLayout";
 // =====================================================
 
 import CustomerProducts from "./pages/CustomerProducts";
-import CustomerOrders from "./pages/customer/MyOrders";
+import CustomerOrders from "./pages/customer/CustomerOrders";
 import CustomerCart from "./pages/customer/MyCart";
 import CustomerInvoices from "./pages/customer/Invoices";
 import CustomerProfile from "./pages/customer/Profile";
