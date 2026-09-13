@@ -53,7 +53,6 @@ const CustomerOrders = () => {
       setLoading(true);
 
       const response = await api.get("/orders/my-orders");
-
       const data = response?.data;
 
       if (data?.success) {
@@ -92,10 +91,8 @@ const CustomerOrders = () => {
   };
 
   const getOrderNumber = (order) => {
-    const orderNumber = order?.orderNumber;
-
-    if (orderNumber) {
-      return orderNumber;
+    if (order?.orderNumber) {
+      return order.orderNumber;
     }
 
     const id = getOrderId(order);
@@ -141,59 +138,100 @@ const CustomerOrders = () => {
   };
 
   /* =========================================================
-     NORMALIZED STATUS HELPERS
+     NORMALIZED VALUES
   ========================================================= */
 
-  /*
-   * Older orders may not have an explicit status.
-   *
-   * The customer UI treats a missing status as Pending.
-   * Therefore all status-dependent logic must use the
-   * exact same fallback.
-   */
   const getNormalizedOrderStatus = (order) => {
-    const rawStatus =
+    const value =
       order?.status ??
       order?.orderStatus ??
       "";
 
-    const normalizedStatus = String(rawStatus)
+    const normalized = String(value)
       .trim()
       .toLowerCase();
 
-    return normalizedStatus || "pending";
+    return normalized || "pending";
   };
 
-  /*
-   * Older orders may also have no explicit paymentStatus.
-   *
-   * Missing payment status is treated as pending.
-   */
   const getNormalizedPaymentStatus = (order) => {
-    const rawPaymentStatus =
+    const value =
       order?.paymentStatus ??
       order?.payment_state ??
       "";
 
-    const normalizedPaymentStatus = String(
-      rawPaymentStatus,
-    )
+    const normalized = String(value)
       .trim()
       .toLowerCase();
 
-    return normalizedPaymentStatus || "pending";
+    return normalized || "pending";
   };
 
+  /* =========================================================
+     CANCELLATION
+  ========================================================= */
+
+  const getCancellationState = (order) => {
+    if (!order) {
+      return {
+        allowed: false,
+        status: "",
+        paymentStatus: "",
+      };
+    }
+
+    const status = getNormalizedOrderStatus(order);
+    const paymentStatus =
+      getNormalizedPaymentStatus(order);
+
+    /*
+     * Customer cancellation is allowed only while the
+     * order is pending or confirmed.
+     */
+    const allowedOrderStatuses = [
+      "pending",
+      "confirmed",
+    ];
+
+    /*
+     * These payment states must NEVER allow cancellation.
+     */
+    const blockedPaymentStatuses = [
+      "paid",
+      "refunded",
+      "cancelled",
+      "partially_refunded",
+    ];
+
+    const allowed =
+      allowedOrderStatuses.includes(status) &&
+      !blockedPaymentStatuses.includes(paymentStatus);
+
+    return {
+      allowed,
+      status,
+      paymentStatus,
+    };
+  };
+
+  const canCancelOrder = (order) => {
+    return getCancellationState(order).allowed;
+  };
+
+  /* =========================================================
+     FORMATTING
+  ========================================================= */
+
   const formatStatus = (status) => {
-    const normalizedStatus = String(status ?? "")
+    const normalized = String(status ?? "")
       .trim()
       .toLowerCase();
 
-    if (!normalizedStatus) {
+    if (!normalized) {
       return "Pending";
     }
 
-    return normalizedStatus
+    return normalized
       .replace(/_/g, " ")
       .replace(/\b\w/g, (letter) =>
         letter.toUpperCase(),
@@ -201,22 +239,19 @@ const CustomerOrders = () => {
   };
 
   const formatPaymentMethod = (method) => {
-    const normalizedMethod = String(method ?? "")
+    const normalized = String(method ?? "")
       .trim()
       .toLowerCase();
 
-    if (
-      !normalizedMethod ||
-      normalizedMethod === "unpaid"
-    ) {
+    if (!normalized || normalized === "unpaid") {
       return "Pending";
     }
 
-    if (normalizedMethod === "razorpay") {
+    if (normalized === "razorpay") {
       return "Razorpay";
     }
 
-    return normalizedMethod
+    return normalized
       .replace(/_/g, " ")
       .replace(/\b\w/g, (letter) =>
         letter.toUpperCase(),
@@ -253,12 +288,12 @@ const CustomerOrders = () => {
   ========================================================= */
 
   const getStatusClass = (status) => {
-    const normalizedStatus =
+    const normalized =
       String(status ?? "")
         .trim()
         .toLowerCase() || "pending";
 
-    switch (normalizedStatus) {
+    switch (normalized) {
       case "completed":
         return "completed";
 
@@ -277,21 +312,18 @@ const CustomerOrders = () => {
       case "refunded":
         return "refunded";
 
-      case "draft":
-        return "default";
-
       default:
         return "default";
     }
   };
 
   const getPaymentClass = (status) => {
-    const normalizedStatus =
+    const normalized =
       String(status ?? "")
         .trim()
         .toLowerCase() || "pending";
 
-    switch (normalizedStatus) {
+    switch (normalized) {
       case "paid":
         return "paid";
 
@@ -313,64 +345,7 @@ const CustomerOrders = () => {
   };
 
   /* =========================================================
-     CANCEL ELIGIBILITY
-  ========================================================= */
-
-  const canCancelOrder = (order) => {
-    if (!order) {
-      return false;
-    }
-
-    /*
-     * Normalize the order status.
-     *
-     * Missing/empty status is intentionally treated
-     * as "pending" because older customer orders may
-     * not contain an explicit status.
-     */
-    const orderStatus =
-      getNormalizedOrderStatus(order);
-
-    /*
-     * Normalize the payment status.
-     *
-     * Missing/empty payment status is intentionally
-     * treated as "pending".
-     */
-    const paymentStatus =
-      getNormalizedPaymentStatus(order);
-
-    /*
-     * Customers may cancel orders that have not yet
-     * progressed beyond pending/confirmed.
-     */
-    const cancellableStatuses = [
-      "pending",
-      "confirmed",
-    ];
-
-    /*
-     * A paid/refunded/cancelled payment must never
-     * expose customer cancellation.
-     */
-    const blockedPaymentStatuses = [
-      "paid",
-      "refunded",
-      "cancelled",
-      "partially_refunded",
-    ];
-
-    /*
-     * Final cancellation decision.
-     */
-    return (
-      cancellableStatuses.includes(orderStatus) &&
-      !blockedPaymentStatuses.includes(paymentStatus)
-    );
-  };
-
-  /* =========================================================
-     FILTER ORDERS
+     FILTERING
   ========================================================= */
 
   const filteredOrders = useMemo(() => {
@@ -386,12 +361,12 @@ const CustomerOrders = () => {
         !searchValue ||
         orderNumber.includes(searchValue);
 
-      const normalizedStatus =
+      const status =
         getNormalizedOrderStatus(order);
 
       const matchesStatus =
         statusFilter === "all" ||
-        normalizedStatus === statusFilter;
+        status === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
@@ -428,8 +403,7 @@ const CustomerOrders = () => {
       )
       .reduce(
         (sum, order) =>
-          sum +
-          Number(order?.totalAmount || 0),
+          sum + Number(order?.totalAmount || 0),
         0,
       );
 
@@ -442,14 +416,12 @@ const CustomerOrders = () => {
   }, [orders]);
 
   /* =========================================================
-     ORDER DETAILS
+     ORDER INTERACTION
   ========================================================= */
 
   const toggleOrder = (orderId) => {
     setExpandedOrder((current) =>
-      current === orderId
-        ? null
-        : orderId,
+      current === orderId ? null : orderId,
     );
   };
 
@@ -470,11 +442,13 @@ const CustomerOrders = () => {
   ========================================================= */
 
   const openCancelConfirmation = (order) => {
-    if (!canCancelOrder(order)) {
+    const cancellation =
+      getCancellationState(order);
+
+    if (!cancellation.allowed) {
       toast.info(
         "This order can no longer be cancelled.",
       );
-
       return;
     }
 
@@ -507,7 +481,6 @@ const CustomerOrders = () => {
       );
 
       setCancelConfirmOrder(null);
-
       return;
     }
 
@@ -525,7 +498,6 @@ const CustomerOrders = () => {
           data?.message ||
             "Unable to cancel order.",
         );
-
         return;
       }
 
@@ -545,19 +517,16 @@ const CustomerOrders = () => {
       };
 
       setOrders((currentOrders) =>
-        currentOrders.map(
-          (currentOrder) =>
-            getOrderId(currentOrder) ===
-            orderId
-              ? updatedOrder
-              : currentOrder,
+        currentOrders.map((currentOrder) =>
+          getOrderId(currentOrder) === orderId
+            ? updatedOrder
+            : currentOrder,
         ),
       );
 
       if (
         selectedOrder &&
-        getOrderId(selectedOrder) ===
-          orderId
+        getOrderId(selectedOrder) === orderId
       ) {
         setSelectedOrder(updatedOrder);
       }
@@ -598,7 +567,6 @@ const CustomerOrders = () => {
       toast.error(
         "This order cannot be reordered.",
       );
-
       return;
     }
 
@@ -630,27 +598,23 @@ const CustomerOrders = () => {
       <h2>No orders found</h2>
 
       <p>
-        {search ||
-        statusFilter !== "all"
+        {search || statusFilter !== "all"
           ? "Try changing your search or filter."
           : "You haven't placed any orders yet."}
       </p>
 
-      {!search &&
-        statusFilter === "all" && (
-          <button
-            type="button"
-            className="start-shopping-btn"
-            onClick={() =>
-              navigate(
-                "/customer/products",
-              )
-            }
-          >
-            <FaShoppingBag />
-            Start Shopping
-          </button>
-        )}
+      {!search && statusFilter === "all" && (
+        <button
+          type="button"
+          className="start-shopping-btn"
+          onClick={() =>
+            navigate("/customer/products")
+          }
+        >
+          <FaShoppingBag />
+          Start Shopping
+        </button>
+      )}
     </motion.div>
   );
 
@@ -661,10 +625,8 @@ const CustomerOrders = () => {
   return (
     <main className="customer-orders-page">
       <div className="customer-orders-container">
-        {/* =====================================================
-            HEADER
-        ===================================================== */}
 
+        {/* HEADER */}
         <motion.header
           className="customer-orders-header"
           initial={{
@@ -680,9 +642,7 @@ const CustomerOrders = () => {
             type="button"
             className="back-button"
             onClick={() =>
-              navigate(
-                "/customer/dashboard",
-              )
+              navigate("/customer/dashboard")
             }
           >
             <FaArrowLeft />
@@ -698,8 +658,8 @@ const CustomerOrders = () => {
               <h1>My Orders</h1>
 
               <p>
-                Track your orders and view
-                your purchase history.
+                Track your orders and view your
+                purchase history.
               </p>
             </div>
 
@@ -709,10 +669,7 @@ const CustomerOrders = () => {
           </div>
         </motion.header>
 
-        {/* =====================================================
-            STATS
-        ===================================================== */}
-
+        {/* STATS */}
         <motion.section
           className="orders-stats"
           initial={{
@@ -734,9 +691,7 @@ const CustomerOrders = () => {
 
             <div>
               <span>Total Orders</span>
-              <strong>
-                {stats.total}
-              </strong>
+              <strong>{stats.total}</strong>
             </div>
           </div>
 
@@ -747,9 +702,7 @@ const CustomerOrders = () => {
 
             <div>
               <span>In Progress</span>
-              <strong>
-                {stats.pending}
-              </strong>
+              <strong>{stats.pending}</strong>
             </div>
           </div>
 
@@ -760,9 +713,7 @@ const CustomerOrders = () => {
 
             <div>
               <span>Completed</span>
-              <strong>
-                {stats.completed}
-              </strong>
+              <strong>{stats.completed}</strong>
             </div>
           </div>
 
@@ -773,20 +724,14 @@ const CustomerOrders = () => {
 
             <div>
               <span>Total Spent</span>
-
               <strong>
-                {formatCurrency(
-                  stats.spent,
-                )}
+                {formatCurrency(stats.spent)}
               </strong>
             </div>
           </div>
         </motion.section>
 
-        {/* =====================================================
-            FILTER TOOLBAR
-        ===================================================== */}
-
+        {/* FILTER TOOLBAR */}
         <motion.section
           className="orders-toolbar"
           initial={{
@@ -808,9 +753,7 @@ const CustomerOrders = () => {
               type="text"
               value={search}
               onChange={(event) =>
-                setSearch(
-                  event.target.value,
-                )
+                setSearch(event.target.value)
               }
               placeholder="Search by order number..."
             />
@@ -818,9 +761,7 @@ const CustomerOrders = () => {
             {search && (
               <button
                 type="button"
-                onClick={() =>
-                  setSearch("")
-                }
+                onClick={() => setSearch("")}
                 aria-label="Clear search"
               >
                 <FaTimes />
@@ -834,9 +775,7 @@ const CustomerOrders = () => {
             <select
               value={statusFilter}
               onChange={(event) =>
-                setStatusFilter(
-                  event.target.value,
-                )
+                setStatusFilter(event.target.value)
               }
             >
               <option value="all">
@@ -876,30 +815,20 @@ const CustomerOrders = () => {
             disabled={loading}
           >
             <FaRedo
-              className={
-                loading ? "spin" : ""
-              }
+              className={loading ? "spin" : ""}
             />
-
             Refresh
           </button>
         </motion.section>
 
-        {/* =====================================================
-            ORDERS LIST
-        ===================================================== */}
-
+        {/* ORDERS */}
         <section className="orders-list-section">
           {loading ? (
             <div className="orders-loading">
               <FaSpinner className="spin" />
-
-              <p>
-                Loading your orders...
-              </p>
+              <p>Loading your orders...</p>
             </div>
-          ) : filteredOrders.length ===
-            0 ? (
+          ) : filteredOrders.length === 0 ? (
             renderEmptyState()
           ) : (
             <div className="orders-list">
@@ -910,34 +839,27 @@ const CustomerOrders = () => {
                       getOrderId(order);
 
                     const isExpanded =
-                      expandedOrder ===
-                      orderId;
+                      expandedOrder === orderId;
 
                     const isCancelling =
                       cancellingOrderId ===
                       orderId;
 
                     /*
-                     * Normalize values before using
-                     * them anywhere in the UI.
+                     * SINGLE SOURCE OF TRUTH
+                     * for customer cancellation.
                      */
+                    const cancellation =
+                      getCancellationState(order);
+
+                    const cancellable =
+                      cancellation.allowed;
+
                     const normalizedStatus =
-                      getNormalizedOrderStatus(
-                        order,
-                      );
+                      cancellation.status;
 
                     const normalizedPaymentStatus =
-                      getNormalizedPaymentStatus(
-                        order,
-                      );
-
-                    /*
-                     * IMPORTANT:
-                     * This controls every cancellation
-                     * button for this order.
-                     */
-                    const cancellable =
-                      canCancelOrder(order);
+                      cancellation.paymentStatus;
 
                     return (
                       <motion.article
@@ -952,19 +874,17 @@ const CustomerOrders = () => {
                           y: 0,
                         }}
                         transition={{
-                          delay:
-                            index * 0.04,
+                          delay: index * 0.04,
                         }}
                       >
-                        {/* =================================================
-                            ORDER CARD HEADER
-                        ================================================= */}
-
                         <div className="order-card-main">
+
+                          {/* PRODUCT ICON */}
                           <div className="order-product-icon">
                             <FaReceipt />
                           </div>
 
+                          {/* ORDER INFORMATION */}
                           <div className="order-main-info">
                             <div className="order-number-row">
                               <h2>
@@ -987,35 +907,25 @@ const CustomerOrders = () => {
                             <div className="order-meta">
                               <span>
                                 <FaCalendarAlt />
-
-                                {getOrderDate(
-                                  order,
-                                )}
+                                {getOrderDate(order)}
                               </span>
 
                               <span>
                                 <FaClock />
-
-                                {getOrderTime(
-                                  order,
-                                )}
+                                {getOrderTime(order)}
                               </span>
 
                               <span>
                                 <FaBoxOpen />
-
-                                {getItemCount(
-                                  order,
-                                )}{" "}
-                                {getItemCount(
-                                  order,
-                                ) === 1
+                                {getItemCount(order)}{" "}
+                                {getItemCount(order) === 1
                                   ? "item"
                                   : "items"}
                               </span>
                             </div>
                           </div>
 
+                          {/* TOTAL */}
                           <div className="order-total">
                             <span>Total</span>
 
@@ -1041,6 +951,7 @@ const CustomerOrders = () => {
                           ================================================= */}
 
                           <div className="order-card-actions">
+
                             {cancellable && (
                               <button
                                 type="button"
@@ -1055,11 +966,13 @@ const CustomerOrders = () => {
                                   !!cancellingOrderId
                                 }
                                 title="Cancel Order"
+                                aria-label={`Cancel ${getOrderNumber(
+                                  order,
+                                )}`}
                               >
                                 {isCancelling ? (
                                   <>
                                     <FaSpinner className="spin" />
-
                                     <span>
                                       Cancelling
                                     </span>
@@ -1067,10 +980,7 @@ const CustomerOrders = () => {
                                 ) : (
                                   <>
                                     <FaTimes />
-
-                                    <span>
-                                      Cancel
-                                    </span>
+                                    <span>Cancel</span>
                                   </>
                                 )}
                               </button>
@@ -1127,10 +1037,9 @@ const CustomerOrders = () => {
                                 opacity: 0,
                               }}
                             >
+                              {/* ITEMS */}
                               <div className="order-items">
-                                <h3>
-                                  Order Items
-                                </h3>
+                                <h3>Order Items</h3>
 
                                 {Array.isArray(
                                   order.items,
@@ -1200,10 +1109,7 @@ const CustomerOrders = () => {
                                   )}
                               </div>
 
-                              {/* =================================================
-                                  ORDER SUMMARY
-                              ================================================= */}
-
+                              {/* SUMMARY */}
                               <div className="order-summary">
                                 <div>
                                   <span>
@@ -1231,9 +1137,7 @@ const CustomerOrders = () => {
                                 </div>
 
                                 <div>
-                                  <span>
-                                    Tax
-                                  </span>
+                                  <span>Tax</span>
 
                                   <strong>
                                     {formatCurrency(
@@ -1255,10 +1159,7 @@ const CustomerOrders = () => {
                                 </div>
                               </div>
 
-                              {/* =================================================
-                                  ORDER FOOTER
-                              ================================================= */}
-
+                              {/* FOOTER */}
                               <div className="order-footer">
                                 <div className="payment-info">
                                   <span>
@@ -1348,15 +1249,9 @@ const CustomerOrders = () => {
         {selectedOrder && (
           <motion.div
             className="order-modal-overlay"
-            initial={{
-              opacity: 0,
-            }}
-            animate={{
-              opacity: 1,
-            }}
-            exit={{
-              opacity: 0,
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={closeModal}
           >
             <motion.div
@@ -1530,15 +1425,9 @@ const CustomerOrders = () => {
         {cancelConfirmOrder && (
           <motion.div
             className="cancel-modal-overlay"
-            initial={{
-              opacity: 0,
-            }}
-            animate={{
-              opacity: 1,
-            }}
-            exit={{
-              opacity: 0,
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             onClick={
               closeCancelConfirmation
             }
@@ -1589,9 +1478,7 @@ const CustomerOrders = () => {
                 </p>
 
                 <div className="cancel-order-summary">
-                  <span>
-                    Order Total
-                  </span>
+                  <span>Order Total</span>
 
                   <strong>
                     {formatCurrency(
