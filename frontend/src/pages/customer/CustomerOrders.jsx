@@ -140,29 +140,48 @@ const CustomerOrders = () => {
     });
   };
 
+  /* =========================================================
+     NORMALIZED STATUS HELPERS
+  ========================================================= */
+
   /*
-   * IMPORTANT:
-   * Some older orders may not have an explicit status.
+   * Older orders may not have an explicit status.
    *
-   * The UI displays missing status as "Pending", therefore
-   * all status-dependent logic must use the same fallback.
+   * The customer UI treats a missing status as Pending.
+   * Therefore all status-dependent logic must use the
+   * exact same fallback.
    */
   const getNormalizedOrderStatus = (order) => {
-    const status = String(order?.status ?? "")
+    const rawStatus =
+      order?.status ??
+      order?.orderStatus ??
+      "";
+
+    const normalizedStatus = String(rawStatus)
       .trim()
       .toLowerCase();
 
-    return status || "pending";
+    return normalizedStatus || "pending";
   };
 
+  /*
+   * Older orders may also have no explicit paymentStatus.
+   *
+   * Missing payment status is treated as pending.
+   */
   const getNormalizedPaymentStatus = (order) => {
-    const paymentStatus = String(
-      order?.paymentStatus ?? "",
+    const rawPaymentStatus =
+      order?.paymentStatus ??
+      order?.payment_state ??
+      "";
+
+    const normalizedPaymentStatus = String(
+      rawPaymentStatus,
     )
       .trim()
       .toLowerCase();
 
-    return paymentStatus || "pending";
+    return normalizedPaymentStatus || "pending";
   };
 
   const formatStatus = (status) => {
@@ -176,7 +195,9 @@ const CustomerOrders = () => {
 
     return normalizedStatus
       .replace(/_/g, " ")
-      .replace(/\b\w/g, (letter) => letter.toUpperCase());
+      .replace(/\b\w/g, (letter) =>
+        letter.toUpperCase(),
+      );
   };
 
   const formatPaymentMethod = (method) => {
@@ -184,7 +205,10 @@ const CustomerOrders = () => {
       .trim()
       .toLowerCase();
 
-    if (!normalizedMethod || normalizedMethod === "unpaid") {
+    if (
+      !normalizedMethod ||
+      normalizedMethod === "unpaid"
+    ) {
       return "Pending";
     }
 
@@ -194,7 +218,9 @@ const CustomerOrders = () => {
 
     return normalizedMethod
       .replace(/_/g, " ")
-      .replace(/\b\w/g, (letter) => letter.toUpperCase());
+      .replace(/\b\w/g, (letter) =>
+        letter.toUpperCase(),
+      );
   };
 
   const formatCurrency = (amount) => {
@@ -227,9 +253,10 @@ const CustomerOrders = () => {
   ========================================================= */
 
   const getStatusClass = (status) => {
-    const normalizedStatus = String(status ?? "")
-      .trim()
-      .toLowerCase() || "pending";
+    const normalizedStatus =
+      String(status ?? "")
+        .trim()
+        .toLowerCase() || "pending";
 
     switch (normalizedStatus) {
       case "completed":
@@ -259,9 +286,10 @@ const CustomerOrders = () => {
   };
 
   const getPaymentClass = (status) => {
-    const normalizedStatus = String(status ?? "")
-      .trim()
-      .toLowerCase() || "pending";
+    const normalizedStatus =
+      String(status ?? "")
+        .trim()
+        .toLowerCase() || "pending";
 
     switch (normalizedStatus) {
       case "paid":
@@ -293,14 +321,28 @@ const CustomerOrders = () => {
       return false;
     }
 
-    const orderStatus = getNormalizedOrderStatus(order);
+    /*
+     * Normalize the order status.
+     *
+     * Missing/empty status is intentionally treated
+     * as "pending" because older customer orders may
+     * not contain an explicit status.
+     */
+    const orderStatus =
+      getNormalizedOrderStatus(order);
 
+    /*
+     * Normalize the payment status.
+     *
+     * Missing/empty payment status is intentionally
+     * treated as "pending".
+     */
     const paymentStatus =
       getNormalizedPaymentStatus(order);
 
     /*
-     * Customers can cancel orders which are still
-     * pending or confirmed.
+     * Customers may cancel orders that have not yet
+     * progressed beyond pending/confirmed.
      */
     const cancellableStatuses = [
       "pending",
@@ -308,8 +350,8 @@ const CustomerOrders = () => {
     ];
 
     /*
-     * Once payment is paid/refunded/cancelled,
-     * customer cancellation is not allowed.
+     * A paid/refunded/cancelled payment must never
+     * expose customer cancellation.
      */
     const blockedPaymentStatuses = [
       "paid",
@@ -318,6 +360,9 @@ const CustomerOrders = () => {
       "partially_refunded",
     ];
 
+    /*
+     * Final cancellation decision.
+     */
     return (
       cancellableStatuses.includes(orderStatus) &&
       !blockedPaymentStatuses.includes(paymentStatus)
@@ -370,7 +415,9 @@ const CustomerOrders = () => {
         "pending",
         "confirmed",
         "processing",
-      ].includes(getNormalizedOrderStatus(order)),
+      ].includes(
+        getNormalizedOrderStatus(order),
+      ),
     ).length;
 
     const spent = orders
@@ -381,7 +428,8 @@ const CustomerOrders = () => {
       )
       .reduce(
         (sum, order) =>
-          sum + Number(order?.totalAmount || 0),
+          sum +
+          Number(order?.totalAmount || 0),
         0,
       );
 
@@ -399,7 +447,9 @@ const CustomerOrders = () => {
 
   const toggleOrder = (orderId) => {
     setExpandedOrder((current) =>
-      current === orderId ? null : orderId,
+      current === orderId
+        ? null
+        : orderId,
     );
   };
 
@@ -495,16 +545,19 @@ const CustomerOrders = () => {
       };
 
       setOrders((currentOrders) =>
-        currentOrders.map((currentOrder) =>
-          getOrderId(currentOrder) === orderId
-            ? updatedOrder
-            : currentOrder,
+        currentOrders.map(
+          (currentOrder) =>
+            getOrderId(currentOrder) ===
+            orderId
+              ? updatedOrder
+              : currentOrder,
         ),
       );
 
       if (
         selectedOrder &&
-        getOrderId(selectedOrder) === orderId
+        getOrderId(selectedOrder) ===
+          orderId
       ) {
         setSelectedOrder(updatedOrder);
       }
@@ -577,23 +630,27 @@ const CustomerOrders = () => {
       <h2>No orders found</h2>
 
       <p>
-        {search || statusFilter !== "all"
+        {search ||
+        statusFilter !== "all"
           ? "Try changing your search or filter."
           : "You haven't placed any orders yet."}
       </p>
 
-      {!search && statusFilter === "all" && (
-        <button
-          type="button"
-          className="start-shopping-btn"
-          onClick={() =>
-            navigate("/customer/products")
-          }
-        >
-          <FaShoppingBag />
-          Start Shopping
-        </button>
-      )}
+      {!search &&
+        statusFilter === "all" && (
+          <button
+            type="button"
+            className="start-shopping-btn"
+            onClick={() =>
+              navigate(
+                "/customer/products",
+              )
+            }
+          >
+            <FaShoppingBag />
+            Start Shopping
+          </button>
+        )}
     </motion.div>
   );
 
@@ -623,7 +680,9 @@ const CustomerOrders = () => {
             type="button"
             className="back-button"
             onClick={() =>
-              navigate("/customer/dashboard")
+              navigate(
+                "/customer/dashboard",
+              )
             }
           >
             <FaArrowLeft />
@@ -639,8 +698,8 @@ const CustomerOrders = () => {
               <h1>My Orders</h1>
 
               <p>
-                Track your orders and view your
-                purchase history.
+                Track your orders and view
+                your purchase history.
               </p>
             </div>
 
@@ -675,7 +734,9 @@ const CustomerOrders = () => {
 
             <div>
               <span>Total Orders</span>
-              <strong>{stats.total}</strong>
+              <strong>
+                {stats.total}
+              </strong>
             </div>
           </div>
 
@@ -686,7 +747,9 @@ const CustomerOrders = () => {
 
             <div>
               <span>In Progress</span>
-              <strong>{stats.pending}</strong>
+              <strong>
+                {stats.pending}
+              </strong>
             </div>
           </div>
 
@@ -697,7 +760,9 @@ const CustomerOrders = () => {
 
             <div>
               <span>Completed</span>
-              <strong>{stats.completed}</strong>
+              <strong>
+                {stats.completed}
+              </strong>
             </div>
           </div>
 
@@ -710,7 +775,9 @@ const CustomerOrders = () => {
               <span>Total Spent</span>
 
               <strong>
-                {formatCurrency(stats.spent)}
+                {formatCurrency(
+                  stats.spent,
+                )}
               </strong>
             </div>
           </div>
@@ -741,7 +808,9 @@ const CustomerOrders = () => {
               type="text"
               value={search}
               onChange={(event) =>
-                setSearch(event.target.value)
+                setSearch(
+                  event.target.value,
+                )
               }
               placeholder="Search by order number..."
             />
@@ -749,7 +818,9 @@ const CustomerOrders = () => {
             {search && (
               <button
                 type="button"
-                onClick={() => setSearch("")}
+                onClick={() =>
+                  setSearch("")
+                }
                 aria-label="Clear search"
               >
                 <FaTimes />
@@ -763,7 +834,9 @@ const CustomerOrders = () => {
             <select
               value={statusFilter}
               onChange={(event) =>
-                setStatusFilter(event.target.value)
+                setStatusFilter(
+                  event.target.value,
+                )
               }
             >
               <option value="all">
@@ -803,8 +876,11 @@ const CustomerOrders = () => {
             disabled={loading}
           >
             <FaRedo
-              className={loading ? "spin" : ""}
+              className={
+                loading ? "spin" : ""
+              }
             />
+
             Refresh
           </button>
         </motion.section>
@@ -822,7 +898,8 @@ const CustomerOrders = () => {
                 Loading your orders...
               </p>
             </div>
-          ) : filteredOrders.length === 0 ? (
+          ) : filteredOrders.length ===
+            0 ? (
             renderEmptyState()
           ) : (
             <div className="orders-list">
@@ -841,10 +918,8 @@ const CustomerOrders = () => {
                       orderId;
 
                     /*
-                     * This is the important value.
-                     *
-                     * Missing order.status is treated
-                     * as "pending".
+                     * Normalize values before using
+                     * them anywhere in the UI.
                      */
                     const normalizedStatus =
                       getNormalizedOrderStatus(
@@ -856,6 +931,11 @@ const CustomerOrders = () => {
                         order,
                       );
 
+                    /*
+                     * IMPORTANT:
+                     * This controls every cancellation
+                     * button for this order.
+                     */
                     const cancellable =
                       canCancelOrder(order);
 
