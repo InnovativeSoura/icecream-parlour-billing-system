@@ -34,19 +34,14 @@ import Register from "./pages/Register";
 
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import StaffDashboard from "./pages/StaffDashboard.jsx";
-import CustomerDashboard from "./pages/customer/CustomerDashboard.jsx";
+import CustomerDashboard from "./pages/CustomerDashboard.jsx";
 
 // =====================================================
-// ADMIN LAYOUT
-// =====================================================
-
-import AdminLayout from "./layouts/admin/Layout.jsx";
-
-// =====================================================
-// CUSTOMER LAYOUT
+// LAYOUTS
 // =====================================================
 
 import CustomerLayout from "./layouts/costomer/CustomerLayout.jsx";
+import AdminLayout from "./layouts/admin/Layout.jsx";
 
 // =====================================================
 // CUSTOMER PAGES
@@ -103,12 +98,7 @@ const HomeRedirect = () => {
   // ===================================================
 
   if (!user) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-      />
-    );
+    return <Navigate to="/login" replace />;
   }
 
   // ===================================================
@@ -154,12 +144,7 @@ const HomeRedirect = () => {
   // UNKNOWN ROLE
   // ===================================================
 
-  return (
-    <Navigate
-      to="/login"
-      replace
-    />
-  );
+  return <Navigate to="/login" replace />;
 };
 
 // =====================================================
@@ -192,24 +177,6 @@ const App = () => {
 
         {/* =================================================
             ADMIN ROUTES
-        =================================================
-
-            AdminLayout is the common shell for ALL admin
-            pages.
-
-            AdminLayout provides:
-
-            - Sidebar
-            - Top navbar
-            - Admin profile
-            - Logout
-            - Main content area
-            - Outlet
-
-            Individual admin pages should render ONLY their
-            page content and should NOT create another
-            sidebar/navbar.
-
         ================================================= */}
 
         <Route
@@ -219,6 +186,10 @@ const App = () => {
             />
           }
         >
+
+          {/* =================================================
+              ADMIN LAYOUT
+          ================================================= */}
 
           <Route
             path="/admin"
@@ -246,33 +217,6 @@ const App = () => {
             <Route
               path="dashboard"
               element={<AdminDashboard />}
-            />
-
-            {/* =================================================
-                ADMIN PRODUCTS
-            ================================================= */}
-
-            <Route
-              path="products"
-              element={<Products />}
-            />
-
-            {/* =================================================
-                ADMIN INVENTORY
-            ================================================= */}
-
-            <Route
-              path="inventory"
-              element={<Inventory />}
-            />
-
-            {/* =================================================
-                ADMIN CUSTOMERS
-            ================================================= */}
-
-            <Route
-              path="customers"
-              element={<Customer />}
             />
 
           </Route>
@@ -306,51 +250,10 @@ const App = () => {
             element={<StaffDashboard />}
           />
 
-          {/* =================================================
-              STAFF PRODUCTS
-          ================================================= */}
-
-          <Route
-            path="/staff/products"
-            element={<Products />}
-          />
-
-          {/* =================================================
-              STAFF INVENTORY
-          ================================================= */}
-
-          <Route
-            path="/staff/inventory"
-            element={<Inventory />}
-          />
-
-          {/* =================================================
-              STAFF CUSTOMERS
-          ================================================= */}
-
-          <Route
-            path="/staff/customers"
-            element={<Customer />}
-          />
-
         </Route>
 
         {/* =================================================
             CUSTOMER ROUTES
-        =================================================
-
-            CustomerLayout provides:
-
-            - Customer sidebar
-            - Customer top navbar
-            - Customer profile
-            - Mobile navigation
-            - Logout
-            - Outlet
-
-            Individual customer pages should NOT contain
-            another CustomerLayout.
-
         ================================================= */}
 
         <Route
@@ -366,9 +269,7 @@ const App = () => {
             element={<CustomerLayout />}
           >
 
-            {/* =================================================
-                CUSTOMER ROOT
-            ================================================= */}
+            {/* Customer root */}
 
             <Route
               index
@@ -380,54 +281,42 @@ const App = () => {
               }
             />
 
-            {/* =================================================
-                CUSTOMER DASHBOARD
-            ================================================= */}
+            {/* Dashboard */}
 
             <Route
               path="dashboard"
               element={<CustomerDashboard />}
             />
 
-            {/* =================================================
-                BROWSE PRODUCTS
-            ================================================= */}
+            {/* Products */}
 
             <Route
               path="products"
               element={<CustomerProducts />}
             />
 
-            {/* =================================================
-                MY ORDERS
-            ================================================= */}
+            {/* Orders */}
 
             <Route
               path="orders"
               element={<CustomerOrders />}
             />
 
-            {/* =================================================
-                MY CART
-            ================================================= */}
+            {/* Cart */}
 
             <Route
               path="cart"
               element={<CustomerCart />}
             />
 
-            {/* =================================================
-                INVOICES
-            ================================================= */}
+            {/* Invoices */}
 
             <Route
               path="invoices"
               element={<CustomerInvoices />}
             />
 
-            {/* =================================================
-                MY PROFILE
-            ================================================= */}
+            {/* Profile */}
 
             <Route
               path="profile"
@@ -439,50 +328,64 @@ const App = () => {
         </Route>
 
         {/* =================================================
-            LEGACY ADMIN / STAFF ROUTES
-        =================================================
-
-            These redirects keep old links/bookmarks working.
-
-            /products     → /admin/products
-            /inventory    → /admin/inventory
-            /customers    → /admin/customers
-
-            IMPORTANT:
-            The redirects below are primarily for admin use.
-            Staff users should use their /staff/* routes.
-
+            PRODUCTS
+            ADMIN + STAFF
         ================================================= */}
 
         <Route
-          path="/products"
           element={
-            <Navigate
-              to="/admin/products"
-              replace
+            <ProtectedRoute
+              allowedRoles={["admin", "staff"]}
             />
           }
-        />
+        >
+
+          <Route
+            path="/products"
+            element={<Products />}
+          />
+
+        </Route>
+
+        {/* =================================================
+            INVENTORY
+            ADMIN + STAFF
+        ================================================= */}
 
         <Route
-          path="/inventory"
           element={
-            <Navigate
-              to="/admin/inventory"
-              replace
+            <ProtectedRoute
+              allowedRoles={["admin", "staff"]}
             />
           }
-        />
+        >
+
+          <Route
+            path="/inventory"
+            element={<Inventory />}
+          />
+
+        </Route>
+
+        {/* =================================================
+            CUSTOMERS
+            ADMIN + STAFF
+        ================================================= */}
 
         <Route
-          path="/customers"
           element={
-            <Navigate
-              to="/admin/customers"
-              replace
+            <ProtectedRoute
+              allowedRoles={["admin", "staff"]}
             />
           }
-        />
+        >
+
+          <Route
+            path="/customers"
+            element={<Customer />}
+          />
+
+        </Route>
 
         {/* =================================================
             FALLBACK
@@ -507,6 +410,7 @@ const App = () => {
         pauseOnHover
         draggable
       />
+
     </>
   );
 };
