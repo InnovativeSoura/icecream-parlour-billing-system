@@ -34,13 +34,19 @@ import Register from "./pages/Register";
 
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import StaffDashboard from "./pages/StaffDashboard.jsx";
-import CustomerDashboard from "./pages/CustomerDashboard.jsx";
+import CustomerDashboard from "./pages/customer/CustomerDashboard.jsx";
+
+// =====================================================
+// ADMIN LAYOUT
+// =====================================================
+
+import AdminLayout from "./layouts/admin/Layout.jsx";
 
 // =====================================================
 // CUSTOMER LAYOUT
 // =====================================================
 
-import CustomerLayout from "./components/CustomerLayout";
+import CustomerLayout from "./layouts/costomer/CustomerLayout.jsx";
 
 // =====================================================
 // CUSTOMER PAGES
@@ -186,6 +192,24 @@ const App = () => {
 
         {/* =================================================
             ADMIN ROUTES
+        =================================================
+
+            AdminLayout is the common shell for ALL admin
+            pages.
+
+            AdminLayout provides:
+
+            - Sidebar
+            - Top navbar
+            - Admin profile
+            - Logout
+            - Main content area
+            - Outlet
+
+            Individual admin pages should render ONLY their
+            page content and should NOT create another
+            sidebar/navbar.
+
         ================================================= */}
 
         <Route
@@ -196,24 +220,62 @@ const App = () => {
           }
         >
 
-          {/* Admin root */}
-
           <Route
             path="/admin"
-            element={
-              <Navigate
-                to="/admin/dashboard"
-                replace
-              />
-            }
-          />
+            element={<AdminLayout />}
+          >
 
-          {/* Admin dashboard */}
+            {/* =================================================
+                ADMIN ROOT
+            ================================================= */}
 
-          <Route
-            path="/admin/dashboard"
-            element={<AdminDashboard />}
-          />
+            <Route
+              index
+              element={
+                <Navigate
+                  to="/admin/dashboard"
+                  replace
+                />
+              }
+            />
+
+            {/* =================================================
+                ADMIN DASHBOARD
+            ================================================= */}
+
+            <Route
+              path="dashboard"
+              element={<AdminDashboard />}
+            />
+
+            {/* =================================================
+                ADMIN PRODUCTS
+            ================================================= */}
+
+            <Route
+              path="products"
+              element={<Products />}
+            />
+
+            {/* =================================================
+                ADMIN INVENTORY
+            ================================================= */}
+
+            <Route
+              path="inventory"
+              element={<Inventory />}
+            />
+
+            {/* =================================================
+                ADMIN CUSTOMERS
+            ================================================= */}
+
+            <Route
+              path="customers"
+              element={<Customer />}
+            />
+
+          </Route>
 
         </Route>
 
@@ -229,8 +291,6 @@ const App = () => {
           }
         >
 
-          {/* Staff root */}
-
           <Route
             path="/staff"
             element={
@@ -241,11 +301,36 @@ const App = () => {
             }
           />
 
-          {/* Staff dashboard */}
-
           <Route
             path="/staff/dashboard"
             element={<StaffDashboard />}
+          />
+
+          {/* =================================================
+              STAFF PRODUCTS
+          ================================================= */}
+
+          <Route
+            path="/staff/products"
+            element={<Products />}
+          />
+
+          {/* =================================================
+              STAFF INVENTORY
+          ================================================= */}
+
+          <Route
+            path="/staff/inventory"
+            element={<Inventory />}
+          />
+
+          {/* =================================================
+              STAFF CUSTOMERS
+          ================================================= */}
+
+          <Route
+            path="/staff/customers"
+            element={<Customer />}
           />
 
         </Route>
@@ -254,22 +339,18 @@ const App = () => {
             CUSTOMER ROUTES
         =================================================
 
-            ProtectedRoute checks that the logged-in user
-            has the customer role.
-
             CustomerLayout provides:
 
-            - Premium sidebar
-            - Premium top navbar
-            - Mobile sidebar
+            - Customer sidebar
+            - Customer top navbar
             - Customer profile
-            - Customer navigation
+            - Mobile navigation
             - Logout
-            - Outlet for all customer pages
+            - Outlet
 
-            IMPORTANT:
-            CustomerDashboard must NOT wrap itself with
-            CustomerLayout because this route already does it.
+            Individual customer pages should NOT contain
+            another CustomerLayout.
+
         ================================================= */}
 
         <Route
@@ -279,10 +360,6 @@ const App = () => {
             />
           }
         >
-
-          {/* =================================================
-              CUSTOMER LAYOUT
-          ================================================= */}
 
           <Route
             path="/customer"
@@ -362,64 +439,50 @@ const App = () => {
         </Route>
 
         {/* =================================================
-            PRODUCTS
-            ADMIN + STAFF
+            LEGACY ADMIN / STAFF ROUTES
+        =================================================
+
+            These redirects keep old links/bookmarks working.
+
+            /products     → /admin/products
+            /inventory    → /admin/inventory
+            /customers    → /admin/customers
+
+            IMPORTANT:
+            The redirects below are primarily for admin use.
+            Staff users should use their /staff/* routes.
+
         ================================================= */}
 
         <Route
+          path="/products"
           element={
-            <ProtectedRoute
-              allowedRoles={["admin", "staff"]}
+            <Navigate
+              to="/admin/products"
+              replace
             />
           }
-        >
-
-          <Route
-            path="/products"
-            element={<Products />}
-          />
-
-        </Route>
-
-        {/* =================================================
-            INVENTORY
-            ADMIN + STAFF
-        ================================================= */}
+        />
 
         <Route
+          path="/inventory"
           element={
-            <ProtectedRoute
-              allowedRoles={["admin", "staff"]}
+            <Navigate
+              to="/admin/inventory"
+              replace
             />
           }
-        >
-
-          <Route
-            path="/inventory"
-            element={<Inventory />}
-          />
-
-        </Route>
-
-        {/* =================================================
-            CUSTOMERS
-            ADMIN + STAFF
-        ================================================= */}
+        />
 
         <Route
+          path="/customers"
           element={
-            <ProtectedRoute
-              allowedRoles={["admin", "staff"]}
+            <Navigate
+              to="/admin/customers"
+              replace
             />
           }
-        >
-
-          <Route
-            path="/customers"
-            element={<Customer />}
-          />
-
-        </Route>
+        />
 
         {/* =================================================
             FALLBACK
@@ -444,7 +507,6 @@ const App = () => {
         pauseOnHover
         draggable
       />
-
     </>
   );
 };
