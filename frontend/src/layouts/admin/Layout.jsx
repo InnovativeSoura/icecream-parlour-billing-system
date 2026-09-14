@@ -87,21 +87,21 @@ const AdminLayout = () => {
       };
     }
 
-    if (path.startsWith("/products")) {
+    if (path.startsWith("/admin/products")) {
       return {
         label: "CATALOGUE",
         title: "Products",
       };
     }
 
-    if (path.startsWith("/inventory")) {
+    if (path.startsWith("/admin/inventory")) {
       return {
         label: "STOCK MANAGEMENT",
         title: "Inventory",
       };
     }
 
-    if (path.startsWith("/customers")) {
+    if (path.startsWith("admin/customers")) {
       return {
         label: "CUSTOMER MANAGEMENT",
         title: "Customers",
@@ -142,17 +142,17 @@ const AdminLayout = () => {
     },
     {
       label: "Products",
-      path: "/products",
+      path: "/admin/products",
       icon: FaIceCream,
     },
     {
       label: "Inventory",
-      path: "/inventory",
+      path: "/admin/inventory",
       icon: FaBoxes,
     },
     {
       label: "Customers",
-      path: "/customers",
+      path: "/admin/customers",
       icon: FaUsers,
     },
   ];

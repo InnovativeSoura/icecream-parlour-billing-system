@@ -214,15 +214,15 @@ const AdminDashboard = () => {
   // =====================================================
 
   const openProducts = () => {
-    navigate("/products");
+    navigate("/admin/products");
   };
 
   const openInventory = () => {
-    navigate("/inventory");
+    navigate("admin/inventory");
   };
 
   const openCustomers = () => {
-    navigate("/customers");
+    navigate("admin/customers");
   };
 
   // =====================================================
