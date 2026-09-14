@@ -1,11 +1,12 @@
 /* =========================================================
    CUSTOMER DASHBOARD
+   Content-only page rendered inside CustomerLayout
    ========================================================= */
 
 .customer-dashboard-page {
   position: relative;
   width: 100%;
-  min-height: calc(100vh - 92px);
+  min-height: 100%;
   overflow: hidden;
   background:
     radial-gradient(
@@ -32,6 +33,7 @@
   border-radius: 50%;
   filter: blur(10px);
   opacity: 0.55;
+  z-index: 0;
 }
 
 .glow-one {
@@ -60,14 +62,17 @@
 
 
 /* =========================================================
-   CONTAINER
+   MAIN CONTAINER
    ========================================================= */
 
 .customer-dashboard-container {
   position: relative;
   z-index: 2;
+
   width: min(1320px, calc(100% - 72px));
+
   margin: 0 auto;
+
   padding: 30px 0 64px;
 }
 
@@ -78,13 +83,19 @@
 
 .customer-dashboard-hero {
   position: relative;
+
   min-height: 315px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   overflow: hidden;
+
   border-radius: 28px;
+
   padding: 44px 52px;
+
   background:
     linear-gradient(
       120deg,
@@ -92,6 +103,7 @@
       #8250e8 45%,
       #b15bd0 100%
     );
+
   box-shadow:
     0 22px 55px rgba(88, 65, 180, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.24);
@@ -99,24 +111,38 @@
 
 .customer-dashboard-hero::before {
   content: "";
+
   position: absolute;
+
   width: 390px;
   height: 390px;
+
   top: -235px;
   right: 30px;
+
   border-radius: 50%;
+
   background: rgba(255, 255, 255, 0.08);
+
+  pointer-events: none;
 }
 
 .customer-dashboard-hero::after {
   content: "";
+
   position: absolute;
+
   width: 330px;
   height: 330px;
+
   right: -80px;
   bottom: -205px;
+
   border-radius: 50%;
+
   background: rgba(255, 255, 255, 0.1);
+
+  pointer-events: none;
 }
 
 
@@ -127,24 +153,34 @@
 .hero-content {
   position: relative;
   z-index: 3;
+
   max-width: 760px;
 }
 
 .hero-eyebrow {
   display: block;
+
   margin-bottom: 13px;
+
   color: rgba(255, 255, 255, 0.78);
+
   font-size: 10px;
   font-weight: 900;
+
   letter-spacing: 3px;
 }
 
 .hero-content h1 {
   margin: 0;
+
   color: #ffffff;
+
   font-size: clamp(34px, 4vw, 50px);
+
   line-height: 1.08;
+
   font-weight: 800;
+
   letter-spacing: -1.7px;
 }
 
@@ -154,38 +190,57 @@
 
 .hero-content p {
   max-width: 680px;
+
   margin: 17px 0 27px;
+
   color: rgba(255, 255, 255, 0.78);
+
   font-size: 14px;
+
   line-height: 1.7;
+
   font-weight: 500;
 }
 
 
 /* =========================================================
-   HERO BUTTON
+   HERO PRIMARY BUTTON
    ========================================================= */
 
 .hero-primary-button {
   display: inline-flex;
+
   align-items: center;
+  justify-content: center;
+
   gap: 12px;
+
   border: 0;
   border-radius: 11px;
+
   padding: 14px 21px;
+
   background: #ffffff;
+
   color: #6744dc;
+
   font-size: 12px;
   font-weight: 800;
+
   cursor: pointer;
-  box-shadow: 0 12px 25px rgba(30, 20, 80, 0.16);
+
+  box-shadow:
+    0 12px 25px rgba(30, 20, 80, 0.16);
+
   transition:
     box-shadow 0.25s ease,
     transform 0.25s ease;
 }
 
 .hero-primary-button:hover {
-  box-shadow: 0 16px 32px rgba(30, 20, 80, 0.23);
+  box-shadow:
+    0 16px 32px rgba(30, 20, 80, 0.23);
+
   transform: translateY(-1px);
 }
 
@@ -200,20 +255,25 @@
 
 .hero-visual {
   position: relative;
+
   width: 300px;
   height: 245px;
+
   flex-shrink: 0;
 }
 
 .hero-circle {
   position: absolute;
+
   border: 1px solid rgba(255, 255, 255, 0.16);
+
   border-radius: 50%;
 }
 
 .hero-circle-one {
   width: 160px;
   height: 160px;
+
   top: 27px;
   right: 45px;
 }
@@ -221,23 +281,33 @@
 .hero-circle-two {
   width: 225px;
   height: 225px;
+
   top: -7px;
   right: 12px;
 }
 
 .hero-main-icon {
   position: absolute;
+
   top: 66px;
   right: 78px;
+
   width: 105px;
   height: 105px;
+
   display: grid;
   place-items: center;
+
   border-radius: 50%;
+
   background: rgba(255, 255, 255, 0.12);
+
   border: 1px solid rgba(255, 255, 255, 0.22);
+
   color: #ffffff;
+
   font-size: 40px;
+
   box-shadow:
     0 15px 40px rgba(40, 20, 80, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
@@ -245,16 +315,25 @@
 
 .hero-floating-icon {
   position: absolute;
+
   z-index: 3;
+
   width: 35px;
   height: 35px;
+
   display: grid;
   place-items: center;
+
   border-radius: 50%;
+
   background: rgba(255, 255, 255, 0.16);
+
   border: 1px solid rgba(255, 255, 255, 0.22);
+
   color: #ffffff;
+
   font-size: 13px;
+
   backdrop-filter: blur(10px);
 }
 
@@ -280,70 +359,117 @@
 
 .dashboard-section-heading {
   display: flex;
+
   align-items: flex-end;
   justify-content: space-between;
+
   margin: 32px 0 17px;
 }
 
 .dashboard-section-heading span {
   display: block;
+
   margin-bottom: 7px;
+
   color: #7657df;
+
   font-size: 8px;
+
   font-weight: 900;
+
   letter-spacing: 2.6px;
 }
 
 .dashboard-section-heading h2 {
   margin: 0;
+
   color: #202334;
+
   font-size: 20px;
+
   line-height: 1.2;
+
   font-weight: 850;
+
   letter-spacing: -0.4px;
 }
 
 
 /* =========================================================
-   STATS
+   STATS GRID
    ========================================================= */
 
 .customer-stats-grid {
   display: grid;
+
   grid-template-columns: repeat(4, 1fr);
+
   gap: 16px;
 }
 
 .customer-stat-card {
   position: relative;
+
   min-height: 90px;
+
   display: flex;
+
   align-items: center;
+
   gap: 15px;
+
   overflow: hidden;
+
   border: 1px solid rgba(255, 255, 255, 0.55);
+
   border-radius: 16px;
+
   padding: 17px;
+
   background:
     linear-gradient(
       135deg,
       #353b50,
       #4a5065
     );
+
   box-shadow:
     0 12px 28px rgba(35, 38, 55, 0.15);
+
   cursor: pointer;
+
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
+
+.customer-stat-card:hover {
+  border-color: rgba(255, 255, 255, 0.75);
+
+  box-shadow:
+    0 16px 35px rgba(35, 38, 55, 0.19);
+}
+
+
+/* =========================================================
+   STAT ICON
+   ========================================================= */
 
 .stat-icon {
   position: relative;
+
   z-index: 2;
+
   width: 43px;
   height: 43px;
+
   display: grid;
   place-items: center;
+
   flex-shrink: 0;
+
   border-radius: 11px;
+
   font-size: 15px;
 }
 
@@ -367,33 +493,52 @@
   color: #ff9abb;
 }
 
+
+/* =========================================================
+   STAT CONTENT
+   ========================================================= */
+
 .stat-info {
   position: relative;
+
   z-index: 2;
+
   display: flex;
+
   flex-direction: column;
+
   gap: 5px;
+
+  min-width: 0;
 }
 
 .stat-info span {
   color: rgba(255, 255, 255, 0.65);
+
   font-size: 9px;
+
   font-weight: 600;
 }
 
 .stat-info strong {
   color: #ffffff;
+
   font-size: 18px;
+
   font-weight: 850;
 }
 
 .stat-decoration {
   position: absolute;
+
   width: 100px;
   height: 100px;
+
   right: -28px;
   top: -38px;
+
   border-radius: 50%;
+
   background: rgba(255, 255, 255, 0.055);
 }
 
@@ -408,24 +553,37 @@
 
 .customer-quick-grid {
   display: grid;
+
   grid-template-columns: repeat(3, 1fr);
+
   gap: 16px;
 }
 
 .customer-quick-card {
   display: flex;
+
   align-items: center;
+
   gap: 14px;
+
   width: 100%;
   min-height: 82px;
+
   border: 1px solid rgba(227, 228, 237, 0.95);
+
   border-radius: 15px;
+
   padding: 15px;
+
   text-align: left;
+
   background: rgba(255, 255, 255, 0.84);
+
   box-shadow:
     0 10px 25px rgba(60, 64, 100, 0.07);
+
   cursor: pointer;
+
   transition:
     border-color 0.25s ease,
     box-shadow 0.25s ease,
@@ -434,18 +592,24 @@
 
 .customer-quick-card:hover {
   border-color: rgba(126, 87, 229, 0.3);
+
   box-shadow:
     0 16px 32px rgba(74, 58, 135, 0.1);
+
   transform: translateY(-2px);
 }
 
 .quick-icon {
   width: 42px;
   height: 42px;
+
   display: grid;
   place-items: center;
+
   flex-shrink: 0;
+
   border-radius: 11px;
+
   font-size: 14px;
 }
 
@@ -466,29 +630,43 @@
 
 .quick-content {
   display: flex;
+
   flex-direction: column;
+
   gap: 5px;
+
   min-width: 0;
 }
 
 .quick-content strong {
   color: #25283a;
+
   font-size: 11px;
+
   font-weight: 850;
 }
 
 .quick-content span {
   overflow: hidden;
+
   color: #9295a5;
+
   font-size: 9px;
+
   line-height: 1.4;
+
   white-space: nowrap;
+
   text-overflow: ellipsis;
 }
 
 .quick-arrow {
   margin-left: auto;
+
+  flex-shrink: 0;
+
   color: #a8aabd;
+
   font-size: 10px;
 }
 
@@ -503,14 +681,32 @@
 
 .view-all-button {
   display: inline-flex;
+
   align-items: center;
+
   gap: 6px;
+
   border: 0;
+
   background: transparent;
+
   color: #7954df;
+
   font-size: 9px;
+
   font-weight: 850;
+
   cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.view-all-button:hover {
+  color: #5e36c7;
+
+  transform: translateX(2px);
 }
 
 .view-all-button svg {
@@ -519,72 +715,126 @@
 
 .recent-orders-card {
   min-height: 185px;
+
   display: flex;
+
   flex-direction: column;
+
   align-items: center;
+
   justify-content: center;
+
   border: 1px solid rgba(226, 228, 238, 0.95);
+
   border-radius: 18px;
+
   padding: 28px;
+
   background: rgba(255, 255, 255, 0.86);
+
   box-shadow:
     0 12px 30px rgba(70, 73, 110, 0.06);
+
   text-align: center;
 }
 
 .recent-empty-icon {
   width: 36px;
   height: 36px;
+
   display: grid;
   place-items: center;
+
   margin-bottom: 8px;
+
   border-radius: 10px;
+
   background: #f0eaff;
+
   color: #8257e8;
+
   font-size: 12px;
 }
 
 .recent-empty-label {
   margin-bottom: 6px;
+
   color: #aa9adb;
+
   font-size: 7px;
+
   font-weight: 900;
+
   letter-spacing: 2px;
 }
 
 .recent-orders-card h3 {
   margin: 0;
+
   color: #2d3042;
+
   font-size: 13px;
+
   font-weight: 850;
 }
 
 .recent-orders-card p {
   max-width: 480px;
+
   margin: 7px 0 13px;
+
   color: #a0a2b0;
+
   font-size: 9px;
+
   line-height: 1.5;
 }
 
+
+/* =========================================================
+   START SHOPPING BUTTON
+   ========================================================= */
+
 .start-shopping-button {
   display: inline-flex;
+
   align-items: center;
+  justify-content: center;
+
   gap: 7px;
+
   border: 0;
+
   border-radius: 9px;
+
   padding: 9px 15px;
-  background: linear-gradient(
-    135deg,
-    #7650e8,
-    #a34cdb
-  );
+
+  background:
+    linear-gradient(
+      135deg,
+      #7650e8,
+      #a34cdb
+    );
+
   color: #ffffff;
+
   font-size: 9px;
+
   font-weight: 800;
+
   cursor: pointer;
+
   box-shadow:
     0 8px 18px rgba(119, 80, 225, 0.22);
+
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.start-shopping-button:hover {
+  box-shadow:
+    0 12px 24px rgba(119, 80, 225, 0.3);
 }
 
 .start-shopping-button svg {
@@ -598,57 +848,96 @@
 
 .dashboard-cart-notice {
   width: 100%;
+
   display: flex;
+
   align-items: center;
+
   gap: 14px;
+
   margin-top: 16px;
+
   border: 1px solid rgba(130, 91, 228, 0.18);
+
   border-radius: 15px;
+
   padding: 14px 18px;
+
   background:
     linear-gradient(
       100deg,
       rgba(242, 237, 255, 0.95),
       rgba(255, 247, 252, 0.95)
     );
+
   text-align: left;
+
   cursor: pointer;
+
   box-shadow:
     0 10px 25px rgba(90, 67, 155, 0.06);
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.dashboard-cart-notice:hover {
+  border-color: rgba(130, 91, 228, 0.32);
+
+  box-shadow:
+    0 14px 30px rgba(90, 67, 155, 0.1);
 }
 
 .cart-notice-icon {
   width: 39px;
   height: 39px;
+
   display: grid;
   place-items: center;
+
   flex-shrink: 0;
+
   border-radius: 11px;
+
   background: #e9ddff;
+
   color: #7650e8;
+
   font-size: 14px;
 }
 
 .cart-notice-content {
   display: flex;
+
   flex-direction: column;
+
   gap: 4px;
+
+  min-width: 0;
 }
 
 .cart-notice-content strong {
   color: #292b3c;
+
   font-size: 11px;
+
   font-weight: 850;
 }
 
 .cart-notice-content span {
   color: #9698a9;
+
   font-size: 9px;
 }
 
 .cart-notice-arrow {
   margin-left: auto;
+
+  flex-shrink: 0;
+
   color: #7955dc;
+
   font-size: 11px;
 }
 
@@ -658,12 +947,14 @@
    ========================================================= */
 
 @media (min-width: 1400px) {
+
   .customer-dashboard-container {
     width: min(1380px, calc(100% - 80px));
   }
 
   .customer-dashboard-hero {
     min-height: 325px;
+
     padding: 46px 56px;
   }
 
@@ -677,11 +968,13 @@
 
   .customer-stat-card {
     min-height: 94px;
+
     padding: 18px 20px;
   }
 
   .customer-quick-card {
     min-height: 86px;
+
     padding: 17px;
   }
 
@@ -692,10 +985,11 @@
 
 
 /* =========================================================
-   MEDIUM DESKTOP / LAPTOP
+   LAPTOP
    ========================================================= */
 
 @media (max-width: 1200px) {
+
   .customer-dashboard-container {
     width: min(100% - 56px, 1180px);
   }
@@ -710,7 +1004,10 @@
 
   .hero-visual {
     width: 250px;
+
     transform: scale(0.92);
+
+    transform-origin: center right;
   }
 }
 
@@ -720,6 +1017,7 @@
    ========================================================= */
 
 @media (max-width: 1050px) {
+
   .customer-dashboard-container {
     width: min(100% - 40px, 1000px);
   }
@@ -730,6 +1028,7 @@
 
   .hero-visual {
     width: 230px;
+
     transform: scale(0.9);
   }
 
@@ -740,6 +1039,10 @@
   .hero-content h1 {
     font-size: 40px;
   }
+
+  .customer-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 
@@ -748,13 +1051,16 @@
    ========================================================= */
 
 @media (max-width: 850px) {
+
   .customer-dashboard-container {
     width: calc(100% - 30px);
+
     padding-top: 22px;
   }
 
   .customer-dashboard-hero {
     min-height: 270px;
+
     padding: 30px;
   }
 
@@ -770,10 +1076,6 @@
     font-size: 36px;
   }
 
-  .customer-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .customer-quick-grid {
     grid-template-columns: 1fr;
   }
@@ -785,38 +1087,46 @@
    ========================================================= */
 
 @media (max-width: 600px) {
+
   .customer-dashboard-page {
-    min-height: calc(100vh - 72px);
+    min-height: 100%;
   }
 
   .customer-dashboard-container {
     width: calc(100% - 20px);
+
     padding: 15px 0 40px;
   }
 
   .customer-dashboard-hero {
     min-height: auto;
+
     padding: 27px 22px;
+
     border-radius: 21px;
   }
 
   .hero-eyebrow {
     font-size: 8px;
+
     letter-spacing: 2px;
   }
 
   .hero-content h1 {
     font-size: 29px;
+
     letter-spacing: -1px;
   }
 
   .hero-content p {
     font-size: 11px;
+
     line-height: 1.6;
   }
 
   .hero-primary-button {
     padding: 12px 15px;
+
     font-size: 10px;
   }
 
@@ -830,20 +1140,31 @@
 
   .customer-stats-grid {
     grid-template-columns: 1fr 1fr;
+
     gap: 9px;
   }
 
   .customer-stat-card {
     min-height: 70px;
+
     padding: 10px;
+
     gap: 9px;
+
     border-radius: 12px;
   }
 
   .stat-icon {
     width: 32px;
     height: 32px;
+
     font-size: 11px;
+
+    border-radius: 9px;
+  }
+
+  .stat-info {
+    gap: 3px;
   }
 
   .stat-info span {
@@ -856,15 +1177,41 @@
 
   .customer-quick-card {
     min-height: 70px;
+
+    padding: 12px;
+  }
+
+  .quick-icon {
+    width: 36px;
+    height: 36px;
+
+    font-size: 12px;
+  }
+
+  .quick-content strong {
+    font-size: 10px;
+  }
+
+  .quick-content span {
+    font-size: 8px;
   }
 
   .recent-orders-card {
     min-height: 155px;
+
     padding: 20px;
   }
 
   .dashboard-cart-notice {
     padding: 11px;
+  }
+
+  .cart-notice-content strong {
+    font-size: 10px;
+  }
+
+  .cart-notice-content span {
+    font-size: 8px;
   }
 }
 
@@ -874,11 +1221,44 @@
    ========================================================= */
 
 @media (max-width: 390px) {
+
   .customer-stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .customer-dashboard-container {
+    width: calc(100% - 16px);
+  }
+
+  .customer-dashboard-hero {
+    padding: 24px 18px;
   }
 
   .hero-content h1 {
     font-size: 26px;
   }
+
+  .hero-content p {
+    font-size: 10px;
+  }
+
+  .dashboard-section-heading h2 {
+    font-size: 15px;
+  }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.hero-primary-button:focus-visible,
+.customer-quick-card:focus-visible,
+.view-all-button:focus-visible,
+.start-shopping-button:focus-visible,
+.dashboard-cart-notice:focus-visible,
+.customer-stat-card:focus-visible {
+  outline: 3px solid rgba(118, 80, 232, 0.28);
+
+  outline-offset: 3px;
 }
