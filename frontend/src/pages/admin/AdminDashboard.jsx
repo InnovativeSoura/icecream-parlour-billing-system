@@ -59,58 +59,79 @@ const AdminDashboard = () => {
         const inventoryResponse = results[1];
         const customerResponse = results[2];
 
-        // -------------------------------------------------
+        // =================================================
         // PRODUCTS
-        // -------------------------------------------------
+        // =================================================
 
         if (productResponse.status === "fulfilled") {
           const data = productResponse.value?.data;
 
-          setProducts(
-            Array.isArray(data)
-              ? data
-              : Array.isArray(data?.products)
-              ? data.products
-              : Array.isArray(data?.data)
-              ? data.data
-              : []
+          const productList = Array.isArray(data)
+            ? data
+            : Array.isArray(data?.products)
+            ? data.products
+            : Array.isArray(data?.data)
+            ? data.data
+            : [];
+
+          setProducts(productList);
+        } else {
+          console.error(
+            "Products dashboard request failed:",
+            productResponse.reason
           );
+
+          setProducts([]);
         }
 
-        // -------------------------------------------------
+        // =================================================
         // INVENTORY
-        // -------------------------------------------------
+        // =================================================
 
         if (inventoryResponse.status === "fulfilled") {
           const data = inventoryResponse.value?.data;
 
-          setInventory(
-            Array.isArray(data)
-              ? data
-              : Array.isArray(data?.inventory)
-              ? data.inventory
-              : Array.isArray(data?.data)
-              ? data.data
-              : []
+          const inventoryList = Array.isArray(data)
+            ? data
+            : Array.isArray(data?.inventory)
+            ? data.inventory
+            : Array.isArray(data?.data)
+            ? data.data
+            : [];
+
+          setInventory(inventoryList);
+        } else {
+          console.error(
+            "Inventory dashboard request failed:",
+            inventoryResponse.reason
           );
+
+          setInventory([]);
         }
 
-        // -------------------------------------------------
+        // =================================================
         // CUSTOMERS
-        // -------------------------------------------------
+        // =================================================
 
         if (customerResponse.status === "fulfilled") {
           const data = customerResponse.value?.data;
 
-          setCustomers(
-            Array.isArray(data)
-              ? data
-              : Array.isArray(data?.customers)
-              ? data.customers
-              : Array.isArray(data?.data)
-              ? data.data
-              : []
+          const customerList = Array.isArray(data)
+            ? data
+            : Array.isArray(data?.customers)
+            ? data.customers
+            : Array.isArray(data?.data)
+            ? data.data
+            : [];
+
+          setCustomers(customerList);
+        } else {
+          console.error(
+            "Customers dashboard request failed:",
+            customerResponse.reason
           );
+
+          setCustomers([]);
         }
       } catch (error) {
         console.error(
@@ -206,6 +227,11 @@ const AdminDashboard = () => {
           item.calculatedQuantity <=
           item.calculatedMinimum
       )
+      .sort(
+        (a, b) =>
+          a.calculatedQuantity -
+          b.calculatedQuantity
+      )
       .slice(0, 5);
   }, [inventory]);
 
@@ -218,11 +244,11 @@ const AdminDashboard = () => {
   };
 
   const openInventory = () => {
-    navigate("admin/inventory");
+    navigate("/admin/inventory");
   };
 
   const openCustomers = () => {
-    navigate("admin/customers");
+    navigate("/admin/customers");
   };
 
   // =====================================================
@@ -272,12 +298,15 @@ const AdminDashboard = () => {
 
       <div className="dashboard-stat-grid">
 
-        {/* PRODUCTS */}
+        {/* =================================================
+            PRODUCTS
+        ================================================= */}
 
         <button
           type="button"
           className="dashboard-stat-card"
           onClick={openProducts}
+          aria-label="Open products"
         >
 
           <div className="stat-card-top">
@@ -301,21 +330,26 @@ const AdminDashboard = () => {
           </div>
 
           <div className="stat-footer">
+
             <span className="stat-trend">
               ●
             </span>
 
             Available in catalogue
+
           </div>
 
         </button>
 
-        {/* CUSTOMERS */}
+        {/* =================================================
+            CUSTOMERS
+        ================================================= */}
 
         <button
           type="button"
           className="dashboard-stat-card"
           onClick={openCustomers}
+          aria-label="Open customers"
         >
 
           <div className="stat-card-top">
@@ -339,21 +373,26 @@ const AdminDashboard = () => {
           </div>
 
           <div className="stat-footer">
+
             <span className="stat-trend">
               ●
             </span>
 
             Customer database
+
           </div>
 
         </button>
 
-        {/* INVENTORY */}
+        {/* =================================================
+            INVENTORY
+        ================================================= */}
 
         <button
           type="button"
           className="dashboard-stat-card"
           onClick={openInventory}
+          aria-label="Open inventory"
         >
 
           <div className="stat-card-top">
@@ -377,21 +416,26 @@ const AdminDashboard = () => {
           </div>
 
           <div className="stat-footer">
+
             <span className="stat-trend">
               ●
             </span>
 
             Stock records
+
           </div>
 
         </button>
 
-        {/* LOW STOCK */}
+        {/* =================================================
+            LOW STOCK
+        ================================================= */}
 
         <button
           type="button"
           className="dashboard-stat-card"
           onClick={openInventory}
+          aria-label="Open low stock inventory"
         >
 
           <div className="stat-card-top">
@@ -475,6 +519,7 @@ const AdminDashboard = () => {
               </div>
 
               <div>
+
                 <strong>
                   Products
                 </strong>
@@ -482,6 +527,7 @@ const AdminDashboard = () => {
                 <span>
                   Manage ice cream catalogue
                 </span>
+
               </div>
 
               <b>
@@ -503,6 +549,7 @@ const AdminDashboard = () => {
               </div>
 
               <div>
+
                 <strong>
                   Inventory
                 </strong>
@@ -510,6 +557,7 @@ const AdminDashboard = () => {
                 <span>
                   Monitor stock levels
                 </span>
+
               </div>
 
               <b>
@@ -531,6 +579,7 @@ const AdminDashboard = () => {
               </div>
 
               <div>
+
                 <strong>
                   Customers
                 </strong>
@@ -538,6 +587,7 @@ const AdminDashboard = () => {
                 <span>
                   View customer records
                 </span>
+
               </div>
 
               <b>
@@ -587,6 +637,7 @@ const AdminDashboard = () => {
               </div>
 
               <div>
+
                 <strong>
                   Application
                 </strong>
@@ -594,6 +645,7 @@ const AdminDashboard = () => {
                 <span>
                   System operational
                 </span>
+
               </div>
 
               <em>
@@ -611,6 +663,7 @@ const AdminDashboard = () => {
               </div>
 
               <div>
+
                 <strong>
                   Authentication
                 </strong>
@@ -618,6 +671,7 @@ const AdminDashboard = () => {
                 <span>
                   Secure session active
                 </span>
+
               </div>
 
               <em>
@@ -635,6 +689,7 @@ const AdminDashboard = () => {
               </div>
 
               <div>
+
                 <strong>
                   Database
                 </strong>
@@ -642,6 +697,7 @@ const AdminDashboard = () => {
                 <span>
                   Data services connected
                 </span>
+
               </div>
 
               <em>
@@ -686,7 +742,9 @@ const AdminDashboard = () => {
 
         </div>
 
-        {/* LOADING */}
+        {/* =================================================
+            LOADING
+        ================================================= */}
 
         {loading ? (
 
@@ -702,7 +760,9 @@ const AdminDashboard = () => {
 
         ) : lowStockItems.length === 0 ? (
 
-          /* HEALTHY INVENTORY */
+          /* =================================================
+             HEALTHY INVENTORY
+          ================================================= */
 
           <div className="dashboard-empty success-empty">
 
@@ -727,7 +787,9 @@ const AdminDashboard = () => {
 
         ) : (
 
-          /* LOW STOCK LIST */
+          /* =================================================
+             LOW STOCK LIST
+          ================================================= */
 
           <div className="stock-list">
 
