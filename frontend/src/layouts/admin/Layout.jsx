@@ -1,4 +1,4 @@
-// frontend/src/layouts/AdminLayout.jsx
+// frontend/src/layouts/admin/Layout.jsx
 
 import { useMemo, useState } from "react";
 import {
@@ -22,7 +22,6 @@ import {
   FaTimes,
   FaCalendarAlt,
   FaChevronRight,
-  FaPlus,
 } from "react-icons/fa";
 
 import "./AdminLayout.css";
@@ -32,22 +31,33 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] =
+    useState(false);
 
   // =====================================================
-  // USER DATA
+  // USER INFORMATION
   // =====================================================
 
   const userName =
-    user?.name ||
-    user?.username ||
+    user?.name?.trim() ||
+    user?.username?.trim() ||
     user?.email?.split("@")[0] ||
     "Administrator";
 
   const userRole = user?.role || "admin";
 
+  const formattedRole =
+    userRole.charAt(0).toUpperCase() +
+    userRole.slice(1);
+
+  // =====================================================
+  // USER INITIALS
+  // =====================================================
+
   const initials = useMemo(() => {
-    if (!userName) return "AD";
+    if (!userName) {
+      return "AD";
+    }
 
     const parts = userName
       .trim()
@@ -55,18 +65,27 @@ const AdminLayout = () => {
       .filter(Boolean);
 
     if (parts.length === 1) {
-      return parts[0].slice(0, 2).toUpperCase();
+      return parts[0]
+        .slice(0, 2)
+        .toUpperCase();
     }
 
     return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
   }, [userName]);
 
   // =====================================================
-  // CURRENT PAGE
+  // CURRENT PAGE INFORMATION
   // =====================================================
 
   const pageInfo = useMemo(() => {
     const path = location.pathname;
+
+    if (path.startsWith("/admin/dashboard")) {
+      return {
+        label: "ADMINISTRATOR",
+        title: "Dashboard",
+      };
+    }
 
     if (path.startsWith("/products")) {
       return {
@@ -89,13 +108,6 @@ const AdminLayout = () => {
       };
     }
 
-    if (path.startsWith("/admin/dashboard")) {
-      return {
-        label: "ADMINISTRATOR",
-        title: "Dashboard",
-      };
-    }
-
     return {
       label: "ADMINISTRATOR",
       title: "Dashboard",
@@ -103,18 +115,23 @@ const AdminLayout = () => {
   }, [location.pathname]);
 
   // =====================================================
-  // DATE
+  // CURRENT DATE
   // =====================================================
 
-  const formattedDate = new Date().toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  const formattedDate = useMemo(() => {
+    return new Date().toLocaleDateString(
+      "en-IN",
+      {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }
+    );
+  }, []);
 
   // =====================================================
-  // NAVIGATION
+  // MAIN NAVIGATION
   // =====================================================
 
   const mainNavigation = [
@@ -140,16 +157,18 @@ const AdminLayout = () => {
     },
   ];
 
+  // =====================================================
+  // MANAGEMENT NAVIGATION
+  // =====================================================
+
   const managementNavigation = [
     {
       label: "Orders",
       icon: FaClipboardList,
-      disabled: true,
     },
     {
       label: "Reports",
       icon: FaChartBar,
-      disabled: true,
     },
   ];
 
@@ -201,7 +220,9 @@ const AdminLayout = () => {
 
       <aside
         className={`admin-sidebar ${
-          mobileSidebarOpen ? "mobile-open" : ""
+          mobileSidebarOpen
+            ? "mobile-open"
+            : ""
         }`}
       >
 
@@ -232,7 +253,7 @@ const AdminLayout = () => {
         </div>
 
         {/* =================================================
-            PROFILE CARD
+            PROFILE
         ================================================= */}
 
         <div className="admin-sidebar-profile">
@@ -243,10 +264,13 @@ const AdminLayout = () => {
 
           <div className="admin-profile-details">
             <strong>{userName}</strong>
-            <span>Administrator</span>
+            <span>{formattedRole}</span>
           </div>
 
-          <span className="admin-online-dot" />
+          <span
+            className="admin-online-dot"
+            aria-label="Online"
+          />
 
         </div>
 
@@ -260,7 +284,10 @@ const AdminLayout = () => {
             MAIN MENU
           </span>
 
-          <nav className="admin-navigation">
+          <nav
+            className="admin-navigation"
+            aria-label="Main navigation"
+          >
 
             {mainNavigation.map((item) => {
               const Icon = item.icon;
@@ -269,13 +296,17 @@ const AdminLayout = () => {
                 <NavLink
                   key={item.path}
                   to={item.path}
+                  end={item.path === "/admin/dashboard"}
                   onClick={closeMobileSidebar}
                   className={({ isActive }) =>
                     `admin-nav-link ${
-                      isActive ? "active" : ""
+                      isActive
+                        ? "active"
+                        : ""
                     }`
                   }
                 >
+
                   <span className="admin-nav-icon">
                     <Icon />
                   </span>
@@ -284,7 +315,10 @@ const AdminLayout = () => {
                     {item.label}
                   </span>
 
-                  <FaChevronRight className="admin-nav-arrow" />
+                  <FaChevronRight
+                    className="admin-nav-arrow"
+                  />
+
                 </NavLink>
               );
             })}
@@ -297,38 +331,53 @@ const AdminLayout = () => {
             MANAGEMENT
         ================================================= */}
 
-        <div className="admin-sidebar-section admin-management-section">
+        <div
+          className="
+            admin-sidebar-section
+            admin-management-section
+          "
+        >
 
           <span className="admin-sidebar-section-title">
             MANAGEMENT
           </span>
 
-          <nav className="admin-navigation">
+          <nav
+            className="admin-navigation"
+            aria-label="Management navigation"
+          >
 
-            {managementNavigation.map((item) => {
-              const Icon = item.icon;
+            {managementNavigation.map(
+              (item) => {
+                const Icon = item.icon;
 
-              return (
-                <div
-                  key={item.label}
-                  className={`admin-nav-link admin-disabled-link ${
-                    item.disabled ? "disabled" : ""
-                  }`}
-                >
-                  <span className="admin-nav-icon">
-                    <Icon />
-                  </span>
+                return (
+                  <div
+                    key={item.label}
+                    className="
+                      admin-nav-link
+                      admin-disabled-link
+                      disabled
+                    "
+                    aria-disabled="true"
+                  >
 
-                  <span className="admin-nav-label">
-                    {item.label}
-                  </span>
+                    <span className="admin-nav-icon">
+                      <Icon />
+                    </span>
 
-                  <small>
-                    Coming soon
-                  </small>
-                </div>
-              );
-            })}
+                    <span className="admin-nav-label">
+                      {item.label}
+                    </span>
+
+                    <small>
+                      Coming soon
+                    </small>
+
+                  </div>
+                );
+              }
+            )}
 
           </nav>
 
@@ -348,7 +397,7 @@ const AdminLayout = () => {
 
             <div>
               <strong>{userName}</strong>
-              <span>Administrator</span>
+              <span>{formattedRole}</span>
             </div>
 
           </div>
@@ -358,11 +407,15 @@ const AdminLayout = () => {
             className="admin-logout-button"
             onClick={handleLogout}
           >
+
             <span className="admin-logout-icon">
               <FaSignOutAlt />
             </span>
 
-            <span>Logout</span>
+            <span>
+              Logout
+            </span>
+
           </button>
 
         </div>
@@ -370,31 +423,39 @@ const AdminLayout = () => {
       </aside>
 
       {/* =================================================
-          MAIN AREA
+          MAIN APPLICATION AREA
       ================================================= */}
 
       <div className="admin-main">
 
         {/* =================================================
-            TOPBAR
+            SINGLE ADMIN TOPBAR
         ================================================= */}
 
         <header className="admin-topbar">
 
           <div className="admin-topbar-left">
 
+            {/* Mobile menu */}
+
             <button
               type="button"
               className="admin-mobile-menu"
-              onClick={() => setMobileSidebarOpen(true)}
+              onClick={() =>
+                setMobileSidebarOpen(true)
+              }
               aria-label="Open navigation"
             >
               <FaBars />
             </button>
 
+            {/* Mobile logo */}
+
             <div className="admin-mobile-brand-mark">
               <FaIceCream />
             </div>
+
+            {/* Current page */}
 
             <div className="admin-page-heading">
 
@@ -409,6 +470,10 @@ const AdminLayout = () => {
             </div>
 
           </div>
+
+          {/* =================================================
+              TOPBAR RIGHT
+          ================================================= */}
 
           <div className="admin-topbar-right">
 
@@ -429,7 +494,10 @@ const AdminLayout = () => {
             <button
               type="button"
               className="admin-topbar-profile"
-              onClick={() => navigate("/admin/dashboard")}
+              onClick={() =>
+                navigate("/admin/dashboard")
+              }
+              aria-label="Open admin dashboard"
             >
 
               <div className="admin-topbar-avatar">
@@ -443,7 +511,7 @@ const AdminLayout = () => {
                 </strong>
 
                 <span>
-                  {userRole}
+                  {formattedRole}
                 </span>
 
               </div>
@@ -456,12 +524,19 @@ const AdminLayout = () => {
 
         {/* =================================================
             PAGE CONTENT
+
+            IMPORTANT:
+            Only the active page is rendered here.
+
+            AdminDashboard.jsx must NOT contain:
+            - sidebar
+            - navbar
+            - header
+            - AdminLayout
         ================================================= */}
 
         <main className="admin-content">
-
           <Outlet />
-
         </main>
 
       </div>
