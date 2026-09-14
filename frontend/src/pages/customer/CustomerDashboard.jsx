@@ -132,6 +132,26 @@ const CustomerDashboard = () => {
 
         const data = response?.data;
 
+        /*
+         * Support all common response structures:
+         *
+         * [
+         *   {...}
+         * ]
+         *
+         * {
+         *   orders: [...]
+         * }
+         *
+         * {
+         *   data: [...]
+         * }
+         *
+         * {
+         *   results: [...]
+         * }
+         */
+
         const orderList = Array.isArray(data)
           ? data
           : Array.isArray(data?.orders)
@@ -201,6 +221,22 @@ const CustomerDashboard = () => {
   };
 
   // =====================================================
+  // NORMALIZE PAYMENT STATUS
+  // =====================================================
+
+  const getPaymentStatus = (order) => {
+    const paymentStatus = String(
+      order?.paymentStatus ??
+        order?.payment_status ??
+        ""
+    )
+      .trim()
+      .toLowerCase();
+
+    return paymentStatus || "pending";
+  };
+
+  // =====================================================
   // ORDER STATISTICS
   // =====================================================
 
@@ -243,12 +279,14 @@ const CustomerDashboard = () => {
         const dateA = new Date(
           a?.createdAt ||
             a?.orderDate ||
+            a?.date ||
             0
         ).getTime();
 
         const dateB = new Date(
           b?.createdAt ||
             b?.orderDate ||
+            b?.date ||
             0
         ).getTime();
 
@@ -305,17 +343,45 @@ const CustomerDashboard = () => {
   };
 
   // =====================================================
+  // FORMAT ORDER TIME
+  // =====================================================
+
+  const getOrderTime = (order) => {
+    const rawDate =
+      order?.createdAt ||
+      order?.orderDate ||
+      order?.date;
+
+    if (!rawDate) {
+      return "";
+    }
+
+    const date = new Date(rawDate);
+
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+
+    return date.toLocaleTimeString(
+      "en-IN",
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    );
+  };
+
+  // =====================================================
   // FORMAT ORDER TOTAL
   // =====================================================
 
   const getOrderTotal = (order) => {
-    const total =
-      Number(
-        order?.totalAmount ??
-          order?.total ??
-          order?.grandTotal ??
-          0
-      );
+    const total = Number(
+      order?.totalAmount ??
+        order?.total ??
+        order?.grandTotal ??
+        0
+    );
 
     return `₹${total.toLocaleString(
       "en-IN",
@@ -327,7 +393,7 @@ const CustomerDashboard = () => {
   };
 
   // =====================================================
-  // FORMAT STATUS
+  // FORMAT ORDER STATUS
   // =====================================================
 
   const formatStatus = (status) => {
@@ -357,13 +423,15 @@ const CustomerDashboard = () => {
       return "completed";
     }
 
-    if (
-      [
-        "pending",
-        "confirmed",
-        "processing",
-      ].includes(normalized)
-    ) {
+    if (normalized === "confirmed") {
+      return "confirmed";
+    }
+
+    if (normalized === "processing") {
+      return "processing";
+    }
+
+    if (normalized === "pending") {
       return "pending";
     }
 
@@ -378,6 +446,125 @@ const CustomerDashboard = () => {
     }
 
     return "pending";
+  };
+
+  // =====================================================
+  // PAYMENT STATUS CLASS
+  // =====================================================
+
+  const getPaymentStatusClass = (status) => {
+    const normalized = String(
+      status || "pending"
+    )
+      .trim()
+      .toLowerCase();
+
+    if (normalized === "paid") {
+      return "paid";
+    }
+
+    if (
+      [
+        "failed",
+        "cancelled",
+        "refunded",
+        "partially_refunded",
+      ].includes(normalized)
+    ) {
+      return "failed";
+    }
+
+    return "pending";
+  };
+
+  // =====================================================
+  // FORMAT PAYMENT STATUS
+  // =====================================================
+
+  const formatPaymentStatus = (status) => {
+    const normalized = String(
+      status || "pending"
+    )
+      .trim()
+      .toLowerCase();
+
+    if (normalized === "paid") {
+      return "Paid";
+    }
+
+    if (normalized === "failed") {
+      return "Payment failed";
+    }
+
+    if (normalized === "cancelled") {
+      return "Payment cancelled";
+    }
+
+    if (normalized === "refunded") {
+      return "Refunded";
+    }
+
+    if (normalized === "partially_refunded") {
+      return "Partially refunded";
+    }
+
+    return "Payment pending";
+  };
+
+  // =====================================================
+  // PAYMENT METHOD
+  // =====================================================
+
+  const getPaymentMethod = (order) => {
+    const method = String(
+      order?.paymentMethod ||
+        order?.payment_method ||
+        "online"
+    )
+      .trim()
+      .toLowerCase();
+
+    if (method === "razorpay") {
+      return "Razorpay";
+    }
+
+    if (method === "upi") {
+      return "UPI";
+    }
+
+    if (method === "card") {
+      return "Card";
+    }
+
+    if (method === "cash") {
+      return "Cash";
+    }
+
+    if (method === "other") {
+      return "Other";
+    }
+
+    return "Online";
+  };
+
+  // =====================================================
+  // ORDER TYPE
+  // =====================================================
+
+  const getOrderType = (order) => {
+    const type = String(
+      order?.orderType ||
+        order?.order_type ||
+        "online"
+    )
+      .trim()
+      .toLowerCase();
+
+    if (type === "pos") {
+      return "POS Order";
+    }
+
+    return "Online Order";
   };
 
   // =====================================================
@@ -421,9 +608,8 @@ const CustomerDashboard = () => {
       {/* =================================================
           BACKGROUND DECORATION
 
-          IMPORTANT:
-          This page does NOT contain a sidebar or navbar.
-          CustomerLayout already provides those.
+          CustomerLayout already provides the
+          sidebar and navbar.
       ================================================= */}
 
       <div className="customer-dashboard-glow glow-one" />
@@ -911,15 +1097,30 @@ const CustomerDashboard = () => {
           }}
         >
 
+          {/* =================================================
+              LOADING
+          ================================================= */}
+
           {ordersLoading ? (
 
-            <div className="recent-empty-icon">
-              <FaSpinner className="spin" />
+            <div className="recent-orders-loading">
+
+              <FaSpinner className="recent-orders-spinner" />
+
+              <span>
+                Loading recent orders...
+              </span>
+
             </div>
 
           ) : recentOrders.length === 0 ? (
 
-            <>
+            /* =================================================
+               EMPTY STATE
+            ================================================= */
+
+            <div className="recent-empty-state">
+
               <div className="recent-empty-icon">
                 <FaBoxOpen />
               </div>
@@ -955,9 +1156,14 @@ const CustomerDashboard = () => {
                 Start Shopping
                 <FaArrowRight />
               </motion.button>
-            </>
+
+            </div>
 
           ) : (
+
+            /* =================================================
+               ORDER LIST
+            ================================================= */
 
             <div className="recent-orders-list">
 
@@ -966,6 +1172,41 @@ const CustomerDashboard = () => {
 
                   const status =
                     getOrderStatus(
+                      order
+                    );
+
+                  const paymentStatus =
+                    getPaymentStatus(
+                      order
+                    );
+
+                  const statusClass =
+                    getStatusClass(
+                      status
+                    );
+
+                  const paymentStatusClass =
+                    getPaymentStatusClass(
+                      paymentStatus
+                    );
+
+                  const displayStatus =
+                    formatStatus(
+                      status
+                    );
+
+                  const displayPaymentStatus =
+                    formatPaymentStatus(
+                      paymentStatus
+                    );
+
+                  const paymentMethod =
+                    getPaymentMethod(
+                      order
+                    );
+
+                  const orderType =
+                    getOrderType(
                       order
                     );
 
@@ -983,48 +1224,122 @@ const CustomerDashboard = () => {
                           "/customer/orders"
                         )
                       }
+                      initial={{
+                        opacity: 0,
+                        y: 10,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+                      transition={{
+                        delay:
+                          0.72 +
+                          index * 0.07,
+                      }}
                       whileHover={{
-                        y: -2,
+                        x: 3,
+                      }}
+                      whileTap={{
+                        scale: 0.995,
                       }}
                     >
 
-                      <div className="recent-order-icon">
-                        <FaReceipt />
+                      {/* =========================================
+                          ORDER ICON + NUMBER
+                      ========================================= */}
+
+                      <div className="recent-order-main">
+
+                        <div className="recent-order-icon">
+                          <FaReceipt />
+                        </div>
+
+                        <div className="recent-order-info">
+
+                          <strong>
+                            {getOrderNumber(
+                              order
+                            )}
+                          </strong>
+
+                          <span>
+                            {paymentMethod}
+
+                            <i>
+                              •
+                            </i>
+
+                            {orderType}
+                          </span>
+
+                        </div>
+
                       </div>
 
-                      <div className="recent-order-info">
+                      {/* =========================================
+                          DATE
+                      ========================================= */}
+
+                      <div className="recent-order-date">
 
                         <strong>
-                          {getOrderNumber(
+                          {getOrderDate(
                             order
                           )}
                         </strong>
 
                         <span>
-                          {getOrderDate(
+                          {getOrderTime(
                             order
                           )}
                         </span>
 
                       </div>
 
-                      <div className="recent-order-total">
-                        {getOrderTotal(
-                          order
-                        )}
+                      {/* =========================================
+                          AMOUNT
+                      ========================================= */}
+
+                      <div className="recent-order-amount">
+
+                        <strong>
+                          {getOrderTotal(
+                            order
+                          )}
+                        </strong>
+
+                        <span
+                          className={`recent-payment-text ${paymentStatusClass}`}
+                        >
+                          {displayPaymentStatus}
+                        </span>
+
                       </div>
 
-                      <span
-                        className={`recent-order-status ${getStatusClass(
-                          status
-                        )}`}
-                      >
-                        {formatStatus(
-                          status
-                        )}
-                      </span>
+                      {/* =========================================
+                          ORDER STATUS
+                      ========================================= */}
 
-                      <FaArrowRight className="recent-order-arrow" />
+                      <div
+                        className={`recent-order-status ${statusClass}`}
+                      >
+
+                        <span className="recent-status-dot" />
+
+                        {displayStatus}
+
+                      </div>
+
+                      {/* =========================================
+                          ARROW
+                      ========================================= */}
+
+                      <div className="recent-order-arrow">
+
+                        <FaArrowRight />
+
+                      </div>
 
                     </motion.button>
                   );
