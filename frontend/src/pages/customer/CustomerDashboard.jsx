@@ -18,7 +18,7 @@ import {
 } from "react-icons/fa";
 
 import { useAuth } from "../../context/AuthContext";
-import api from "../api/api";
+import api from "../../api/api";
 
 import "./CustomerDashboard.css";
 
