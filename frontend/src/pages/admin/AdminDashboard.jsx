@@ -1,15 +1,26 @@
-// frontend/src/pages/AdminDashboard.jsx
+// frontend/src/pages/admin/AdminDashboard.jsx
 
 import { useEffect, useMemo, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../context/AuthContext";
 import api from "../../api/api";
 
+import {
+  FaIceCream,
+  FaUsers,
+  FaBoxes,
+  FaExclamationTriangle,
+  FaArrowRight,
+  FaCheckCircle,
+  FaSpinner,
+  FaBoxOpen,
+} from "react-icons/fa";
+
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
@@ -17,6 +28,22 @@ const AdminDashboard = () => {
   const [customers, setCustomers] = useState([]);
 
   const [loading, setLoading] = useState(true);
+
+  // =====================================================
+  // USER DATA
+  // =====================================================
+
+  const userName =
+    user?.name?.trim() ||
+    user?.username ||
+    user?.email?.split("@")[0] ||
+    "Administrator";
+
+  const firstName =
+    userName
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)[0] || "Administrator";
 
   // =====================================================
   // FETCH DASHBOARD DATA
@@ -35,11 +62,17 @@ const AdminDashboard = () => {
           api.get("/customers"),
         ]);
 
-        if (!mounted) return;
+        if (!mounted) {
+          return;
+        }
 
         const productResponse = results[0];
         const inventoryResponse = results[1];
         const customerResponse = results[2];
+
+        // -------------------------------------------------
+        // PRODUCTS
+        // -------------------------------------------------
 
         if (productResponse.status === "fulfilled") {
           const data = productResponse.value?.data;
@@ -53,7 +86,16 @@ const AdminDashboard = () => {
               ? data.data
               : []
           );
+        } else {
+          console.error(
+            "Failed to load products:",
+            productResponse.reason
+          );
         }
+
+        // -------------------------------------------------
+        // INVENTORY
+        // -------------------------------------------------
 
         if (inventoryResponse.status === "fulfilled") {
           const data = inventoryResponse.value?.data;
@@ -67,7 +109,16 @@ const AdminDashboard = () => {
               ? data.data
               : []
           );
+        } else {
+          console.error(
+            "Failed to load inventory:",
+            inventoryResponse.reason
+          );
         }
+
+        // -------------------------------------------------
+        // CUSTOMERS
+        // -------------------------------------------------
 
         if (customerResponse.status === "fulfilled") {
           const data = customerResponse.value?.data;
@@ -81,9 +132,17 @@ const AdminDashboard = () => {
               ? data.data
               : []
           );
+        } else {
+          console.error(
+            "Failed to load customers:",
+            customerResponse.reason
+          );
         }
       } catch (error) {
-        console.error("Dashboard data error:", error);
+        console.error(
+          "Dashboard data error:",
+          error
+        );
       } finally {
         if (mounted) {
           setLoading(false);
@@ -99,73 +158,87 @@ const AdminDashboard = () => {
   }, []);
 
   // =====================================================
-  // USER DATA
+  // PRODUCT / INVENTORY HELPERS
   // =====================================================
 
-  const userName =
-    user?.name ||
-    user?.username ||
-    user?.email?.split("@")[0] ||
-    "Administrator";
+  const isProductActive = (product) => {
+    if (typeof product?.isActive === "boolean") {
+      return product.isActive;
+    }
 
-  const userRole = user?.role || "admin";
+    if (typeof product?.active === "boolean") {
+      return product.active;
+    }
 
-  const getInitials = (name) => {
-    if (!name) return "AD";
-
-    return name
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((word) => word[0])
-      .join("")
-      .toUpperCase();
+    return true;
   };
 
-  const initials = getInitials(userName);
+  const getInventoryQuantity = (item) => {
+    const values = [
+      item?.quantity,
+      item?.currentStock,
+      item?.stock,
+      item?.availableQuantity,
+    ];
+
+    for (const value of values) {
+      const number = Number(value);
+
+      if (Number.isFinite(number)) {
+        return number;
+      }
+    }
+
+    return 0;
+  };
+
+  const getMinimumStock = (item) => {
+    const values = [
+      item?.reorderLevel,
+      item?.minStock,
+      item?.minimumStock,
+      item?.minimumQuantity,
+    ];
+
+    for (const value of values) {
+      const number = Number(value);
+
+      if (Number.isFinite(number)) {
+        return number;
+      }
+    }
+
+    return 5;
+  };
 
   // =====================================================
   // DASHBOARD STATISTICS
   // =====================================================
 
   const stats = useMemo(() => {
-    const activeProducts = products.filter((product) => {
-      if (typeof product.isActive === "boolean") {
-        return product.isActive;
-      }
+    const activeProducts =
+      products.filter(isProductActive);
 
-      if (typeof product.active === "boolean") {
-        return product.active;
-      }
+    const lowStockCount = inventory.reduce(
+      (count, item) => {
+        const quantity =
+          getInventoryQuantity(item);
 
-      return true;
-    });
+        const minimum =
+          getMinimumStock(item);
 
-    let lowStock = 0;
-
-    inventory.forEach((item) => {
-      const quantity =
-        Number(item.quantity) ||
-        Number(item.currentStock) ||
-        Number(item.stock) ||
-        0;
-
-      const minimum =
-        Number(item.reorderLevel) ||
-        Number(item.minStock) ||
-        Number(item.minimumStock) ||
-        5;
-
-      if (quantity <= minimum) {
-        lowStock += 1;
-      }
-    });
+        return quantity <= minimum
+          ? count + 1
+          : count;
+      },
+      0
+    );
 
     return {
       products: activeProducts.length,
       customers: customers.length,
       inventory: inventory.length,
-      lowStock,
+      lowStock: lowStockCount,
     };
   }, [products, inventory, customers]);
 
@@ -177,16 +250,10 @@ const AdminDashboard = () => {
     return inventory
       .map((item) => {
         const quantity =
-          Number(item.quantity) ||
-          Number(item.currentStock) ||
-          Number(item.stock) ||
-          0;
+          getInventoryQuantity(item);
 
         const minimum =
-          Number(item.reorderLevel) ||
-          Number(item.minStock) ||
-          Number(item.minimumStock) ||
-          5;
+          getMinimumStock(item);
 
         return {
           ...item,
@@ -195,642 +262,580 @@ const AdminDashboard = () => {
         };
       })
       .filter(
-        (item) => item.calculatedQuantity <= item.calculatedMinimum
+        (item) =>
+          item.calculatedQuantity <=
+          item.calculatedMinimum
+      )
+      .sort(
+        (a, b) =>
+          a.calculatedQuantity -
+          b.calculatedQuantity
       )
       .slice(0, 5);
   }, [inventory]);
-
-  // =====================================================
-  // LOGOUT
-  // =====================================================
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login", { replace: true });
-  };
-
-  // =====================================================
-  // DATE
-  // =====================================================
-
-  const today = new Date();
-
-  const formattedDate = today.toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
 
   // =====================================================
   // RENDER
   // =====================================================
 
   return (
-    <div className="admin-dashboard">
+    <div className="admin-dashboard-content">
 
       {/* =================================================
-          SIDEBAR
+          BACKGROUND DECORATION
       ================================================= */}
 
-      <aside className="admin-sidebar">
+      <div className="admin-dashboard-glow glow-one" />
+      <div className="admin-dashboard-glow glow-two" />
+      <div className="admin-dashboard-glow glow-three" />
 
-        <div className="sidebar-brand">
-          <div className="brand-icon">
-            🍦
-          </div>
+      <section className="dashboard-content">
 
-          <div>
-            <h2>IceCream</h2>
-            <span>Billing System</span>
-          </div>
-        </div>
+        {/* =================================================
+            WELCOME SECTION
+        ================================================= */}
 
-        <div className="sidebar-section-title">
-          MAIN MENU
-        </div>
+        <div className="welcome-section">
 
-        <nav className="admin-navigation">
+          <div className="welcome-copy">
 
-          <NavLink
-            to="/admin/dashboard"
-            className={({ isActive }) =>
-              `admin-nav-link ${isActive ? "active" : ""}`
-            }
-          >
-            <span className="nav-icon">⌂</span>
-            <span>Dashboard</span>
-          </NavLink>
+            <span className="welcome-label">
+              OVERVIEW
+            </span>
 
-          <NavLink
-            to="/products"
-            className={({ isActive }) =>
-              `admin-nav-link ${isActive ? "active" : ""}`
-            }
-          >
-            <span className="nav-icon">▣</span>
-            <span>Products</span>
-          </NavLink>
+            <h2>
+              Welcome back, {firstName}
+              <span className="welcome-wave">
+                👋
+              </span>
+            </h2>
 
-          <NavLink
-            to="/inventory"
-            className={({ isActive }) =>
-              `admin-nav-link ${isActive ? "active" : ""}`
-            }
-          >
-            <span className="nav-icon">▤</span>
-            <span>Inventory</span>
-          </NavLink>
-
-          <NavLink
-            to="/customers"
-            className={({ isActive }) =>
-              `admin-nav-link ${isActive ? "active" : ""}`
-            }
-          >
-            <span className="nav-icon">♙</span>
-            <span>Customers</span>
-          </NavLink>
-
-        </nav>
-
-        <div className="sidebar-section-title management-title">
-          MANAGEMENT
-        </div>
-
-        <div className="admin-nav-link disabled-link">
-          <span className="nav-icon">◴</span>
-          <span>Orders</span>
-          <small>Coming soon</small>
-        </div>
-
-        <div className="admin-nav-link disabled-link">
-          <span className="nav-icon">▥</span>
-          <span>Reports</span>
-          <small>Coming soon</small>
-        </div>
-
-        {/* SIDEBAR PROFILE */}
-
-        <div className="sidebar-bottom">
-
-          <div className="sidebar-profile">
-
-            <div className="profile-avatar">
-              {initials}
-            </div>
-
-            <div className="profile-info">
-              <strong>{userName}</strong>
-              <span>Administrator</span>
-            </div>
+            <p>
+              Here's what's happening with your
+              ice cream parlour today.
+            </p>
 
           </div>
 
           <button
-            className="sidebar-logout"
-            onClick={handleLogout}
+            type="button"
+            className="primary-dashboard-button"
+            onClick={() =>
+              navigate("/products")
+            }
           >
-            <span>↪</span>
-            Logout
+            <FaIceCream />
+
+            <span>
+              Manage Products
+            </span>
+
+            <FaArrowRight />
           </button>
 
         </div>
 
-      </aside>
+        {/* =================================================
+            STAT CARDS
+        ================================================= */}
 
-      {/* =================================================
-          MAIN CONTENT
-      ================================================= */}
+        <div className="dashboard-stat-grid">
 
-      <main className="admin-main">
+          {/* PRODUCTS */}
 
-        {/* TOP HEADER */}
+          <article className="dashboard-stat-card">
 
-        <header className="admin-topbar">
+            <div className="stat-card-top">
 
-          <div className="topbar-left">
+              <div className="stat-icon stat-icon-products">
+                <FaIceCream />
+              </div>
 
-            <div className="mobile-brand">
-              🍦
-            </div>
-
-            <div>
-              <span className="topbar-label">
-                ADMINISTRATOR
+              <span className="stat-status">
+                ACTIVE
               </span>
 
-              <h1>
-                Dashboard
-              </h1>
             </div>
 
-          </div>
+            <div className="stat-number">
+              {loading ? (
+                <FaSpinner className="dashboard-spinner" />
+              ) : (
+                stats.products
+              )}
+            </div>
 
-          <div className="topbar-right">
+            <div className="stat-label">
+              Total Products
+            </div>
 
-            <div className="date-display">
-              <span className="date-icon">
-                ◷
+            <div className="stat-footer">
+              <span className="stat-trend">
+                ●
               </span>
 
-              <span>
-                {formattedDate}
-              </span>
+              Available in catalogue
             </div>
 
-            <div className="topbar-profile">
+          </article>
 
-              <div className="topbar-avatar">
-                {initials}
+          {/* CUSTOMERS */}
+
+          <article className="dashboard-stat-card">
+
+            <div className="stat-card-top">
+
+              <div className="stat-icon stat-icon-customers">
+                <FaUsers />
               </div>
 
-              <div className="topbar-user">
-                <strong>{userName}</strong>
-                <span>{userRole}</span>
-              </div>
-
-            </div>
-
-          </div>
-
-        </header>
-
-        {/* DASHBOARD BODY */}
-
-        <section className="dashboard-content">
-
-          {/* WELCOME */}
-
-          <div className="welcome-section">
-
-            <div>
-              <span className="welcome-label">
-                OVERVIEW
+              <span className="stat-status">
+                USERS
               </span>
 
-              <h2>
-                Welcome back, {userName.split(" ")[0]} 👋
-              </h2>
-
-              <p>
-                Here's what's happening with your ice cream
-                parlour today.
-              </p>
             </div>
 
-            <button
-              className="primary-dashboard-button"
-              onClick={() => navigate("/products")}
-            >
-              <span>＋</span>
-              Manage Products
-            </button>
+            <div className="stat-number">
+              {loading ? (
+                <FaSpinner className="dashboard-spinner" />
+              ) : (
+                stats.customers
+              )}
+            </div>
 
-          </div>
+            <div className="stat-label">
+              Registered Customers
+            </div>
 
-          {/* STAT CARDS */}
+            <div className="stat-footer">
+              <span className="stat-trend">
+                ●
+              </span>
 
-          <div className="dashboard-stat-grid">
+              Customer database
+            </div>
 
-            {/* PRODUCTS */}
+          </article>
 
-            <div className="dashboard-stat-card">
+          {/* INVENTORY */}
 
-              <div className="stat-card-top">
+          <article className="dashboard-stat-card">
 
-                <div className="stat-icon stat-icon-products">
-                  🍨
-                </div>
+            <div className="stat-card-top">
 
-                <span className="stat-status">
-                  ACTIVE
-                </span>
-
+              <div className="stat-icon stat-icon-inventory">
+                <FaBoxes />
               </div>
 
-              <div className="stat-number">
-                {loading ? "—" : stats.products}
-              </div>
-
-              <div className="stat-label">
-                Total Products
-              </div>
-
-              <div className="stat-footer">
-                <span className="stat-trend">●</span>
-                Available in catalogue
-              </div>
+              <span className="stat-status">
+                STOCK
+              </span>
 
             </div>
 
-            {/* CUSTOMERS */}
+            <div className="stat-number">
+              {loading ? (
+                <FaSpinner className="dashboard-spinner" />
+              ) : (
+                stats.inventory
+              )}
+            </div>
 
-            <div className="dashboard-stat-card">
+            <div className="stat-label">
+              Inventory Items
+            </div>
 
-              <div className="stat-card-top">
+            <div className="stat-footer">
+              <span className="stat-trend">
+                ●
+              </span>
 
-                <div className="stat-icon stat-icon-customers">
-                  ♙
-                </div>
+              Stock records
+            </div>
 
-                <span className="stat-status">
-                  USERS
-                </span>
+          </article>
 
+          {/* LOW STOCK */}
+
+          <article className="dashboard-stat-card">
+
+            <div className="stat-card-top">
+
+              <div className="stat-icon stat-icon-warning">
+                <FaExclamationTriangle />
               </div>
 
-              <div className="stat-number">
-                {loading ? "—" : stats.customers}
-              </div>
-
-              <div className="stat-label">
-                Registered Customers
-              </div>
-
-              <div className="stat-footer">
-                <span className="stat-trend">●</span>
-                Customer database
-              </div>
+              <span className="stat-status warning">
+                ATTENTION
+              </span>
 
             </div>
 
-            {/* INVENTORY */}
+            <div className="stat-number">
+              {loading ? (
+                <FaSpinner className="dashboard-spinner" />
+              ) : (
+                stats.lowStock
+              )}
+            </div>
 
-            <div className="dashboard-stat-card">
+            <div className="stat-label">
+              Low Stock Items
+            </div>
 
-              <div className="stat-card-top">
+            <div className="stat-footer">
 
-                <div className="stat-icon stat-icon-inventory">
-                  📦
-                </div>
+              <span className="stat-trend warning-dot">
+                ●
+              </span>
 
-                <span className="stat-status">
-                  STOCK
-                </span>
-
-              </div>
-
-              <div className="stat-number">
-                {loading ? "—" : stats.inventory}
-              </div>
-
-              <div className="stat-label">
-                Inventory Items
-              </div>
-
-              <div className="stat-footer">
-                <span className="stat-trend">●</span>
-                Stock records
-              </div>
+              Requires attention
 
             </div>
 
-            {/* LOW STOCK */}
+          </article>
 
-            <div className="dashboard-stat-card">
+        </div>
 
-              <div className="stat-card-top">
+        {/* =================================================
+            MAIN DASHBOARD GRID
+        ================================================= */}
 
-                <div className="stat-icon stat-icon-warning">
-                  ⚠
-                </div>
+        <div className="dashboard-main-grid">
 
-                <span className="stat-status warning">
-                  ATTENTION
-                </span>
+          {/* =================================================
+              QUICK ACTIONS
+          ================================================= */}
 
-              </div>
-
-              <div className="stat-number">
-                {loading ? "—" : stats.lowStock}
-              </div>
-
-              <div className="stat-label">
-                Low Stock Items
-              </div>
-
-              <div className="stat-footer">
-                <span className="stat-trend warning-dot">
-                  ●
-                </span>
-                Requires attention
-              </div>
-
-            </div>
-
-          </div>
-
-          {/* MAIN DASHBOARD GRID */}
-
-          <div className="dashboard-main-grid">
-
-            {/* QUICK ACTIONS */}
-
-            <section className="dashboard-panel">
-
-              <div className="panel-header">
-
-                <div>
-                  <span className="panel-eyebrow">
-                    WORKSPACE
-                  </span>
-
-                  <h3>
-                    Quick Actions
-                  </h3>
-                </div>
-
-                <span className="panel-header-icon">
-                  ✦
-                </span>
-
-              </div>
-
-              <div className="quick-actions">
-
-                <button
-                  className="quick-action"
-                  onClick={() => navigate("/products")}
-                >
-                  <div className="quick-action-icon">
-                    🍦
-                  </div>
-
-                  <div>
-                    <strong>
-                      Products
-                    </strong>
-
-                    <span>
-                      Manage ice cream catalogue
-                    </span>
-                  </div>
-
-                  <b>→</b>
-                </button>
-
-                <button
-                  className="quick-action"
-                  onClick={() => navigate("/inventory")}
-                >
-                  <div className="quick-action-icon">
-                    📦
-                  </div>
-
-                  <div>
-                    <strong>
-                      Inventory
-                    </strong>
-
-                    <span>
-                      Monitor stock levels
-                    </span>
-                  </div>
-
-                  <b>→</b>
-                </button>
-
-                <button
-                  className="quick-action"
-                  onClick={() => navigate("/customers")}
-                >
-                  <div className="quick-action-icon">
-                    👥
-                  </div>
-
-                  <div>
-                    <strong>
-                      Customers
-                    </strong>
-
-                    <span>
-                      View customer records
-                    </span>
-                  </div>
-
-                  <b>→</b>
-                </button>
-
-              </div>
-
-            </section>
-
-            {/* SYSTEM STATUS */}
-
-            <section className="dashboard-panel system-panel">
-
-              <div className="panel-header">
-
-                <div>
-                  <span className="panel-eyebrow">
-                    SYSTEM
-                  </span>
-
-                  <h3>
-                    System Status
-                  </h3>
-                </div>
-
-                <span className="system-live">
-                  ● LIVE
-                </span>
-
-              </div>
-
-              <div className="system-status-list">
-
-                <div className="system-status-item">
-
-                  <div className="status-indicator">
-                    ✓
-                  </div>
-
-                  <div>
-                    <strong>
-                      Application
-                    </strong>
-
-                    <span>
-                      System operational
-                    </span>
-                  </div>
-
-                  <em>
-                    Online
-                  </em>
-
-                </div>
-
-                <div className="system-status-item">
-
-                  <div className="status-indicator">
-                    ✓
-                  </div>
-
-                  <div>
-                    <strong>
-                      Authentication
-                    </strong>
-
-                    <span>
-                      Secure session active
-                    </span>
-                  </div>
-
-                  <em>
-                    Secure
-                  </em>
-
-                </div>
-
-                <div className="system-status-item">
-
-                  <div className="status-indicator">
-                    ✓
-                  </div>
-
-                  <div>
-                    <strong>
-                      Database
-                    </strong>
-
-                    <span>
-                      Data services connected
-                    </span>
-                  </div>
-
-                  <em>
-                    Connected
-                  </em>
-
-                </div>
-
-              </div>
-
-            </section>
-
-          </div>
-
-          {/* INVENTORY ALERTS */}
-
-          <section className="dashboard-panel inventory-panel">
+          <section className="dashboard-panel">
 
             <div className="panel-header">
 
               <div>
+
                 <span className="panel-eyebrow">
-                  INVENTORY
+                  WORKSPACE
                 </span>
 
                 <h3>
-                  Stock Alerts
+                  Quick Actions
                 </h3>
+
               </div>
 
+              <span className="panel-header-icon">
+                ✦
+              </span>
+
+            </div>
+
+            <div className="quick-actions">
+
+              {/* PRODUCTS */}
+
               <button
-                className="panel-link"
-                onClick={() => navigate("/inventory")}
+                type="button"
+                className="quick-action"
+                onClick={() =>
+                  navigate("/products")
+                }
               >
-                View Inventory →
+
+                <div className="quick-action-icon">
+                  <FaIceCream />
+                </div>
+
+                <div className="quick-action-content">
+
+                  <strong>
+                    Products
+                  </strong>
+
+                  <span>
+                    Manage ice cream catalogue
+                  </span>
+
+                </div>
+
+                <FaArrowRight className="quick-action-arrow" />
+
+              </button>
+
+              {/* INVENTORY */}
+
+              <button
+                type="button"
+                className="quick-action"
+                onClick={() =>
+                  navigate("/inventory")
+                }
+              >
+
+                <div className="quick-action-icon">
+                  <FaBoxes />
+                </div>
+
+                <div className="quick-action-content">
+
+                  <strong>
+                    Inventory
+                  </strong>
+
+                  <span>
+                    Monitor stock levels
+                  </span>
+
+                </div>
+
+                <FaArrowRight className="quick-action-arrow" />
+
+              </button>
+
+              {/* CUSTOMERS */}
+
+              <button
+                type="button"
+                className="quick-action"
+                onClick={() =>
+                  navigate("/customers")
+                }
+              >
+
+                <div className="quick-action-icon">
+                  <FaUsers />
+                </div>
+
+                <div className="quick-action-content">
+
+                  <strong>
+                    Customers
+                  </strong>
+
+                  <span>
+                    View customer records
+                  </span>
+
+                </div>
+
+                <FaArrowRight className="quick-action-arrow" />
+
               </button>
 
             </div>
 
-            {loading ? (
+          </section>
 
-              <div className="dashboard-empty">
-                <div className="empty-loader" />
-                <p>
-                  Loading inventory...
-                </p>
+          {/* =================================================
+              SYSTEM STATUS
+          ================================================= */}
+
+          <section className="dashboard-panel system-panel">
+
+            <div className="panel-header">
+
+              <div>
+
+                <span className="panel-eyebrow">
+                  SYSTEM
+                </span>
+
+                <h3>
+                  System Status
+                </h3>
+
               </div>
 
-            ) : lowStockItems.length === 0 ? (
+              <span className="system-live">
+                ● LIVE
+              </span>
 
-              <div className="dashboard-empty success-empty">
+            </div>
 
-                <div className="empty-success-icon">
-                  ✓
+            <div className="system-status-list">
+
+              {/* APPLICATION */}
+
+              <div className="system-status-item">
+
+                <div className="status-indicator">
+                  <FaCheckCircle />
                 </div>
 
                 <div>
+
                   <strong>
-                    Inventory looks healthy
+                    Application
                   </strong>
 
-                  <p>
-                    No low-stock items require immediate
-                    attention.
-                  </p>
+                  <span>
+                    System operational
+                  </span>
+
                 </div>
+
+                <em>
+                  Online
+                </em>
 
               </div>
 
-            ) : (
+              {/* AUTHENTICATION */}
 
-              <div className="stock-list">
+              <div className="system-status-item">
 
-                {lowStockItems.map((item, index) => {
+                <div className="status-indicator">
+                  <FaCheckCircle />
+                </div>
+
+                <div>
+
+                  <strong>
+                    Authentication
+                  </strong>
+
+                  <span>
+                    Secure session active
+                  </span>
+
+                </div>
+
+                <em>
+                  Secure
+                </em>
+
+              </div>
+
+              {/* DATABASE */}
+
+              <div className="system-status-item">
+
+                <div className="status-indicator">
+                  <FaCheckCircle />
+                </div>
+
+                <div>
+
+                  <strong>
+                    Database
+                  </strong>
+
+                  <span>
+                    Data services connected
+                  </span>
+
+                </div>
+
+                <em>
+                  Connected
+                </em>
+
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+        {/* =================================================
+            INVENTORY ALERTS
+        ================================================= */}
+
+        <section className="dashboard-panel inventory-panel">
+
+          <div className="panel-header">
+
+            <div>
+
+              <span className="panel-eyebrow">
+                INVENTORY
+              </span>
+
+              <h3>
+                Stock Alerts
+              </h3>
+
+            </div>
+
+            <button
+              type="button"
+              className="panel-link"
+              onClick={() =>
+                navigate("/inventory")
+              }
+            >
+              View Inventory
+              <FaArrowRight />
+            </button>
+
+          </div>
+
+          {/* LOADING */}
+
+          {loading ? (
+
+            <div className="dashboard-empty">
+
+              <FaSpinner className="empty-loader" />
+
+              <p>
+                Loading inventory...
+              </p>
+
+            </div>
+
+          ) : lowStockItems.length === 0 ? (
+
+            /* HEALTHY INVENTORY */
+
+            <div className="dashboard-empty success-empty">
+
+              <div className="empty-success-icon">
+                <FaCheckCircle />
+              </div>
+
+              <div>
+
+                <strong>
+                  Inventory looks healthy
+                </strong>
+
+                <p>
+                  No low-stock items require
+                  immediate attention.
+                </p>
+
+              </div>
+
+            </div>
+
+          ) : (
+
+            /* LOW STOCK LIST */
+
+            <div className="stock-list">
+
+              {lowStockItems.map(
+                (item, index) => {
 
                   const productName =
-                    item.product?.name ||
-                    item.productName ||
-                    item.name ||
+                    item?.product?.name ||
+                    item?.productName ||
+                    item?.name ||
                     `Inventory Item ${index + 1}`;
 
                   return (
                     <div
                       className="stock-row"
                       key={
-                        item._id ||
-                        item.id ||
+                        item?._id ||
+                        item?.id ||
                         index
                       }
                     >
 
                       <div className="stock-product-icon">
-                        🍨
+                        <FaIceCream />
                       </div>
 
                       <div className="stock-product-info">
@@ -847,6 +852,7 @@ const AdminDashboard = () => {
                       </div>
 
                       <div className="stock-quantity">
+
                         <strong>
                           {item.calculatedQuantity}
                         </strong>
@@ -854,6 +860,7 @@ const AdminDashboard = () => {
                         <span>
                           remaining
                         </span>
+
                       </div>
 
                       <span className="low-stock-badge">
@@ -862,37 +869,41 @@ const AdminDashboard = () => {
 
                     </div>
                   );
-                })}
+                }
+              )}
 
-              </div>
-
-            )}
-
-          </section>
-
-          {/* FOOTER */}
-
-          <footer className="dashboard-footer">
-
-            <div>
-              <strong>
-                🍦 IceCream Billing System
-              </strong>
-
-              <span>
-                Admin Control Center
-              </span>
             </div>
 
-            <span>
-              © {new Date().getFullYear()} All rights reserved.
-            </span>
-
-          </footer>
+          )}
 
         </section>
 
-      </main>
+        {/* =================================================
+            FOOTER
+        ================================================= */}
+
+        <footer className="dashboard-footer">
+
+          <div>
+
+            <strong>
+              <FaIceCream />
+              IceCream Billing System
+            </strong>
+
+            <span>
+              Admin Control Center
+            </span>
+
+          </div>
+
+          <span>
+            © {new Date().getFullYear()} All rights reserved.
+          </span>
+
+        </footer>
+
+      </section>
 
     </div>
   );
