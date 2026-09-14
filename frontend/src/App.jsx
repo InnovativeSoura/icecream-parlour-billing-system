@@ -98,7 +98,12 @@ const HomeRedirect = () => {
   // ===================================================
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    );
   }
 
   // ===================================================
@@ -144,7 +149,12 @@ const HomeRedirect = () => {
   // UNKNOWN ROLE
   // ===================================================
 
-  return <Navigate to="/login" replace />;
+  return (
+    <Navigate
+      to="/login"
+      replace
+    />
+  );
 };
 
 // =====================================================
@@ -189,6 +199,12 @@ const App = () => {
 
           {/* =================================================
               ADMIN LAYOUT
+
+              EVERYTHING INSIDE THIS ROUTE AUTOMATICALLY
+              GETS:
+              - ADMIN SIDEBAR
+              - ADMIN TOPBAR
+              - ADMIN CONTENT AREA
           ================================================= */}
 
           <Route
@@ -217,6 +233,33 @@ const App = () => {
             <Route
               path="dashboard"
               element={<AdminDashboard />}
+            />
+
+            {/* =================================================
+                ADMIN PRODUCTS
+            ================================================= */}
+
+            <Route
+              path="products"
+              element={<Products />}
+            />
+
+            {/* =================================================
+                ADMIN INVENTORY
+            ================================================= */}
+
+            <Route
+              path="inventory"
+              element={<Inventory />}
+            />
+
+            {/* =================================================
+                ADMIN CUSTOMERS
+            ================================================= */}
+
+            <Route
+              path="customers"
+              element={<Customer />}
             />
 
           </Route>
@@ -269,7 +312,9 @@ const App = () => {
             element={<CustomerLayout />}
           >
 
-            {/* Customer root */}
+            {/* =================================================
+                CUSTOMER ROOT
+            ================================================= */}
 
             <Route
               index
@@ -281,42 +326,54 @@ const App = () => {
               }
             />
 
-            {/* Dashboard */}
+            {/* =================================================
+                CUSTOMER DASHBOARD
+            ================================================= */}
 
             <Route
               path="dashboard"
               element={<CustomerDashboard />}
             />
 
-            {/* Products */}
+            {/* =================================================
+                CUSTOMER PRODUCTS
+            ================================================= */}
 
             <Route
               path="products"
               element={<CustomerProducts />}
             />
 
-            {/* Orders */}
+            {/* =================================================
+                CUSTOMER ORDERS
+            ================================================= */}
 
             <Route
               path="orders"
               element={<CustomerOrders />}
             />
 
-            {/* Cart */}
+            {/* =================================================
+                CUSTOMER CART
+            ================================================= */}
 
             <Route
               path="cart"
               element={<CustomerCart />}
             />
 
-            {/* Invoices */}
+            {/* =================================================
+                CUSTOMER INVOICES
+            ================================================= */}
 
             <Route
               path="invoices"
               element={<CustomerInvoices />}
             />
 
-            {/* Profile */}
+            {/* =================================================
+                CUSTOMER PROFILE
+            ================================================= */}
 
             <Route
               path="profile"
@@ -324,66 +381,6 @@ const App = () => {
             />
 
           </Route>
-
-        </Route>
-
-        {/* =================================================
-            PRODUCTS
-            ADMIN + STAFF
-        ================================================= */}
-
-        <Route
-          element={
-            <ProtectedRoute
-              allowedRoles={["admin", "staff"]}
-            />
-          }
-        >
-
-          <Route
-            path="/products"
-            element={<Products />}
-          />
-
-        </Route>
-
-        {/* =================================================
-            INVENTORY
-            ADMIN + STAFF
-        ================================================= */}
-
-        <Route
-          element={
-            <ProtectedRoute
-              allowedRoles={["admin", "staff"]}
-            />
-          }
-        >
-
-          <Route
-            path="/inventory"
-            element={<Inventory />}
-          />
-
-        </Route>
-
-        {/* =================================================
-            CUSTOMERS
-            ADMIN + STAFF
-        ================================================= */}
-
-        <Route
-          element={
-            <ProtectedRoute
-              allowedRoles={["admin", "staff"]}
-            />
-          }
-        >
-
-          <Route
-            path="/customers"
-            element={<Customer />}
-          />
 
         </Route>
 
