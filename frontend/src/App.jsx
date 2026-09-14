@@ -34,7 +34,7 @@ import Register from "./pages/Register";
 
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import StaffDashboard from "./pages/StaffDashboard.jsx";
-import CustomerDashboard from "./pages/CustomerDashboard.jsx";
+import CustomerDashboard from "./pages/customer/CustomerDashboard.jsx";
 
 // =====================================================
 // LAYOUTS
