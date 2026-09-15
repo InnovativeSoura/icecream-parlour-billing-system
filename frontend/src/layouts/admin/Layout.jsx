@@ -21,7 +21,7 @@ import {
 } from "react-icons/fa";
 
 import { useAuth } from "../../context/AuthContext";
-import "./Layout.css";
+import "./AdminLayout.css";
 
 const navigationGroups = [
   {
