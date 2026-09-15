@@ -1,84 +1,74 @@
 // frontend/src/App.jsx
 
-import {
-  Navigate,
-  Route,
-  Routes,
-} from "react-router-dom";
-
+import { Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 
-// =====================================================
-// CONTEXT
-// =====================================================
-
 import { useAuth } from "./context/AuthContext";
-
-// =====================================================
-// AUTH / ROUTE PROTECTION
-// =====================================================
-
 import ProtectedRoute from "./components/ProtectedRoute";
 
-// =====================================================
-// PUBLIC PAGES
-// =====================================================
+// =========================================================
+// AUTH PAGES
+// =========================================================
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-// =====================================================
-// DASHBOARDS
-// =====================================================
+// =========================================================
+// ADMIN
+// =========================================================
 
+import AdminLayout from "./layouts/admin/Layout.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
-import StaffDashboard from "./pages/StaffDashboard.jsx";
-import CustomerDashboard from "./pages/customer/CustomerDashboard.jsx";
 
-// =====================================================
-// LAYOUTS
-// =====================================================
+import Products from "./pages/Products.jsx";
+import Inventory from "./pages/Inventory.jsx";
+import Customers from "./pages/Customers.jsx";
+
+// =========================================================
+// STAFF
+// =========================================================
+
+import StaffLayout from "./layouts/staff/Layout.jsx";
+
+import StaffDashboard from "./pages/staff/StaffDashboard.jsx";
+import StaffBilling from "./pages/staff/StaffBilling.jsx";
+import StaffOrders from "./pages/staff/StaffOrders.jsx";
+import StaffCustomers from "./pages/staff/StaffCustomers.jsx";
+import StaffReports from "./pages/staff/StaffReports.jsx";
+
+// =========================================================
+// CUSTOMER
+// =========================================================
 
 import CustomerLayout from "./layouts/costomer/CustomerLayout.jsx";
-import AdminLayout from "./layouts/admin/Layout.jsx";
 
-// =====================================================
-// CUSTOMER PAGES
-// =====================================================
-
+import CustomerDashboard from "./pages/customer/CustomerDashboard.jsx";
 import CustomerProducts from "./pages/CustomerProducts";
 import CustomerOrders from "./pages/customer/CustomerOrders";
 import CustomerCart from "./pages/customer/MyCart";
 import CustomerInvoices from "./pages/customer/Invoices";
 import CustomerProfile from "./pages/customer/Profile";
 
-// =====================================================
-// ADMIN / STAFF PAGES
-// =====================================================
 
-import Products from "./pages/Products.jsx";
-import Inventory from "./pages/Inventory.jsx";
-import Customer from "./pages/Customers.jsx";
-import Orders from "./pages/admin/Orders.jsx";
-import Reports from "./pages/admin/Reports.jsx";
-
-// =====================================================
+// =========================================================
 // HOME REDIRECT
-// =====================================================
+// =========================================================
 
 const HomeRedirect = () => {
   const { user, loading } = useAuth();
 
-  // ===================================================
+  // -------------------------------------------------------
   // AUTH LOADING
-  // ===================================================
+  // -------------------------------------------------------
 
   if (loading) {
     return (
       <div
         style={{
           minHeight: "100vh",
+          width: "100%",
           display: "grid",
           placeItems: "center",
           background:
@@ -95,73 +85,41 @@ const HomeRedirect = () => {
     );
   }
 
-  // ===================================================
-  // NOT LOGGED IN
-  // ===================================================
+  // -------------------------------------------------------
+  // NOT AUTHENTICATED
+  // -------------------------------------------------------
 
   if (!user) {
-    return (
-      <Navigate
-        to="/login"
-        replace
-      />
-    );
+    return <Navigate to="/login" replace />;
   }
 
-  // ===================================================
-  // ADMIN
-  // ===================================================
+  // -------------------------------------------------------
+  // ROLE BASED REDIRECT
+  // -------------------------------------------------------
 
   if (user.role === "admin") {
-    return (
-      <Navigate
-        to="/admin/dashboard"
-        replace
-      />
-    );
+    return <Navigate to="/admin/dashboard" replace />;
   }
-
-  // ===================================================
-  // STAFF
-  // ===================================================
 
   if (user.role === "staff") {
-    return (
-      <Navigate
-        to="/staff/dashboard"
-        replace
-      />
-    );
+    return <Navigate to="/staff/dashboard" replace />;
   }
-
-  // ===================================================
-  // CUSTOMER
-  // ===================================================
 
   if (user.role === "customer") {
-    return (
-      <Navigate
-        to="/customer/dashboard"
-        replace
-      />
-    );
+    return <Navigate to="/customer/dashboard" replace />;
   }
 
-  // ===================================================
-  // UNKNOWN ROLE
-  // ===================================================
+  // -------------------------------------------------------
+  // FALLBACK
+  // -------------------------------------------------------
 
-  return (
-    <Navigate
-      to="/login"
-      replace
-    />
-  );
+  return <Navigate to="/login" replace />;
 };
 
-// =====================================================
+
+// =========================================================
 // APP
-// =====================================================
+// =========================================================
 
 const App = () => {
   return (
@@ -169,13 +127,18 @@ const App = () => {
       <Routes>
 
         {/* =================================================
-            PUBLIC ROUTES
-        ================================================= */}
+            ROOT
+            ================================================= */}
 
         <Route
           path="/"
           element={<HomeRedirect />}
         />
+
+
+        {/* =================================================
+            AUTHENTICATION
+            ================================================= */}
 
         <Route
           path="/login"
@@ -187,9 +150,10 @@ const App = () => {
           element={<Register />}
         />
 
+
         {/* =================================================
             ADMIN ROUTES
-        ================================================= */}
+            ================================================= */}
 
         <Route
           element={
@@ -198,26 +162,11 @@ const App = () => {
             />
           }
         >
-
-          {/* =================================================
-              ADMIN LAYOUT
-
-              EVERYTHING INSIDE THIS ROUTE AUTOMATICALLY
-              GETS:
-              - ADMIN SIDEBAR
-              - ADMIN TOPBAR
-              - ADMIN CONTENT AREA
-          ================================================= */}
-
           <Route
             path="/admin"
             element={<AdminLayout />}
           >
-
-            {/* =================================================
-                ADMIN ROOT
-            ================================================= */}
-
+            {/* /admin */}
             <Route
               index
               element={
@@ -228,67 +177,36 @@ const App = () => {
               }
             />
 
-            {/* =================================================
-                ADMIN DASHBOARD
-            ================================================= */}
-
+            {/* Dashboard */}
             <Route
               path="dashboard"
               element={<AdminDashboard />}
             />
 
-            {/* =================================================
-                ADMIN PRODUCTS
-            ================================================= */}
-
+            {/* Products */}
             <Route
               path="products"
               element={<Products />}
             />
 
-            {/* =================================================
-                ADMIN INVENTORY
-            ================================================= */}
-
+            {/* Inventory */}
             <Route
               path="inventory"
               element={<Inventory />}
             />
 
-            {/* =================================================
-                ADMIN CUSTOMERS
-            ================================================= */}
-
+            {/* Customers */}
             <Route
               path="customers"
-              element={<Customer />}
+              element={<Customers />}
             />
-
-            {/* =================================================
-                ADMIN Orders
-            ================================================= */}
-
-            <Route
-              path="orders"
-              element={<Orders />}
-            />
-
-            {/* =================================================
-                ADMIN Orders
-            ================================================= */}
-            
-            <Route
-              path="reports"
-              element={<Reports />}
-            />
-
           </Route>
-
         </Route>
+
 
         {/* =================================================
             STAFF ROUTES
-        ================================================= */}
+            ================================================= */}
 
         <Route
           element={
@@ -297,27 +215,57 @@ const App = () => {
             />
           }
         >
-
           <Route
             path="/staff"
-            element={
-              <Navigate
-                to="/staff/dashboard"
-                replace
-              />
-            }
-          />
+            element={<StaffLayout />}
+          >
+            {/* /staff */}
+            <Route
+              index
+              element={
+                <Navigate
+                  to="/staff/dashboard"
+                  replace
+                />
+              }
+            />
 
-          <Route
-            path="/staff/dashboard"
-            element={<StaffDashboard />}
-          />
+            {/* Staff Dashboard */}
+            <Route
+              path="dashboard"
+              element={<StaffDashboard />}
+            />
 
+            {/* Staff Billing */}
+            <Route
+              path="billing"
+              element={<StaffBilling />}
+            />
+
+            {/* Staff Orders */}
+            <Route
+              path="orders"
+              element={<StaffOrders />}
+            />
+
+            {/* Staff Customers */}
+            <Route
+              path="customers"
+              element={<StaffCustomers />}
+            />
+
+            {/* Staff Reports */}
+            <Route
+              path="reports"
+              element={<StaffReports />}
+            />
+          </Route>
         </Route>
+
 
         {/* =================================================
             CUSTOMER ROUTES
-        ================================================= */}
+            ================================================= */}
 
         <Route
           element={
@@ -326,16 +274,11 @@ const App = () => {
             />
           }
         >
-
           <Route
             path="/customer"
             element={<CustomerLayout />}
           >
-
-            {/* =================================================
-                CUSTOMER ROOT
-            ================================================= */}
-
+            {/* /customer */}
             <Route
               index
               element={
@@ -346,67 +289,48 @@ const App = () => {
               }
             />
 
-            {/* =================================================
-                CUSTOMER DASHBOARD
-            ================================================= */}
-
+            {/* Dashboard */}
             <Route
               path="dashboard"
               element={<CustomerDashboard />}
             />
 
-            {/* =================================================
-                CUSTOMER PRODUCTS
-            ================================================= */}
-
+            {/* Products */}
             <Route
               path="products"
               element={<CustomerProducts />}
             />
 
-            {/* =================================================
-                CUSTOMER ORDERS
-            ================================================= */}
-
+            {/* Orders */}
             <Route
               path="orders"
               element={<CustomerOrders />}
             />
 
-            {/* =================================================
-                CUSTOMER CART
-            ================================================= */}
-
+            {/* Cart */}
             <Route
               path="cart"
               element={<CustomerCart />}
             />
 
-            {/* =================================================
-                CUSTOMER INVOICES
-            ================================================= */}
-
+            {/* Invoices */}
             <Route
               path="invoices"
               element={<CustomerInvoices />}
             />
 
-            {/* =================================================
-                CUSTOMER PROFILE
-            ================================================= */}
-
+            {/* Profile */}
             <Route
               path="profile"
               element={<CustomerProfile />}
             />
-
           </Route>
-
         </Route>
 
+
         {/* =================================================
-            FALLBACK
-        ================================================= */}
+            UNKNOWN ROUTES
+            ================================================= */}
 
         <Route
           path="*"
@@ -415,9 +339,10 @@ const App = () => {
 
       </Routes>
 
-      {/* =================================================
-          TOAST NOTIFICATIONS
-      ================================================= */}
+
+      {/* ===================================================
+          GLOBAL TOAST CONTAINER
+          =================================================== */}
 
       <ToastContainer
         position="top-right"
@@ -427,7 +352,6 @@ const App = () => {
         pauseOnHover
         draggable
       />
-
     </>
   );
 };

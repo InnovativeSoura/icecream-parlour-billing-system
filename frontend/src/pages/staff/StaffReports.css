@@ -1,0 +1,1515 @@
+/* frontend/src/pages/staff/StaffReports.css */
+
+.staff-reports-page {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 4px 4px 32px;
+  color: #17213d;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.staff-reports-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.staff-reports-header-copy {
+  min-width: 0;
+}
+
+.staff-reports-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  color: #7c3aed;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.staff-reports-eyebrow svg {
+  font-size: 13px;
+}
+
+.staff-reports-header h2 {
+  margin: 0;
+  color: #17213d;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+}
+
+.staff-reports-header p {
+  max-width: 700px;
+  margin: 10px 0 0;
+  color: #737d96;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.staff-reports-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.staff-report-refresh-button,
+.staff-report-export-button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.staff-report-refresh-button {
+  border: 1px solid #e8e8f1;
+  background: #ffffff;
+  color: #536079;
+  box-shadow: 0 5px 18px rgba(31, 35, 55, 0.05);
+}
+
+.staff-report-export-button {
+  border: 1px solid #7c3aed;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #ffffff;
+  box-shadow: 0 9px 24px rgba(124, 58, 237, 0.2);
+}
+
+.staff-report-refresh-button:hover:not(:disabled),
+.staff-report-export-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.staff-report-refresh-button:hover:not(:disabled) {
+  border-color: #d7d3e8;
+  box-shadow: 0 9px 24px rgba(31, 35, 55, 0.08);
+}
+
+.staff-report-export-button:hover:not(:disabled) {
+  box-shadow: 0 13px 28px rgba(124, 58, 237, 0.27);
+}
+
+.staff-report-refresh-button:disabled,
+.staff-report-export-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.staff-report-spin {
+  animation: staffReportSpin 0.85s linear infinite;
+}
+
+@keyframes staffReportSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   PERIOD BAR
+========================================================= */
+
+.staff-report-period-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 17px;
+  margin-bottom: 20px;
+  border: 1px solid #ececf5;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 7px 25px rgba(33, 37, 57, 0.045);
+}
+
+.staff-report-period-copy {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.staff-report-period-copy span {
+  color: #939bb0;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.staff-report-period-copy strong {
+  color: #27324e;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.staff-report-period-options {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px;
+  border-radius: 11px;
+  background: #f5f4fa;
+}
+
+.staff-report-period-options button {
+  min-height: 34px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #7b849b;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.staff-report-period-options button:hover {
+  color: #5530b0;
+}
+
+.staff-report-period-options button.active {
+  background: #ffffff;
+  color: #6d28d9;
+  box-shadow: 0 3px 9px rgba(38, 32, 64, 0.08);
+}
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.staff-report-error {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  border: 1px solid #f5d8df;
+  border-radius: 15px;
+  background: #fff8fa;
+}
+
+.staff-report-error-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 10px;
+  background: #ffe6ec;
+  color: #dc365f;
+  font-size: 17px;
+  font-weight: 850;
+}
+
+.staff-report-error > div:nth-child(2) {
+  flex: 1;
+}
+
+.staff-report-error strong {
+  display: block;
+  color: #9f2344;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.staff-report-error p {
+  margin: 3px 0 0;
+  color: #a85e72;
+  font-size: 12px;
+}
+
+.staff-report-error button {
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid #edb8c5;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #c52f54;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.staff-report-loading {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  border: 1px solid #ececf5;
+  border-radius: 18px;
+  background: #ffffff;
+  color: #7c849a;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 7px 25px rgba(33, 37, 57, 0.045);
+}
+
+/* =========================================================
+   STAT CARDS
+========================================================= */
+
+.staff-report-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.staff-report-stat-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: 19px;
+  border: 1px solid #ececf5;
+  border-radius: 17px;
+  background: #ffffff;
+  box-shadow: 0 7px 25px rgba(33, 37, 57, 0.045);
+}
+
+.staff-report-stat-card::after {
+  content: "";
+  position: absolute;
+  right: -34px;
+  bottom: -42px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: #f5f1ff;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.staff-report-stat-card.sales::after {
+  background: #f0eaff;
+}
+
+.staff-report-stat-card.orders::after {
+  background: #eaf4ff;
+}
+
+.staff-report-stat-card.average::after {
+  background: #e9fbf4;
+}
+
+.staff-report-stat-card.collection::after {
+  background: #fff3e5;
+}
+
+.staff-report-stat-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.staff-report-stat-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #f2edff;
+  color: #7c3aed;
+  font-size: 16px;
+}
+
+.staff-report-stat-card.orders .staff-report-stat-icon {
+  background: #edf5ff;
+  color: #3478d4;
+}
+
+.staff-report-stat-card.average .staff-report-stat-icon {
+  background: #eafaf3;
+  color: #159d70;
+}
+
+.staff-report-stat-card.collection .staff-report-stat-icon {
+  background: #fff2e3;
+  color: #e28a25;
+}
+
+.staff-report-stat-caption {
+  color: #8b94aa;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.staff-report-stat-number {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 18px;
+  color: #1c2742;
+  font-size: clamp(24px, 2.2vw, 31px);
+  font-weight: 850;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.staff-report-stat-bottom {
+  position: relative;
+  z-index: 1;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 13px;
+  color: #9aa2b5;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.staff-report-growth {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 800;
+}
+
+.staff-report-growth svg {
+  font-size: 9px;
+}
+
+.staff-report-growth.positive {
+  color: #159b6c;
+}
+
+.staff-report-growth.negative {
+  color: #db4666;
+}
+
+.staff-report-growth.neutral {
+  color: #8a93a7;
+}
+
+.staff-report-stat-neutral {
+  color: #8a93a7;
+  font-weight: 750;
+}
+
+.staff-report-stat-success {
+  color: #159b6c;
+  font-weight: 850;
+}
+
+/* =========================================================
+   MAIN GRID
+========================================================= */
+
+.staff-report-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.85fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.staff-report-secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.staff-report-panel {
+  min-width: 0;
+  border: 1px solid #ececf5;
+  border-radius: 17px;
+  background: #ffffff;
+  box-shadow: 0 7px 25px rgba(33, 37, 57, 0.045);
+  overflow: hidden;
+}
+
+.staff-report-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 20px 21px 16px;
+}
+
+.staff-report-panel-eyebrow {
+  display: block;
+  margin-bottom: 5px;
+  color: #9aa2b4;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.staff-report-panel-header h3 {
+  margin: 0;
+  color: #26314d;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.staff-report-panel-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #f4efff;
+  color: #7c3aed;
+  font-size: 14px;
+}
+
+/* =========================================================
+   SALES CHART
+========================================================= */
+
+.staff-report-chart {
+  min-height: 310px;
+  display: flex;
+  gap: 12px;
+  padding: 10px 21px 21px;
+}
+
+.staff-report-chart-y {
+  width: 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 7px 0 27px;
+  color: #a1a8b9;
+  font-size: 9px;
+  font-weight: 650;
+  text-align: right;
+}
+
+.staff-report-chart-area {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 280px;
+}
+
+.staff-report-chart-grid-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  border-top: 1px dashed #eeeef5;
+}
+
+.staff-report-chart-grid-line.top {
+  top: 7px;
+}
+
+.staff-report-chart-grid-line.middle {
+  top: 50%;
+}
+
+.staff-report-chart-grid-line.bottom {
+  bottom: 28px;
+}
+
+.staff-report-bars {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 8px;
+}
+
+.staff-report-bar-column {
+  position: relative;
+  height: 100%;
+  min-width: 28px;
+  flex: 1;
+  max-width: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.staff-report-bar-value {
+  position: absolute;
+  top: 0;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: #f6f2ff;
+  color: #7651bd;
+  font-size: 8px;
+  font-weight: 750;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.staff-report-bar-column:hover .staff-report-bar-value {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.staff-report-bar-track {
+  width: min(40px, 72%);
+  height: calc(100% - 31px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.staff-report-bar {
+  width: 100%;
+  min-height: 5px;
+  border-radius: 8px 8px 3px 3px;
+  background: linear-gradient(
+    180deg,
+    #8b5cf6 0%,
+    #6d28d9 100%
+  );
+  box-shadow: 0 5px 14px rgba(124, 58, 237, 0.18);
+  transition:
+    height 0.45s ease,
+    transform 0.2s ease;
+}
+
+.staff-report-bar-column:hover .staff-report-bar {
+  transform: scaleX(1.08);
+}
+
+.staff-report-bar-column > span {
+  margin-top: 8px;
+  color: #939bae;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   PAYMENT METHODS
+========================================================= */
+
+.staff-report-payment-list {
+  padding: 2px 21px 21px;
+}
+
+.staff-report-payment-row {
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f1f6;
+}
+
+.staff-report-payment-row:last-child {
+  border-bottom: 0;
+}
+
+.staff-report-payment-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.staff-report-payment-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.staff-report-payment-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #7c3aed;
+  box-shadow: 0 0 0 4px #f2edff;
+}
+
+.staff-report-payment-row:nth-child(2) .staff-report-payment-dot {
+  background: #2789df;
+  box-shadow: 0 0 0 4px #eaf4ff;
+}
+
+.staff-report-payment-row:nth-child(3) .staff-report-payment-dot {
+  background: #19a873;
+  box-shadow: 0 0 0 4px #eaf9f3;
+}
+
+.staff-report-payment-row:nth-child(4) .staff-report-payment-dot {
+  background: #eb9634;
+  box-shadow: 0 0 0 4px #fff4e7;
+}
+
+.staff-report-payment-name strong {
+  overflow: hidden;
+  color: #36405a;
+  font-size: 12px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staff-report-payment-amount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.staff-report-payment-amount strong {
+  color: #28324b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.staff-report-payment-amount span {
+  min-width: 34px;
+  padding: 4px 5px;
+  border-radius: 6px;
+  background: #f5f4f9;
+  color: #8c94a8;
+  font-size: 9px;
+  font-weight: 750;
+  text-align: center;
+}
+
+.staff-report-progress {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  margin-top: 9px;
+  border-radius: 20px;
+  background: #f0f0f5;
+}
+
+.staff-report-progress > div {
+  height: 100%;
+  min-width: 3px;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #8b5cf6,
+    #6d28d9
+  );
+  transition: width 0.45s ease;
+}
+
+.staff-report-payment-orders,
+.staff-report-status-percent {
+  display: block;
+  margin-top: 6px;
+  color: #a0a7b7;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+/* =========================================================
+   PRODUCTS
+========================================================= */
+
+.staff-report-products-list {
+  padding: 0 21px 15px;
+}
+
+.staff-report-product-row {
+  min-height: 63px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #f1f1f6;
+}
+
+.staff-report-product-row:last-child {
+  border-bottom: 0;
+}
+
+.staff-report-product-rank {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 9px;
+  background: #f5f1ff;
+  color: #7c3aed;
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.staff-report-product-row:nth-child(2) .staff-report-product-rank {
+  background: #edf5ff;
+  color: #367bd1;
+}
+
+.staff-report-product-row:nth-child(3) .staff-report-product-rank {
+  background: #eaf9f3;
+  color: #16966a;
+}
+
+.staff-report-product-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.staff-report-product-copy strong {
+  display: block;
+  overflow: hidden;
+  color: #35405b;
+  font-size: 12px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staff-report-product-copy span {
+  display: block;
+  margin-top: 4px;
+  color: #9ba3b5;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.staff-report-product-sales {
+  flex-shrink: 0;
+  color: #28334d;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   ORDER STATUS
+========================================================= */
+
+.staff-report-status-list {
+  padding: 0 21px 18px;
+}
+
+.staff-report-status-row {
+  padding: 10px 0;
+}
+
+.staff-report-status-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.staff-report-status-top > strong {
+  color: #39445f;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.staff-report-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: 7px;
+  background: #f3f4f7;
+  color: #747d91;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.staff-report-status.status-completed {
+  background: #eaf9f2;
+  color: #159466;
+}
+
+.staff-report-status.status-confirmed {
+  background: #edf4ff;
+  color: #3477ca;
+}
+
+.staff-report-status.status-processing {
+  background: #f1edff;
+  color: #6e46d1;
+}
+
+.staff-report-status.status-pending {
+  background: #fff5e8;
+  color: #d48628;
+}
+
+.staff-report-status.status-cancelled {
+  background: #ffedf1;
+  color: #d13f61;
+}
+
+.staff-report-status.status-refunded,
+.staff-report-status.status-partially_refunded {
+  background: #f2f2f6;
+  color: #777f93;
+}
+
+.staff-report-status-row .staff-report-progress {
+  margin-top: 8px;
+}
+
+.staff-report-status-row .staff-report-progress > div {
+  background: linear-gradient(
+    90deg,
+    #b19aef,
+    #7c3aed
+  );
+}
+
+/* =========================================================
+   EMPTY STATES
+========================================================= */
+
+.staff-report-empty-inline {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 25px;
+  color: #a1a8b8;
+  text-align: center;
+}
+
+.staff-report-empty-inline svg {
+  margin-bottom: 4px;
+  color: #c1b2e8;
+  font-size: 25px;
+}
+
+.staff-report-empty-inline strong {
+  color: #626c82;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.staff-report-empty-inline span {
+  color: #9ba3b4;
+  font-size: 10px;
+}
+
+.staff-report-empty {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+}
+
+.staff-report-empty-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 13px;
+  border-radius: 14px;
+  background: #f5f1ff;
+  color: #8a67d5;
+  font-size: 20px;
+}
+
+.staff-report-empty h3 {
+  margin: 0;
+  color: #4b566f;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.staff-report-empty p {
+  max-width: 390px;
+  margin: 7px 0 0;
+  color: #9aa2b3;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   RECENT SALES
+========================================================= */
+
+.staff-report-recent-panel {
+  margin-bottom: 18px;
+}
+
+.staff-report-recent-summary {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.staff-report-recent-summary span {
+  color: #9ba2b3;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.staff-report-recent-summary strong {
+  color: #6d28d9;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.staff-report-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-top: 1px solid #f0f0f5;
+}
+
+.staff-report-table {
+  width: 100%;
+  min-width: 790px;
+  border-collapse: collapse;
+}
+
+.staff-report-table th {
+  padding: 12px 20px;
+  background: #fafafd;
+  color: #969daf;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.staff-report-table td {
+  padding: 13px 20px;
+  border-top: 1px solid #f1f1f6;
+  color: #5d667c;
+  font-size: 11px;
+  vertical-align: middle;
+}
+
+.staff-report-table tbody tr {
+  transition: background 0.18s ease;
+}
+
+.staff-report-table tbody tr:hover {
+  background: #fbfaff;
+}
+
+.staff-report-table .align-right {
+  text-align: right;
+}
+
+.staff-report-order-number {
+  color: #5d3baa;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.staff-report-customer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 150px;
+}
+
+.staff-report-customer-avatar {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 9px;
+  background: #f1ecff;
+  color: #7040c5;
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.staff-report-customer > span {
+  overflow: hidden;
+  color: #46516a;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staff-report-date {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.staff-report-date strong {
+  color: #566078;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.staff-report-date span {
+  color: #a1a8b7;
+  font-size: 9px;
+}
+
+.staff-report-payment-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.staff-report-payment-cell strong {
+  color: #5a647b;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.staff-report-payment-cell span {
+  width: fit-content;
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: #f4f4f7;
+  color: #8a92a4;
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.staff-report-payment-cell .payment-paid {
+  background: #eaf9f2;
+  color: #159466;
+}
+
+.staff-report-payment-cell .payment-pending {
+  background: #fff4e5;
+  color: #d28727;
+}
+
+.staff-report-payment-cell .payment-failed {
+  background: #ffedf1;
+  color: #d13f61;
+}
+
+.staff-report-payment-cell .payment-cancelled,
+.staff-report-payment-cell .payment-refunded {
+  background: #f2f2f6;
+  color: #777f93;
+}
+
+.staff-report-payment-cell .payment-partially_refunded {
+  background: #f3edff;
+  color: #7451c3;
+}
+
+.staff-report-amount {
+  color: #26314b;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.staff-report-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 3px 0;
+  color: #a0a7b7;
+  font-size: 9px;
+}
+
+.staff-report-footer > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.staff-report-footer svg {
+  color: #8d70ca;
+  font-size: 12px;
+}
+
+.staff-report-footer strong {
+  color: #969eaf;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   FOCUS
+========================================================= */
+
+.staff-reports-page button:focus-visible {
+  outline: 3px solid rgba(124, 58, 237, 0.2);
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   RESPONSIVE — 1300
+========================================================= */
+
+@media (max-width: 1300px) {
+  .staff-report-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .staff-report-main-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.85fr);
+  }
+}
+
+/* =========================================================
+   RESPONSIVE — 1050
+========================================================= */
+
+@media (max-width: 1050px) {
+  .staff-reports-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .staff-reports-header-actions {
+    width: 100%;
+  }
+
+  .staff-report-refresh-button,
+  .staff-report-export-button {
+    flex: 1;
+  }
+
+  .staff-report-main-grid,
+  .staff-report-secondary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE — 760
+========================================================= */
+
+@media (max-width: 760px) {
+  .staff-reports-page {
+    padding: 0 0 25px;
+  }
+
+  .staff-reports-header h2 {
+    font-size: 28px;
+  }
+
+  .staff-reports-header p {
+    font-size: 13px;
+  }
+
+  .staff-report-period-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .staff-report-period-copy {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .staff-report-period-options {
+    width: 100%;
+  }
+
+  .staff-report-period-options button {
+    flex: 1;
+    padding: 0 7px;
+  }
+
+  .staff-report-stat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 11px;
+  }
+
+  .staff-report-stat-card {
+    padding: 15px;
+  }
+
+  .staff-report-stat-number {
+    font-size: 23px;
+  }
+
+  .staff-report-chart {
+    min-height: 270px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .staff-report-chart-y {
+    width: 43px;
+  }
+
+  .staff-report-panel-header {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .staff-report-payment-list,
+  .staff-report-products-list,
+  .staff-report-status-list {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .staff-report-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE — 560
+========================================================= */
+
+@media (max-width: 560px) {
+  .staff-reports-header {
+    gap: 17px;
+    margin-bottom: 18px;
+  }
+
+  .staff-reports-header h2 {
+    font-size: 25px;
+  }
+
+  .staff-reports-header p {
+    margin-top: 8px;
+    font-size: 12px;
+  }
+
+  .staff-reports-header-actions {
+    gap: 7px;
+  }
+
+  .staff-report-refresh-button,
+  .staff-report-export-button {
+    min-height: 42px;
+    padding: 0 11px;
+    font-size: 11px;
+  }
+
+  .staff-report-period-bar {
+    padding: 12px;
+    margin-bottom: 13px;
+  }
+
+  .staff-report-period-options button {
+    min-height: 32px;
+    font-size: 10px;
+  }
+
+  .staff-report-stat-grid {
+    gap: 9px;
+    margin-bottom: 13px;
+  }
+
+  .staff-report-stat-card {
+    padding: 13px;
+    border-radius: 14px;
+  }
+
+  .staff-report-stat-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 9px;
+    font-size: 13px;
+  }
+
+  .staff-report-stat-caption {
+    max-width: 75px;
+    font-size: 8px;
+    text-align: right;
+  }
+
+  .staff-report-stat-number {
+    margin-top: 14px;
+    font-size: 19px;
+  }
+
+  .staff-report-stat-bottom {
+    display: block;
+    margin-top: 9px;
+    font-size: 8px;
+    line-height: 1.5;
+  }
+
+  .staff-report-growth {
+    margin-right: 4px;
+  }
+
+  .staff-report-main-grid,
+  .staff-report-secondary-grid {
+    gap: 13px;
+    margin-bottom: 13px;
+  }
+
+  .staff-report-panel {
+    border-radius: 14px;
+  }
+
+  .staff-report-panel-header {
+    padding: 15px 14px 13px;
+  }
+
+  .staff-report-panel-header h3 {
+    font-size: 15px;
+  }
+
+  .staff-report-panel-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    font-size: 12px;
+  }
+
+  .staff-report-chart {
+    min-height: 240px;
+    gap: 5px;
+    padding: 5px 10px 14px;
+  }
+
+  .staff-report-chart-y {
+    width: 36px;
+    padding-bottom: 24px;
+    font-size: 7px;
+  }
+
+  .staff-report-chart-area {
+    min-height: 220px;
+  }
+
+  .staff-report-bar-column {
+    min-width: 20px;
+  }
+
+  .staff-report-bar-track {
+    width: 65%;
+  }
+
+  .staff-report-bar-column > span {
+    font-size: 7px;
+  }
+
+  .staff-report-bar-value {
+    display: none;
+  }
+
+  .staff-report-payment-list {
+    padding: 0 14px 13px;
+  }
+
+  .staff-report-payment-row {
+    padding: 10px 0;
+  }
+
+  .staff-report-payment-amount {
+    gap: 5px;
+  }
+
+  .staff-report-payment-amount strong {
+    font-size: 10px;
+  }
+
+  .staff-report-product-row {
+    min-height: 57px;
+  }
+
+  .staff-report-products-list {
+    padding: 0 14px 10px;
+  }
+
+  .staff-report-product-rank {
+    width: 27px;
+    height: 27px;
+    font-size: 8px;
+  }
+
+  .staff-report-product-copy strong {
+    font-size: 10px;
+  }
+
+  .staff-report-product-sales {
+    font-size: 9px;
+  }
+
+  .staff-report-status-list {
+    padding: 0 14px 12px;
+  }
+
+  .staff-report-recent-panel {
+    margin-bottom: 13px;
+  }
+
+  .staff-report-recent-summary strong {
+    font-size: 12px;
+  }
+
+  .staff-report-table th,
+  .staff-report-table td {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .staff-report-footer {
+    padding-top: 0;
+    font-size: 8px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .staff-report-spin {
+    animation: none;
+  }
+
+  .staff-report-bar,
+  .staff-report-progress > div,
+  .staff-report-refresh-button,
+  .staff-report-export-button {
+    transition: none;
+  }
+}
