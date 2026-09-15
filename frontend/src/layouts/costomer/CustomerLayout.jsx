@@ -1,6 +1,6 @@
-// frontend/src/components/CustomerLayout.jsx
+// frontend/src/layouts/costomer/CustomerLayout.jsx
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   NavLink,
   Outlet,
@@ -10,152 +10,391 @@ import {
 
 import {
   FaBars,
-  FaBoxOpen,
-  FaCartPlus,
-  FaIceCream,
-  FaReceipt,
-  FaSignOutAlt,
-  FaShoppingBag,
   FaTimes,
-  FaUserCircle,
+  FaChevronLeft,
   FaChevronRight,
+  FaHome,
+  FaIceCream,
+  FaShoppingBag,
+  FaShoppingCart,
+  FaFileInvoice,
+  FaUser,
+  FaSignOutAlt,
+  FaCalendarAlt,
 } from "react-icons/fa";
 
 import { useAuth } from "../../context/AuthContext";
 
 import "./CustomerLayout.css";
 
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const getInitials = (name = "Customer") => {
+  const words = String(name)
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!words.length) {
+    return "CU";
+  }
+
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
+
+  return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
+};
+
+const formatToday = () => {
+  return new Intl.DateTimeFormat("en-IN", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date());
+};
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+const MAIN_NAVIGATION = [
+  {
+    label: "Dashboard",
+    path: "/customer/dashboard",
+    icon: FaHome,
+  },
+  {
+    label: "Products",
+    path: "/customer/products",
+    icon: FaIceCream,
+  },
+  {
+    label: "Orders",
+    path: "/customer/orders",
+    icon: FaShoppingBag,
+  },
+  {
+    label: "Cart",
+    path: "/customer/cart",
+    icon: FaShoppingCart,
+  },
+  {
+    label: "Invoices",
+    path: "/customer/invoices",
+    icon: FaFileInvoice,
+  },
+];
+
+const ACCOUNT_NAVIGATION = [
+  {
+    label: "Profile",
+    path: "/customer/profile",
+    icon: FaUser,
+  },
+];
+
+/* =========================================================
+   CUSTOMER LAYOUT
+========================================================= */
+
 const CustomerLayout = () => {
   const { user, logout } = useAuth();
 
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const [mobileSidebarOpen, setMobileSidebarOpen] =
-    useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  /* =====================================================
-     CUSTOMER NAME
-  ===================================================== */
+  const customerName = user?.name || "Customer";
+  const initials = getInitials(customerName);
 
-  const customerName =
-    user?.name?.trim() ||
-    user?.username ||
-    user?.email?.split("@")[0] ||
-    "Customer";
+  const currentPage = useMemo(() => {
+    const pathname = location.pathname;
 
-  /* =====================================================
-     INITIALS
-  ===================================================== */
-
-  const getInitials = (name) => {
-    if (!name) return "CU";
-
-    return name
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((word) => word.charAt(0))
-      .join("")
-      .toUpperCase();
-  };
-
-  /* =====================================================
-     CURRENT PAGE TITLE
-  ===================================================== */
-
-  const getPageTitle = () => {
-    const path = location.pathname;
-
-    if (path === "/customer/dashboard") {
-      return "Dashboard";
+    if (pathname.includes("/products")) {
+      return {
+        eyebrow: "CUSTOMER",
+        title: "Products",
+      };
     }
 
-    if (path === "/customer/products") {
-      return "Browse Products";
+    if (pathname.includes("/orders")) {
+      return {
+        eyebrow: "CUSTOMER",
+        title: "My Orders",
+      };
     }
 
-    if (path === "/customer/orders") {
-      return "My Orders";
+    if (pathname.includes("/cart")) {
+      return {
+        eyebrow: "CUSTOMER",
+        title: "Shopping Cart",
+      };
     }
 
-    if (path === "/customer/cart") {
-      return "My Cart";
+    if (pathname.includes("/invoices")) {
+      return {
+        eyebrow: "CUSTOMER",
+        title: "Invoices",
+      };
     }
 
-    if (path === "/customer/invoices") {
-      return "Invoices";
+    if (pathname.includes("/profile")) {
+      return {
+        eyebrow: "ACCOUNT",
+        title: "My Profile",
+      };
     }
 
-    if (path === "/customer/profile") {
-      return "My Profile";
-    }
+    return {
+      eyebrow: "CUSTOMER",
+      title: "Dashboard",
+    };
+  }, [location.pathname]);
 
-    return "Customer Portal";
-  };
+  /* =======================================================
+     SIDEBAR TOGGLE
+  ======================================================= */
 
-  /* =====================================================
-     LOGOUT
-  ===================================================== */
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login", {
-      replace: true,
-    });
-  };
-
-  /* =====================================================
-     MOBILE SIDEBAR
-  ===================================================== */
-
-  const openMobileSidebar = () => {
-    setMobileSidebarOpen(true);
+  const toggleSidebar = () => {
+    setSidebarCollapsed((previous) => !previous);
   };
 
   const closeMobileSidebar = () => {
     setMobileSidebarOpen(false);
   };
 
-  /* =====================================================
-     NAVIGATION ITEM
-  ===================================================== */
+  const openMobileSidebar = () => {
+    setMobileSidebarOpen(true);
+  };
 
-  const navigationItems = [
-    {
-      path: "/customer/dashboard",
-      label: "Dashboard",
-      icon: FaBoxOpen,
-    },
-    {
-      path: "/customer/products",
-      label: "Browse Products",
-      icon: FaIceCream,
-    },
-    {
-      path: "/customer/orders",
-      label: "My Orders",
-      icon: FaShoppingBag,
-    },
-    {
-      path: "/customer/cart",
-      label: "My Cart",
-      icon: FaCartPlus,
-    },
-    {
-      path: "/customer/invoices",
-      label: "Invoices",
-      icon: FaReceipt,
-    },
-    {
-      path: "/customer/profile",
-      label: "My Profile",
-      icon: FaUserCircle,
-    },
-  ];
+  /* =======================================================
+     LOGOUT
+  ======================================================= */
+
+  const handleLogout = async () => {
+    closeMobileSidebar();
+
+    try {
+      if (typeof logout === "function") {
+        await logout();
+      }
+    } catch (error) {
+      console.error("Customer logout error:", error);
+    }
+
+    navigate("/login", { replace: true });
+  };
+
+  /* =======================================================
+     NAVIGATION CLICK
+  ======================================================= */
+
+  const handleNavigation = () => {
+    closeMobileSidebar();
+  };
 
   return (
-    <div className="customer-layout">
+    <div
+      className={`customer-layout ${
+        sidebarCollapsed
+          ? "customer-sidebar-is-collapsed"
+          : ""
+      }`}
+    >
+      {/* =====================================================
+          SIDEBAR
+      ===================================================== */}
+
+      <aside
+        className={`customer-sidebar ${
+          mobileSidebarOpen
+            ? "customer-mobile-sidebar-open"
+            : ""
+        }`}
+      >
+        {/* ===================================================
+            BRAND
+        =================================================== */}
+
+        <div className="customer-brand">
+          <button
+            type="button"
+            className="customer-brand-logo"
+            onClick={() =>
+              navigate("/customer/dashboard")
+            }
+            aria-label="Go to customer dashboard"
+          >
+            <FaIceCream />
+          </button>
+
+          <div className="customer-brand-copy">
+            <strong>IceCream</strong>
+
+            <span>BILLING SYSTEM</span>
+          </div>
+
+          <button
+            type="button"
+            className="customer-mobile-close"
+            onClick={closeMobileSidebar}
+            aria-label="Close customer menu"
+          >
+            <FaTimes />
+          </button>
+        </div>
+
+        {/* ===================================================
+            NAVIGATION
+        =================================================== */}
+
+        <nav className="customer-sidebar-navigation">
+          {/* MAIN MENU */}
+
+          <div className="customer-nav-group">
+            <div className="customer-nav-group-title">
+              Main Menu
+            </div>
+
+            <div className="customer-nav-list">
+              {MAIN_NAVIGATION.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    end={item.path === "/customer/dashboard"}
+                    onClick={handleNavigation}
+                    className={({ isActive }) =>
+                      `customer-nav-item ${
+                        isActive
+                          ? "active"
+                          : ""
+                      }`
+                    }
+                  >
+                    <span className="customer-nav-icon">
+                      <Icon />
+                    </span>
+
+                    <span className="customer-nav-label">
+                      {item.label}
+                    </span>
+
+                    <span className="customer-nav-arrow">
+                      <FaChevronRight />
+                    </span>
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ACCOUNT */}
+
+          <div className="customer-nav-group">
+            <div className="customer-nav-group-title">
+              Account
+            </div>
+
+            <div className="customer-nav-list">
+              {ACCOUNT_NAVIGATION.map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={handleNavigation}
+                    className={({ isActive }) =>
+                      `customer-nav-item ${
+                        isActive
+                          ? "active"
+                          : ""
+                      }`
+                    }
+                  >
+                    <span className="customer-nav-icon">
+                      <Icon />
+                    </span>
+
+                    <span className="customer-nav-label">
+                      {item.label}
+                    </span>
+
+                    <span className="customer-nav-arrow">
+                      <FaChevronRight />
+                    </span>
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+        </nav>
+
+        {/* ===================================================
+            SIDEBAR BOTTOM
+        =================================================== */}
+
+        <div className="customer-sidebar-bottom">
+          <div className="customer-sidebar-profile">
+            <div className="customer-avatar customer-avatar-sidebar">
+              {initials}
+            </div>
+
+            <div className="customer-sidebar-profile-info">
+              <strong>{customerName}</strong>
+
+              <span>Customer</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="customer-logout-button"
+            onClick={handleLogout}
+          >
+            <FaSignOutAlt />
+
+            <span className="customer-logout-label">
+              Logout
+            </span>
+          </button>
+        </div>
+
+        {/* ===================================================
+            COLLAPSE BUTTON
+        =================================================== */}
+
+        <button
+          type="button"
+          className="customer-sidebar-collapse"
+          onClick={toggleSidebar}
+          aria-label={
+            sidebarCollapsed
+              ? "Expand sidebar"
+              : "Collapse sidebar"
+          }
+          title={
+            sidebarCollapsed
+              ? "Expand sidebar"
+              : "Collapse sidebar"
+          }
+        >
+          {sidebarCollapsed ? (
+            <FaChevronRight />
+          ) : (
+            <FaChevronLeft />
+          )}
+        </button>
+      </aside>
 
       {/* =====================================================
           MOBILE OVERLAY
@@ -165,297 +404,89 @@ const CustomerLayout = () => {
         <button
           type="button"
           className="customer-sidebar-overlay"
-          aria-label="Close navigation"
           onClick={closeMobileSidebar}
+          aria-label="Close customer sidebar"
         />
       )}
 
       {/* =====================================================
-          SIDEBAR
-      ===================================================== */}
-
-      <aside
-        className={`customer-sidebar ${
-          mobileSidebarOpen
-            ? "mobile-open"
-            : ""
-        }`}
-      >
-
-        {/* =================================================
-            SIDEBAR BRAND
-        ================================================= */}
-
-        <div className="customer-brand">
-
-          <div className="customer-brand-icon">
-            <FaIceCream />
-          </div>
-
-          <div className="customer-brand-text">
-            <h2>IceCream</h2>
-            <span>PARLOUR</span>
-          </div>
-
-          <button
-            type="button"
-            className="customer-mobile-close"
-            onClick={closeMobileSidebar}
-            aria-label="Close sidebar"
-          >
-            <FaTimes />
-          </button>
-
-        </div>
-
-        {/* =================================================
-            CUSTOMER PROFILE CARD
-        ================================================= */}
-
-        <div className="customer-sidebar-profile">
-
-          <div className="customer-sidebar-avatar">
-            {getInitials(customerName)}
-          </div>
-
-          <div className="customer-sidebar-profile-info">
-
-            <strong>
-              {customerName}
-            </strong>
-
-            <span>
-              Customer Account
-            </span>
-
-          </div>
-
-          <div className="customer-profile-status">
-            <span />
-          </div>
-
-        </div>
-
-        {/* =================================================
-            MENU TITLE
-        ================================================= */}
-
-        <div className="customer-navigation-heading">
-          <span>MAIN MENU</span>
-        </div>
-
-        {/* =================================================
-            NAVIGATION
-        ================================================= */}
-
-        <nav className="customer-navigation">
-
-          {navigationItems.map(
-            ({
-              path,
-              label,
-              icon: Icon,
-            }) => (
-              <NavLink
-                key={path}
-                to={path}
-                onClick={closeMobileSidebar}
-                className={({ isActive }) =>
-                  `customer-nav-item ${
-                    isActive
-                      ? "active"
-                      : ""
-                  }`
-                }
-              >
-
-                <span className="customer-nav-icon">
-                  <Icon />
-                </span>
-
-                <span className="customer-nav-label">
-                  {label}
-                </span>
-
-                <span className="customer-nav-arrow">
-                  <FaChevronRight />
-                </span>
-
-              </NavLink>
-            )
-          )}
-
-        </nav>
-
-        {/* =================================================
-            SIDEBAR BOTTOM
-        ================================================= */}
-
-        <div className="customer-sidebar-bottom">
-
-          <div className="customer-sidebar-divider" />
-
-          <button
-            type="button"
-            className="customer-logout"
-            onClick={handleLogout}
-          >
-
-            <span className="customer-logout-icon">
-              <FaSignOutAlt />
-            </span>
-
-            <span>
-              Logout
-            </span>
-
-          </button>
-
-        </div>
-
-      </aside>
-
-      {/* =====================================================
-          MAIN AREA
+          MAIN
       ===================================================== */}
 
       <div className="customer-main">
-
-        {/* =================================================
-            TOP NAVBAR
-        ================================================= */}
+        {/* ===================================================
+            TOPBAR
+        =================================================== */}
 
         <header className="customer-topbar">
-
-          {/* LEFT */}
-
           <div className="customer-topbar-left">
-
-            {/* Mobile Menu */}
-
             <button
               type="button"
-              className="customer-mobile-menu"
+              className="customer-mobile-menu-button"
               onClick={openMobileSidebar}
-              aria-label="Open navigation"
+              aria-label="Open customer menu"
             >
               <FaBars />
             </button>
 
-            {/* Mobile Brand */}
-
-            <div className="customer-mobile-brand">
-
-              <div className="customer-mobile-brand-icon">
-                <FaIceCream />
-              </div>
-
-              <div className="customer-mobile-brand-text">
-
-                <strong>
-                  IceCream
-                </strong>
-
-                <span>
-                  PARLOUR
-                </span>
-
-              </div>
-
-            </div>
-
-            {/* Desktop Page Heading */}
-
             <div className="customer-page-heading">
-
-              <span>
-                CUSTOMER PORTAL
+              <span className="customer-page-eyebrow">
+                {currentPage.eyebrow}
               </span>
 
-              <h1>
-                {getPageTitle()}
-              </h1>
-
+              <h1>{currentPage.title}</h1>
             </div>
-
           </div>
 
-          {/* =================================================
-              TOPBAR RIGHT
-          ================================================= */}
-
           <div className="customer-topbar-right">
+            {/* DATE */}
 
-            {/* Welcome */}
+            <div className="customer-date">
+              <div className="customer-date-icon">
+                <FaCalendarAlt />
+              </div>
 
-            <div className="customer-topbar-welcome">
+              <div className="customer-date-copy">
+                <strong>{formatToday()}</strong>
 
-              <span>
-                Welcome back,
-              </span>
-
-              <strong>
-                {customerName}
-              </strong>
-
+                <span>Today</span>
+              </div>
             </div>
-
-            {/* Divider */}
 
             <div className="customer-topbar-divider" />
 
-            {/* Profile */}
+            {/* PROFILE */}
 
             <button
               type="button"
               className="customer-topbar-profile"
               onClick={() =>
-                navigate(
-                  "/customer/profile"
-                )
+                navigate("/customer/profile")
               }
             >
-
-              <div className="customer-avatar">
-
-                {getInitials(
-                  customerName
-                )}
-
+              <div className="customer-avatar customer-avatar-topbar">
+                {initials}
               </div>
 
-              <div className="customer-profile-info">
+              <div className="customer-topbar-profile-copy">
+                <strong>{customerName}</strong>
 
-                <strong>
-                  {customerName}
-                </strong>
-
-                <span>
-                  Customer
-                </span>
-
+                <span>Customer</span>
               </div>
 
-              <FaChevronRight
-                className="customer-profile-chevron"
-              />
-
+              <FaChevronRight className="customer-profile-arrow" />
             </button>
-
           </div>
-
         </header>
 
-        {/* =================================================
+        {/* ===================================================
             PAGE CONTENT
-        ================================================= */}
+        =================================================== */}
 
         <main className="customer-content">
           <Outlet />
         </main>
-
       </div>
-
     </div>
   );
 };
