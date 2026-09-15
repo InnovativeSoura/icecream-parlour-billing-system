@@ -57,6 +57,7 @@ import inventoryRoutes from "./routes/inventoryRoutes.js";
 import customerRoutes from "./routes/customerRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import staffRoutes from "./routes/staffRoutes.js";
 
 /*
 |--------------------------------------------------------------------------
@@ -416,6 +417,17 @@ app.use(
 app.use(
   "/api/orders",
   orderRoutes
+);
+
+/*
+|--------------------------------------------------------------------------
+| Staffs
+|--------------------------------------------------------------------------
+*/
+
+app.use(
+  "/api/staff",
+  staffRoutes
 );
 
 /*
