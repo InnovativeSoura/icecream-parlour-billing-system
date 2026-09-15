@@ -55,14 +55,12 @@ const navigationGroups = [
       {
         label: "Orders",
         path: "/admin/orders",
-        icon: FaClipboardList,
-        disabled: true,
+        icon: FaClipboardList, 
       },
       {
         label: "Reports",
         path: "/admin/reports",
         icon: FaChartBar,
-        disabled: true,
       },
     ],
   },
