@@ -15,7 +15,10 @@ export const AuthProvider = ({ children }) => {
 
   const isAuthenticated = Boolean(user);
 
-  // Restore existing session
+  // =========================================================
+  // RESTORE EXISTING SESSION
+  // =========================================================
+
   useEffect(() => {
     const restoreSession = async () => {
       const token = localStorage.getItem("icecream_token");
@@ -29,15 +32,25 @@ export const AuthProvider = ({ children }) => {
         const response = await api.get("/auth/me");
 
         if (response.data?.success) {
-          setUser(response.data.user);
+          const restoredUser = response.data.user;
+
+          setUser(restoredUser);
 
           localStorage.setItem(
             "icecream_user",
-            JSON.stringify(response.data.user)
+            JSON.stringify(restoredUser)
           );
+        } else {
+          localStorage.removeItem("icecream_token");
+          localStorage.removeItem("icecream_user");
+
+          setUser(null);
         }
       } catch (error) {
-        console.error("Session restoration failed:", error);
+        console.error(
+          "Session restoration failed:",
+          error
+        );
 
         localStorage.removeItem("icecream_token");
         localStorage.removeItem("icecream_user");
@@ -51,7 +64,10 @@ export const AuthProvider = ({ children }) => {
     restoreSession();
   }, []);
 
-  // Login
+  // =========================================================
+  // LOGIN
+  // =========================================================
+
   const login = async (email, password) => {
     const response = await api.post("/auth/login", {
       email,
@@ -64,9 +80,15 @@ export const AuthProvider = ({ children }) => {
       );
     }
 
-    const { token, user: loggedInUser } = response.data;
+    const {
+      token,
+      user: loggedInUser,
+    } = response.data;
 
-    localStorage.setItem("icecream_token", token);
+    localStorage.setItem(
+      "icecream_token",
+      token
+    );
 
     localStorage.setItem(
       "icecream_user",
@@ -78,29 +100,67 @@ export const AuthProvider = ({ children }) => {
     return loggedInUser;
   };
 
-  // Register
+  // =========================================================
+  // REGISTER
+  // =========================================================
+
   const register = async ({
     name,
     email,
     phone,
     password,
+    role = "customer",
   }) => {
-    const response = await api.post("/auth/register", {
-      name,
-      email,
-      phone,
-      password,
-    });
+    /*
+     * Public registration is intentionally limited to:
+     * - customer
+     * - staff
+     *
+     * Admin accounts should NOT be created through the
+     * public registration page.
+     */
 
-    if (!response.data?.success) {
+    const normalizedRole = String(role || "customer")
+      .trim()
+      .toLowerCase();
+
+    if (
+      !["customer", "staff"].includes(
+        normalizedRole
+      )
+    ) {
       throw new Error(
-        response.data?.message || "Registration failed"
+        "Invalid registration role."
       );
     }
 
-    const { token, user: registeredUser } = response.data;
+    const response = await api.post(
+      "/auth/register",
+      {
+        name,
+        email,
+        phone,
+        password,
+        role: normalizedRole,
+      }
+    );
 
-    localStorage.setItem("icecream_token", token);
+    if (!response.data?.success) {
+      throw new Error(
+        response.data?.message ||
+          "Registration failed"
+      );
+    }
+
+    const {
+      token,
+      user: registeredUser,
+    } = response.data;
+
+    localStorage.setItem(
+      "icecream_token",
+      token
+    );
 
     localStorage.setItem(
       "icecream_user",
@@ -112,7 +172,10 @@ export const AuthProvider = ({ children }) => {
     return registeredUser;
   };
 
-  // Logout
+  // =========================================================
+  // LOGOUT
+  // =========================================================
+
   const logout = () => {
     localStorage.removeItem("icecream_token");
     localStorage.removeItem("icecream_user");
@@ -121,6 +184,10 @@ export const AuthProvider = ({ children }) => {
 
     window.location.href = "/login";
   };
+
+  // =========================================================
+  // AUTH VALUE
+  // =========================================================
 
   const value = {
     user,
@@ -142,6 +209,10 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+// ===========================================================
+// USE AUTH
+// ===========================================================
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
