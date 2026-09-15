@@ -60,6 +60,8 @@ import CustomerProfile from "./pages/customer/Profile";
 import Products from "./pages/Products.jsx";
 import Inventory from "./pages/Inventory.jsx";
 import Customer from "./pages/Customers.jsx";
+import Orders from "./pages/admin/Orders.jsx";
+import Reports from "./pages/admin/Reports.jsx";
 
 // =====================================================
 // HOME REDIRECT
@@ -260,6 +262,24 @@ const App = () => {
             <Route
               path="customers"
               element={<Customer />}
+            />
+
+            {/* =================================================
+                ADMIN Orders
+            ================================================= */}
+
+            <Route
+              path="orders"
+              element={<Orders />}
+            />
+
+            {/* =================================================
+                ADMIN Orders
+            ================================================= */}
+            
+            <Route
+              path="reports"
+              element={<Reports />}
             />
 
           </Route>
