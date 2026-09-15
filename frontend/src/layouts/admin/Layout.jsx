@@ -1,5 +1,3 @@
-// frontend/src/layouts/admin/Layout.jsx
-
 import { useMemo, useState } from "react";
 import {
   NavLink,
@@ -8,539 +6,444 @@ import {
   useNavigate,
 } from "react-router-dom";
 
-import { useAuth } from "../../context/AuthContext";
-
 import {
-  FaHome,
-  FaIceCream,
   FaBoxes,
-  FaUsers,
-  FaClipboardList,
-  FaChartBar,
-  FaSignOutAlt,
-  FaBars,
-  FaTimes,
   FaCalendarAlt,
   FaChevronRight,
+  FaClipboardList,
+  FaChartBar,
+  FaChevronLeft,
+  FaHome,
+  FaIceCream,
+  FaSignOutAlt,
+  FaTimes,
+  FaUsers,
 } from "react-icons/fa";
 
-import "./AdminLayout.css";
+import { useAuth } from "../../context/AuthContext";
+import "./Layout.css";
+
+const navigationGroups = [
+  {
+    title: "Main Menu",
+    items: [
+      {
+        label: "Dashboard",
+        path: "/admin/dashboard",
+        icon: FaHome,
+      },
+      {
+        label: "Products",
+        path: "/admin/products",
+        icon: FaIceCream,
+      },
+      {
+        label: "Inventory",
+        path: "/admin/inventory",
+        icon: FaBoxes,
+      },
+      {
+        label: "Customers",
+        path: "/admin/customers",
+        icon: FaUsers,
+      },
+    ],
+  },
+  {
+    title: "Management",
+    items: [
+      {
+        label: "Orders",
+        path: "/admin/orders",
+        icon: FaClipboardList,
+        disabled: true,
+      },
+      {
+        label: "Reports",
+        path: "/admin/reports",
+        icon: FaChartBar,
+        disabled: true,
+      },
+    ],
+  },
+];
+
+const getInitials = (name = "Admin") => {
+  const words = String(name)
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!words.length) return "AD";
+
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
+
+  return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
+};
+
+const formatDate = () => {
+  return new Intl.DateTimeFormat("en-IN", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date());
+};
 
 const AdminLayout = () => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const [mobileSidebarOpen, setMobileSidebarOpen] =
-    useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // =====================================================
-  // USER INFORMATION
-  // =====================================================
-
-  const userName =
-    user?.name?.trim() ||
-    user?.username?.trim() ||
-    user?.email?.split("@")[0] ||
-    "Administrator";
-
+  const userName = user?.name || "Admin";
   const userRole = user?.role || "admin";
 
-  const formattedRole =
-    userRole.charAt(0).toUpperCase() +
-    userRole.slice(1);
-
-  // =====================================================
-  // USER INITIALS
-  // =====================================================
-
-  const initials = useMemo(() => {
-    if (!userName) {
-      return "AD";
-    }
-
-    const parts = userName
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
-
-    if (parts.length === 1) {
-      return parts[0]
-        .slice(0, 2)
-        .toUpperCase();
-    }
-
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  }, [userName]);
-
-  // =====================================================
-  // CURRENT PAGE INFORMATION
-  // =====================================================
+  const initials = useMemo(
+    () => getInitials(userName),
+    [userName]
+  );
 
   const pageInfo = useMemo(() => {
-    const path = location.pathname;
+    const pathname = location.pathname;
 
-    if (path.startsWith("/admin/dashboard")) {
+    if (pathname.startsWith("/admin/products")) {
       return {
-        label: "ADMINISTRATOR",
-        title: "Dashboard",
-      };
-    }
-
-    if (path.startsWith("/admin/products")) {
-      return {
-        label: "CATALOGUE",
+        eyebrow: "CATALOG",
         title: "Products",
       };
     }
 
-    if (path.startsWith("/admin/inventory")) {
+    if (pathname.startsWith("/admin/inventory")) {
       return {
-        label: "STOCK MANAGEMENT",
+        eyebrow: "STOCK CONTROL",
         title: "Inventory",
       };
     }
 
-    if (path.startsWith("admin/customers")) {
+    if (pathname.startsWith("/admin/customers")) {
       return {
-        label: "CUSTOMER MANAGEMENT",
+        eyebrow: "CUSTOMER MANAGEMENT",
         title: "Customers",
       };
     }
 
+    if (pathname.startsWith("/admin/orders")) {
+      return {
+        eyebrow: "MANAGEMENT",
+        title: "Orders",
+      };
+    }
+
+    if (pathname.startsWith("/admin/reports")) {
+      return {
+        eyebrow: "ANALYTICS",
+        title: "Reports",
+      };
+    }
+
     return {
-      label: "ADMINISTRATOR",
+      eyebrow: "ADMINISTRATIVE",
       title: "Dashboard",
     };
   }, [location.pathname]);
 
-  // =====================================================
-  // CURRENT DATE
-  // =====================================================
+  const handleLogout = () => {
+    setMobileSidebarOpen(false);
+    logout();
+  };
 
-  const formattedDate = useMemo(() => {
-    return new Date().toLocaleDateString(
-      "en-IN",
-      {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }
-    );
-  }, []);
+  const handleNavigation = (path, disabled = false) => {
+    if (disabled) return;
 
-  // =====================================================
-  // MAIN NAVIGATION
-  // =====================================================
-
-  const mainNavigation = [
-    {
-      label: "Dashboard",
-      path: "/admin/dashboard",
-      icon: FaHome,
-    },
-    {
-      label: "Products",
-      path: "/admin/products",
-      icon: FaIceCream,
-    },
-    {
-      label: "Inventory",
-      path: "/admin/inventory",
-      icon: FaBoxes,
-    },
-    {
-      label: "Customers",
-      path: "/admin/customers",
-      icon: FaUsers,
-    },
-  ];
-
-  // =====================================================
-  // MANAGEMENT NAVIGATION
-  // =====================================================
-
-  const managementNavigation = [
-    {
-      label: "Orders",
-      icon: FaClipboardList,
-    },
-    {
-      label: "Reports",
-      icon: FaChartBar,
-    },
-  ];
-
-  // =====================================================
-  // CLOSE MOBILE SIDEBAR
-  // =====================================================
-
-  const closeMobileSidebar = () => {
+    navigate(path);
     setMobileSidebarOpen(false);
   };
 
-  // =====================================================
-  // LOGOUT
-  // =====================================================
-
-  const handleLogout = () => {
-    closeMobileSidebar();
-
-    logout();
-
-    navigate("/login", {
-      replace: true,
-    });
-  };
-
-  // =====================================================
-  // RENDER
-  // =====================================================
-
   return (
-    <div className="admin-layout">
-
-      {/* =================================================
-          MOBILE OVERLAY
-      ================================================= */}
-
+    <div
+      className={`admin-layout ${
+        sidebarCollapsed ? "sidebar-is-collapsed" : ""
+      }`}
+    >
+      {/* Mobile Overlay */}
       {mobileSidebarOpen && (
         <button
           type="button"
           className="admin-sidebar-overlay"
-          aria-label="Close navigation"
-          onClick={closeMobileSidebar}
+          aria-label="Close sidebar"
+          onClick={() => setMobileSidebarOpen(false)}
         />
       )}
 
-      {/* =================================================
-          SIDEBAR
-      ================================================= */}
-
+      {/* ================= SIDEBAR ================= */}
       <aside
         className={`admin-sidebar ${
-          mobileSidebarOpen
-            ? "mobile-open"
-            : ""
+          mobileSidebarOpen ? "mobile-sidebar-open" : ""
         }`}
       >
-
-        {/* =================================================
-            BRAND
-        ================================================= */}
-
-        <div className="admin-sidebar-brand">
-
-          <div className="admin-brand-mark">
+        {/* Brand */}
+        <div className="admin-brand">
+          <div
+            className="admin-brand-logo"
+            onClick={() => handleNavigation("/admin/dashboard")}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleNavigation("/admin/dashboard");
+              }
+            }}
+          >
             <FaIceCream />
           </div>
 
-          <div className="admin-brand-text">
-            <h2>IceCream</h2>
-            <span>Billing System</span>
-          </div>
+          {!sidebarCollapsed && (
+            <div className="admin-brand-copy">
+              <strong>IceCream</strong>
+              <span>BILLING SYSTEM</span>
+            </div>
+          )}
 
           <button
             type="button"
-            className="admin-mobile-close"
-            onClick={closeMobileSidebar}
+            className="mobile-sidebar-close"
+            onClick={() => setMobileSidebarOpen(false)}
             aria-label="Close sidebar"
           >
             <FaTimes />
           </button>
-
         </div>
 
-        {/* =================================================
-            PROFILE
-        ================================================= */}
+        {/* Sidebar Navigation */}
+        <div className="admin-sidebar-navigation">
+          {navigationGroups.map((group) => (
+            <div className="admin-nav-group" key={group.title}>
+              {!sidebarCollapsed && (
+                <div className="admin-nav-group-title">
+                  {group.title}
+                </div>
+              )}
 
-        <div className="admin-sidebar-profile">
+              <div className="admin-nav-list">
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive =
+                    location.pathname === item.path ||
+                    (!item.disabled &&
+                      location.pathname.startsWith(`${item.path}/`));
 
-          <div className="admin-profile-avatar">
-            {initials}
-          </div>
+                  if (item.disabled) {
+                    return (
+                      <button
+                        type="button"
+                        key={item.label}
+                        className="admin-nav-item admin-nav-item-disabled"
+                        title={
+                          sidebarCollapsed
+                            ? `${item.label} — Coming soon`
+                            : undefined
+                        }
+                        onClick={() => {}}
+                      >
+                        <span className="admin-nav-icon">
+                          <Icon />
+                        </span>
 
-          <div className="admin-profile-details">
-            <strong>{userName}</strong>
-            <span>{formattedRole}</span>
-          </div>
+                        {!sidebarCollapsed && (
+                          <>
+                            <span className="admin-nav-label">
+                              {item.label}
+                            </span>
 
-          <span
-            className="admin-online-dot"
-            aria-label="Online"
-          />
-
-        </div>
-
-        {/* =================================================
-            MAIN MENU
-        ================================================= */}
-
-        <div className="admin-sidebar-section">
-
-          <span className="admin-sidebar-section-title">
-            MAIN MENU
-          </span>
-
-          <nav
-            className="admin-navigation"
-            aria-label="Main navigation"
-          >
-
-            {mainNavigation.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  end={item.path === "/admin/dashboard"}
-                  onClick={closeMobileSidebar}
-                  className={({ isActive }) =>
-                    `admin-nav-link ${
-                      isActive
-                        ? "active"
-                        : ""
-                    }`
+                            <span className="admin-nav-coming-soon">
+                              Soon
+                            </span>
+                          </>
+                        )}
+                      </button>
+                    );
                   }
-                >
 
-                  <span className="admin-nav-icon">
-                    <Icon />
-                  </span>
+                  return (
+                    <NavLink
+                      to={item.path}
+                      key={item.label}
+                      className={`admin-nav-item ${
+                        isActive ? "active" : ""
+                      }`}
+                      title={
+                        sidebarCollapsed
+                          ? item.label
+                          : undefined
+                      }
+                      onClick={() =>
+                        setMobileSidebarOpen(false)
+                      }
+                    >
+                      <span className="admin-nav-icon">
+                        <Icon />
+                      </span>
 
-                  <span className="admin-nav-label">
-                    {item.label}
-                  </span>
+                      {!sidebarCollapsed && (
+                        <span className="admin-nav-label">
+                          {item.label}
+                        </span>
+                      )}
 
-                  <FaChevronRight
-                    className="admin-nav-arrow"
-                  />
-
-                </NavLink>
-              );
-            })}
-
-          </nav>
-
+                      {!sidebarCollapsed && isActive && (
+                        <span className="admin-nav-arrow">
+                          <FaChevronRight />
+                        </span>
+                      )}
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* =================================================
-            MANAGEMENT
-        ================================================= */}
-
-        <div
-          className="
-            admin-sidebar-section
-            admin-management-section
-          "
-        >
-
-          <span className="admin-sidebar-section-title">
-            MANAGEMENT
-          </span>
-
-          <nav
-            className="admin-navigation"
-            aria-label="Management navigation"
-          >
-
-            {managementNavigation.map(
-              (item) => {
-                const Icon = item.icon;
-
-                return (
-                  <div
-                    key={item.label}
-                    className="
-                      admin-nav-link
-                      admin-disabled-link
-                      disabled
-                    "
-                    aria-disabled="true"
-                  >
-
-                    <span className="admin-nav-icon">
-                      <Icon />
-                    </span>
-
-                    <span className="admin-nav-label">
-                      {item.label}
-                    </span>
-
-                    <small>
-                      Coming soon
-                    </small>
-
-                  </div>
-                );
-              }
-            )}
-
-          </nav>
-
-        </div>
-
-        {/* =================================================
-            SIDEBAR FOOTER
-        ================================================= */}
-
-        <div className="admin-sidebar-footer">
-
-          <div className="admin-sidebar-footer-profile">
-
-            <div className="admin-footer-avatar">
+        {/* Sidebar Bottom */}
+        <div className="admin-sidebar-bottom">
+          <div className="admin-sidebar-profile">
+            <div className="admin-avatar admin-avatar-sidebar">
               {initials}
             </div>
 
-            <div>
-              <strong>{userName}</strong>
-              <span>{formattedRole}</span>
-            </div>
-
+            {!sidebarCollapsed && (
+              <div className="admin-sidebar-profile-info">
+                <strong>{userName}</strong>
+                <span>
+                  {userRole === "admin"
+                    ? "Administrator"
+                    : userRole}
+                </span>
+              </div>
+            )}
           </div>
 
           <button
             type="button"
             className="admin-logout-button"
             onClick={handleLogout}
+            title={
+              sidebarCollapsed
+                ? "Logout"
+                : undefined
+            }
           >
+            <FaSignOutAlt />
 
-            <span className="admin-logout-icon">
-              <FaSignOutAlt />
-            </span>
-
-            <span>
-              Logout
-            </span>
-
+            {!sidebarCollapsed && (
+              <span>Logout</span>
+            )}
           </button>
 
+          <button
+            type="button"
+            className="admin-sidebar-collapse"
+            onClick={() =>
+              setSidebarCollapsed((value) => !value)
+            }
+            aria-label={
+              sidebarCollapsed
+                ? "Expand sidebar"
+                : "Collapse sidebar"
+            }
+            title={
+              sidebarCollapsed
+                ? "Expand sidebar"
+                : "Collapse sidebar"
+            }
+          >
+            {sidebarCollapsed ? (
+              <FaChevronRight />
+            ) : (
+              <FaChevronLeft />
+            )}
+          </button>
         </div>
-
       </aside>
 
-      {/* =================================================
-          MAIN APPLICATION AREA
-      ================================================= */}
-
+      {/* ================= MAIN ================= */}
       <div className="admin-main">
-
-        {/* =================================================
-            SINGLE ADMIN TOPBAR
-        ================================================= */}
-
+        {/* ================= TOP NAVBAR ================= */}
         <header className="admin-topbar">
-
           <div className="admin-topbar-left">
-
-            {/* Mobile menu */}
-
             <button
               type="button"
-              className="admin-mobile-menu"
+              className="admin-mobile-menu-button"
               onClick={() =>
                 setMobileSidebarOpen(true)
               }
-              aria-label="Open navigation"
+              aria-label="Open sidebar"
             >
-              <FaBars />
+              <span />
+              <span />
+              <span />
             </button>
 
-            {/* Mobile logo */}
-
-            <div className="admin-mobile-brand-mark">
-              <FaIceCream />
-            </div>
-
-            {/* Current page */}
-
             <div className="admin-page-heading">
-
-              <span>
-                {pageInfo.label}
+              <span className="admin-page-eyebrow">
+                {pageInfo.eyebrow}
               </span>
 
-              <h1>
-                {pageInfo.title}
-              </h1>
-
+              <h1>{pageInfo.title}</h1>
             </div>
-
           </div>
 
-          {/* =================================================
-              TOPBAR RIGHT
-          ================================================= */}
-
           <div className="admin-topbar-right">
-
-            <div className="admin-date-display">
-
-              <span className="admin-date-icon">
+            {/* Date */}
+            <div className="admin-date">
+              <div className="admin-date-icon">
                 <FaCalendarAlt />
-              </span>
+              </div>
 
-              <span>
-                {formattedDate}
-              </span>
-
+              <div className="admin-date-copy">
+                <strong>{formatDate()}</strong>
+                <span>Today</span>
+              </div>
             </div>
 
+            {/* Divider */}
             <div className="admin-topbar-divider" />
 
+            {/* Profile */}
             <button
               type="button"
               className="admin-topbar-profile"
               onClick={() =>
                 navigate("/admin/dashboard")
               }
-              aria-label="Open admin dashboard"
             >
-
-              <div className="admin-topbar-avatar">
+              <div className="admin-avatar admin-avatar-topbar">
                 {initials}
               </div>
 
-              <div className="admin-topbar-user">
-
-                <strong>
-                  {userName}
-                </strong>
-
+              <div className="admin-topbar-profile-copy">
+                <strong>{userName}</strong>
                 <span>
-                  {formattedRole}
+                  {userRole === "admin"
+                    ? "Administrator"
+                    : userRole}
                 </span>
-
               </div>
 
+              <FaChevronRight className="admin-profile-arrow" />
             </button>
-
           </div>
-
         </header>
 
-        {/* =================================================
-            PAGE CONTENT
-
-            IMPORTANT:
-            Only the active page is rendered here.
-
-            AdminDashboard.jsx must NOT contain:
-            - sidebar
-            - navbar
-            - header
-            - AdminLayout
-        ================================================= */}
-
+        {/* ================= PAGE CONTENT ================= */}
         <main className="admin-content">
           <Outlet />
         </main>
-
       </div>
-
     </div>
   );
 };
