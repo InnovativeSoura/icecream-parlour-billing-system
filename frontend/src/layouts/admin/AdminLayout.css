@@ -53,6 +53,7 @@
     var(--admin-background);
 
   color: var(--admin-text);
+
   font-family:
     Inter,
     -apple-system,
@@ -79,6 +80,7 @@
   flex-direction: column;
 
   background: rgba(255, 255, 255, 0.97);
+
   border-right: 1px solid var(--admin-border);
 
   z-index: 1000;
@@ -100,10 +102,13 @@
 
 .admin-brand {
   min-height: 108px;
-  padding: 22px 20px;
+
+  padding:
+    22px 20px;
 
   display: flex;
   align-items: center;
+
   gap: 15px;
 
   border-bottom: 1px solid var(--admin-border);
@@ -153,6 +158,7 @@
 
   display: flex;
   flex-direction: column;
+
   line-height: 1;
 }
 
@@ -200,6 +206,7 @@
 
 .admin-sidebar-navigation::-webkit-scrollbar-thumb {
   background: #ddd9ed;
+
   border-radius: 20px;
 }
 
@@ -217,12 +224,14 @@
   font-weight: 850;
 
   letter-spacing: 2px;
+
   text-transform: uppercase;
 }
 
 .admin-nav-list {
   display: flex;
   flex-direction: column;
+
   gap: 6px;
 }
 
@@ -237,6 +246,7 @@
 
   display: flex;
   align-items: center;
+
   gap: 15px;
 
   border: 0;
@@ -247,6 +257,7 @@
   color: #39435e;
 
   font-family: inherit;
+
   font-size: 14px;
   font-weight: 700;
 
@@ -262,6 +273,7 @@
 
 .admin-nav-item:hover {
   background: #f7f3ff;
+
   color: var(--admin-purple);
 
   transform: translateX(2px);
@@ -283,6 +295,7 @@
 
 .admin-nav-item.active:hover {
   color: #ffffff;
+
   transform: translateX(0);
 }
 
@@ -320,12 +333,15 @@
 
 .admin-nav-item-disabled {
   cursor: not-allowed;
+
   opacity: 0.62;
 }
 
 .admin-nav-item-disabled:hover {
   background: #fafafd;
+
   color: #39435e;
+
   transform: none;
 }
 
@@ -344,6 +360,7 @@
 
 .sidebar-is-collapsed .admin-brand {
   justify-content: center;
+
   padding-inline: 18px;
 }
 
@@ -382,7 +399,8 @@
 .admin-sidebar-bottom {
   position: relative;
 
-  padding: 18px 15px 20px;
+  padding:
+    18px 15px 20px;
 
   border-top: 1px solid var(--admin-border);
 
@@ -394,9 +412,11 @@
 
   display: flex;
   align-items: center;
+
   gap: 12px;
 
-  padding: 4px 5px 13px;
+  padding:
+    4px 5px 13px;
 }
 
 .admin-sidebar-profile-info {
@@ -413,6 +433,7 @@
   font-weight: 800;
 
   white-space: nowrap;
+
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -477,9 +498,11 @@
 
   display: flex;
   align-items: center;
+
   gap: 13px;
 
-  padding: 0 15px;
+  padding:
+    0 15px;
 
   border: 1px solid #eee9f3;
   border-radius: 11px;
@@ -489,6 +512,7 @@
   color: #626b80;
 
   font-family: inherit;
+
   font-size: 13px;
   font-weight: 750;
 
@@ -506,7 +530,9 @@
 
 .admin-logout-button:hover {
   background: #fff3f6;
+
   border-color: #ffdce5;
+
   color: var(--admin-danger);
 }
 
@@ -520,8 +546,11 @@
 
 .sidebar-is-collapsed .admin-logout-button {
   width: 58px;
+
   justify-content: center;
+
   margin-inline: auto;
+
   padding: 0;
 }
 
@@ -532,16 +561,24 @@
 .admin-sidebar-collapse {
   position: absolute;
 
-  right: -13px;
-  top: 17px;
+  /*
+   * Moved slightly farther LEFT so the button
+   * stays comfortably inside the sidebar.
+   */
+  right: 18px;
 
-  width: 27px;
-  height: 27px;
+  top: 18px;
+
+  width: 30px;
+  height: 30px;
 
   display: grid;
   place-items: center;
 
-  border: 1px solid #e7e2f0;
+  padding: 0;
+
+  border: 1px solid #e5e1ee;
+
   border-radius: 50%;
 
   background: #ffffff;
@@ -549,22 +586,46 @@
   color: #72798d;
 
   box-shadow:
-    0 5px 14px rgba(43, 37, 75, 0.08);
+    0 5px 14px rgba(43, 37, 75, 0.09);
 
   cursor: pointer;
 
-  z-index: 5;
+  z-index: 30;
 
-  font-size: 9px;
+  font-size: 10px;
 
   transition:
     color 0.2s ease,
-    transform 0.2s ease;
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .admin-sidebar-collapse:hover {
-  color: var(--admin-purple);
-  transform: scale(1.06);
+  color: #7c3aed;
+
+  background: #f7f3ff;
+
+  border-color: #ddd2f5;
+
+  transform: scale(1.08);
+
+  box-shadow:
+    0 7px 18px rgba(124, 58, 237, 0.16);
+}
+
+.admin-sidebar-collapse:active {
+  transform: scale(0.96);
+}
+
+/*
+ * When the sidebar is collapsed, keep the button
+ * properly aligned with the smaller sidebar.
+ */
+.sidebar-is-collapsed
+.admin-sidebar-collapse {
+  right: 9px;
 }
 
 /* =========================================================
@@ -599,6 +660,7 @@
 
 .admin-topbar {
   position: sticky;
+
   top: 0;
 
   height: var(--admin-topbar-height);
@@ -628,6 +690,7 @@
 .admin-topbar-left {
   display: flex;
   align-items: center;
+
   gap: 15px;
 }
 
@@ -645,6 +708,7 @@
   font-weight: 850;
 
   letter-spacing: 2px;
+
   text-transform: uppercase;
 }
 
@@ -674,6 +738,7 @@
   padding: 0;
 
   border: 1px solid #e8e5ef;
+
   border-radius: 11px;
 
   background: #ffffff;
@@ -701,12 +766,14 @@
 .admin-topbar-right {
   display: flex;
   align-items: center;
+
   gap: 22px;
 }
 
 .admin-date {
   display: flex;
   align-items: center;
+
   gap: 11px;
 }
 
@@ -763,9 +830,11 @@
 .admin-topbar-profile {
   display: flex;
   align-items: center;
+
   gap: 11px;
 
-  padding: 5px 0;
+  padding:
+    5px 0;
 
   border: 0;
 
@@ -807,12 +876,14 @@
   font-size: 9px;
 
   transition:
-    transform 0.2s ease;
+    transform 0.2s ease,
+    color 0.2s ease;
 }
 
 .admin-topbar-profile:hover
 .admin-profile-arrow {
   transform: translateX(3px);
+
   color: var(--admin-purple);
 }
 
@@ -822,6 +893,7 @@
 
 .admin-content {
   width: 100%;
+
   min-height: calc(
     100vh - var(--admin-topbar-height)
   );
@@ -927,6 +999,7 @@
     place-items: center;
 
     border: 1px solid #ece9f2;
+
     border-radius: 10px;
 
     background: #ffffff;
@@ -948,6 +1021,7 @@
   .sidebar-is-collapsed
   .admin-nav-item {
     width: 100%;
+
     justify-content: flex-start;
 
     padding-inline: 13px;
@@ -971,6 +1045,7 @@
   .sidebar-is-collapsed
   .admin-logout-button {
     width: 100%;
+
     justify-content: flex-start;
 
     padding-inline: 15px;
@@ -978,6 +1053,7 @@
 
   .admin-sidebar-overlay {
     position: fixed;
+
     inset: 0;
 
     display: block;
@@ -1001,6 +1077,7 @@
   .admin-main,
   .sidebar-is-collapsed .admin-main {
     width: 100%;
+
     margin-left: 0;
   }
 
@@ -1080,6 +1157,8 @@
 .admin-mobile-menu-button:focus-visible,
 .admin-topbar-profile:focus-visible,
 .admin-brand-logo:focus-visible {
-  outline: 3px solid rgba(124, 58, 237, 0.22);
+  outline:
+    3px solid rgba(124, 58, 237, 0.22);
+
   outline-offset: 2px;
 }
