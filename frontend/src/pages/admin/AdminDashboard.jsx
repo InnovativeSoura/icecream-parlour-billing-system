@@ -1,884 +1,800 @@
-// frontend/src/pages/admin/AdminDashboard.jsx
-
 import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+
+import {
+  FaArrowRight,
+  FaBoxOpen,
+  FaBoxes,
+  FaCheckCircle,
+  FaClipboardList,
+  FaCube,
+  FaExclamationTriangle,
+  FaIceCream,
+  FaPlus,
+  FaShoppingBag,
+  FaUsers,
+  FaChartLine,
+  FaDatabase,
+  FaShieldAlt,
+  FaServer,
+  FaSyncAlt,
+} from "react-icons/fa";
 
 import { useAuth } from "../../context/AuthContext";
 import api from "../../api/api";
 
 import "./AdminDashboard.css";
 
-const AdminDashboard = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
+const getArray = (response, keys = []) => {
+  const data = response?.data;
 
-  const [products, setProducts] = useState([]);
-  const [inventory, setInventory] = useState([]);
-  const [customers, setCustomers] = useState([]);
+  if (Array.isArray(data)) return data;
+
+  if (Array.isArray(data?.data)) return data.data;
+
+  for (const key of keys) {
+    if (Array.isArray(data?.[key])) {
+      return data[key];
+    }
+  }
+
+  return [];
+};
+
+const getNumber = (value, fallback = 0) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+};
+
+const formatCurrency = (value) => {
+  return `₹${getNumber(value).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
+
+const getOrderTotal = (order) => {
+  return getNumber(
+    order?.grandTotal ??
+      order?.totalAmount ??
+      order?.total ??
+      order?.amount ??
+      0
+  );
+};
+
+const getOrderPaymentStatus = (order) => {
+  return String(order?.paymentStatus || "")
+    .trim()
+    .toLowerCase();
+};
+
+const getStockValue = (item) => {
+  return getNumber(
+    item?.quantity ??
+      item?.stock ??
+      item?.currentStock ??
+      item?.availableQuantity ??
+      item?.stockQuantity ??
+      0
+  );
+};
+
+const getInitials = (name = "") => {
+  return String(name)
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join("")
+    .toUpperCase() || "AD";
+};
+
+const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const [stats, setStats] = useState({
+    products: 0,
+    customers: 0,
+    inventory: 0,
+    lowStock: 0,
+    revenue: 0,
+  });
 
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  // =====================================================
-  // USER INFORMATION
-  // =====================================================
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [inventoryItems, setInventoryItems] = useState([]);
 
-  const userName =
-    user?.name?.trim() ||
-    user?.username?.trim() ||
-    user?.email?.split("@")[0] ||
-    "Administrator";
+  const loadDashboard = async (showRefresh = false) => {
+    try {
+      if (showRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
+      }
 
-  const firstName =
-    userName
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)[0] || "Administrator";
+      const results = await Promise.allSettled([
+        api.get("/products"),
+        api.get("/customers"),
+        api.get("/inventory"),
+        api.get("/orders"),
+      ]);
 
-  // =====================================================
-  // FETCH DASHBOARD DATA
-  // =====================================================
+      const products =
+        results[0].status === "fulfilled"
+          ? getArray(results[0].value, ["products"])
+          : [];
+
+      const customers =
+        results[1].status === "fulfilled"
+          ? getArray(results[1].value, ["customers"])
+          : [];
+
+      const inventory =
+        results[2].status === "fulfilled"
+          ? getArray(results[2].value, ["inventory", "items"])
+          : [];
+
+      const orders =
+        results[3].status === "fulfilled"
+          ? getArray(results[3].value, ["orders"])
+          : [];
+
+      const lowStockItems = inventory.filter((item) => {
+        const stock = getStockValue(item);
+
+        const threshold = getNumber(
+          item?.lowStockThreshold ??
+            item?.reorderLevel ??
+            item?.minimumStock ??
+            5
+        );
+
+        return stock <= threshold;
+      });
+
+      const collectedRevenue = orders
+        .filter((order) => {
+          const paymentStatus = getOrderPaymentStatus(order);
+
+          return (
+            paymentStatus === "paid" ||
+            paymentStatus === "captured" ||
+            paymentStatus === "completed"
+          );
+        })
+        .reduce((total, order) => total + getOrderTotal(order), 0);
+
+      const sortedOrders = [...orders]
+        .sort(
+          (a, b) =>
+            new Date(b?.createdAt || b?.date || 0) -
+            new Date(a?.createdAt || a?.date || 0)
+        )
+        .slice(0, 4);
+
+      setStats({
+        products: products.length,
+        customers: customers.length,
+        inventory: inventory.length,
+        lowStock: lowStockItems.length,
+        revenue: collectedRevenue,
+      });
+
+      setRecentOrders(sortedOrders);
+      setInventoryItems(lowStockItems.slice(0, 4));
+    } catch (error) {
+      console.error("Admin dashboard loading failed:", error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   useEffect(() => {
-    let mounted = true;
-
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-
-        const results = await Promise.allSettled([
-          api.get("/products"),
-          api.get("/inventory"),
-          api.get("/customers"),
-        ]);
-
-        if (!mounted) {
-          return;
-        }
-
-        const productResponse = results[0];
-        const inventoryResponse = results[1];
-        const customerResponse = results[2];
-
-        // =================================================
-        // PRODUCTS
-        // =================================================
-
-        if (productResponse.status === "fulfilled") {
-          const data = productResponse.value?.data;
-
-          const productList = Array.isArray(data)
-            ? data
-            : Array.isArray(data?.products)
-            ? data.products
-            : Array.isArray(data?.data)
-            ? data.data
-            : [];
-
-          setProducts(productList);
-        } else {
-          console.error(
-            "Products dashboard request failed:",
-            productResponse.reason
-          );
-
-          setProducts([]);
-        }
-
-        // =================================================
-        // INVENTORY
-        // =================================================
-
-        if (inventoryResponse.status === "fulfilled") {
-          const data = inventoryResponse.value?.data;
-
-          const inventoryList = Array.isArray(data)
-            ? data
-            : Array.isArray(data?.inventory)
-            ? data.inventory
-            : Array.isArray(data?.data)
-            ? data.data
-            : [];
-
-          setInventory(inventoryList);
-        } else {
-          console.error(
-            "Inventory dashboard request failed:",
-            inventoryResponse.reason
-          );
-
-          setInventory([]);
-        }
-
-        // =================================================
-        // CUSTOMERS
-        // =================================================
-
-        if (customerResponse.status === "fulfilled") {
-          const data = customerResponse.value?.data;
-
-          const customerList = Array.isArray(data)
-            ? data
-            : Array.isArray(data?.customers)
-            ? data.customers
-            : Array.isArray(data?.data)
-            ? data.data
-            : [];
-
-          setCustomers(customerList);
-        } else {
-          console.error(
-            "Customers dashboard request failed:",
-            customerResponse.reason
-          );
-
-          setCustomers([]);
-        }
-      } catch (error) {
-        console.error(
-          "Admin dashboard data error:",
-          error
-        );
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchDashboardData();
-
-    return () => {
-      mounted = false;
-    };
+    loadDashboard();
   }, []);
 
-  // =====================================================
-  // DASHBOARD STATISTICS
-  // =====================================================
+  const firstName = useMemo(() => {
+    return (
+      user?.name?.trim()?.split(" ")[0] ||
+      user?.email?.split("@")[0] ||
+      "Admin"
+    );
+  }, [user]);
 
-  const stats = useMemo(() => {
-    const activeProducts = products.filter((product) => {
-      if (typeof product?.isActive === "boolean") {
-        return product.isActive;
-      }
+  const avatar = getInitials(user?.name || "Admin");
 
-      if (typeof product?.active === "boolean") {
-        return product.active;
-      }
+  const handleLogout = () => {
+    logout();
+  };
 
-      return true;
+  const quickActions = [
+    {
+      title: "Products",
+      description: "Manage ice cream catalogue",
+      icon: FaIceCream,
+      className: "purple",
+      path: "/admin/products",
+    },
+    {
+      title: "Inventory",
+      description: "Monitor stock levels",
+      icon: FaBoxes,
+      className: "orange",
+      path: "/admin/inventory",
+    },
+    {
+      title: "Customers",
+      description: "View customer records",
+      icon: FaUsers,
+      className: "green",
+      path: "/admin/customers",
+    },
+  ];
+
+  const systemStatus = [
+    {
+      title: "Application",
+      description: "Server operational",
+      value: "Online",
+      icon: FaServer,
+    },
+    {
+      title: "Authentication",
+      description: "Secure session active",
+      value: "Secure",
+      icon: FaShieldAlt,
+    },
+    {
+      title: "Database",
+      description: "Database connected",
+      value: "Connected",
+      icon: FaDatabase,
+    },
+  ];
+
+  const getOrderCustomer = (order) => {
+    return (
+      order?.customerSnapshot?.name ||
+      order?.customer?.name ||
+      order?.customerName ||
+      "Walk-in Customer"
+    );
+  };
+
+  const getOrderStatus = (order) => {
+    return (
+      String(order?.status || "pending")
+        .trim()
+        .toLowerCase() || "pending"
+    );
+  };
+
+  const getOrderNumber = (order) => {
+    return (
+      order?.orderNumber ||
+      order?.invoiceNumber ||
+      order?._id?.slice(-8)?.toUpperCase() ||
+      "ORDER"
+    );
+  };
+
+  const formatDate = (date) => {
+    if (!date) return "Today";
+
+    const parsed = new Date(date);
+
+    if (Number.isNaN(parsed.getTime())) {
+      return "Today";
+    }
+
+    return parsed.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
-
-    let lowStock = 0;
-
-    inventory.forEach((item) => {
-      const quantity =
-        Number(item?.quantity) ||
-        Number(item?.currentStock) ||
-        Number(item?.stock) ||
-        0;
-
-      const minimum =
-        Number(item?.reorderLevel) ||
-        Number(item?.minStock) ||
-        Number(item?.minimumStock) ||
-        5;
-
-      if (quantity <= minimum) {
-        lowStock += 1;
-      }
-    });
-
-    return {
-      products: activeProducts.length,
-      customers: customers.length,
-      inventory: inventory.length,
-      lowStock,
-    };
-  }, [products, inventory, customers]);
-
-  // =====================================================
-  // LOW STOCK ITEMS
-  // =====================================================
-
-  const lowStockItems = useMemo(() => {
-    return inventory
-      .map((item) => {
-        const quantity =
-          Number(item?.quantity) ||
-          Number(item?.currentStock) ||
-          Number(item?.stock) ||
-          0;
-
-        const minimum =
-          Number(item?.reorderLevel) ||
-          Number(item?.minStock) ||
-          Number(item?.minimumStock) ||
-          5;
-
-        return {
-          ...item,
-          calculatedQuantity: quantity,
-          calculatedMinimum: minimum,
-        };
-      })
-      .filter(
-        (item) =>
-          item.calculatedQuantity <=
-          item.calculatedMinimum
-      )
-      .sort(
-        (a, b) =>
-          a.calculatedQuantity -
-          b.calculatedQuantity
-      )
-      .slice(0, 5);
-  }, [inventory]);
-
-  // =====================================================
-  // NAVIGATION HANDLERS
-  // =====================================================
-
-  const openProducts = () => {
-    navigate("/admin/products");
   };
-
-  const openInventory = () => {
-    navigate("/admin/inventory");
-  };
-
-  const openCustomers = () => {
-    navigate("/admin/customers");
-  };
-
-  // =====================================================
-  // RENDER
-  // =====================================================
 
   return (
-    <section className="dashboard-content">
+    <main className="admin-dashboard-page">
+      {/* =====================================================
+          TOP INTRO
+          ===================================================== */}
 
-      {/* =================================================
-          WELCOME SECTION
-      ================================================= */}
-
-      <div className="welcome-section">
-
-        <div className="welcome-copy">
-
-          <span className="welcome-label">
+      <motion.section
+        className="admin-dashboard-intro"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+      >
+        <div className="admin-dashboard-intro-copy">
+          <span className="admin-dashboard-eyebrow">
             OVERVIEW
           </span>
 
-          <h2>
-            Welcome back, {firstName} 👋
-          </h2>
+          <h1>
+            Welcome back, {firstName}
+            <span className="admin-wave">👋</span>
+          </h1>
 
           <p>
-            Here's what's happening with your ice cream
+            Here&apos;s what&apos;s happening with your ice cream
             parlour today.
           </p>
-
         </div>
 
-        <button
-          type="button"
-          className="primary-dashboard-button"
-          onClick={openProducts}
+        <div className="admin-dashboard-intro-actions">
+          <button
+            type="button"
+            className="admin-refresh-btn"
+            onClick={() => loadDashboard(true)}
+            disabled={refreshing}
+          >
+            <FaSyncAlt className={refreshing ? "admin-spin" : ""} />
+            {refreshing ? "Refreshing..." : "Refresh Data"}
+          </button>
+
+          <button
+            type="button"
+            className="admin-primary-btn"
+            onClick={() => navigate("/admin/products")}
+          >
+            <FaPlus />
+            Manage Products
+          </button>
+        </div>
+      </motion.section>
+
+      {/* =====================================================
+          KPI CARDS
+          ===================================================== */}
+
+      <section className="admin-dashboard-stats">
+        <motion.article
+          className="admin-stat-card purple"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
         >
-          <span>＋</span>
-          Manage Products
-        </button>
+          <div className="admin-stat-icon">
+            <FaCube />
+          </div>
 
-      </div>
+          <div className="admin-stat-content">
+            <span className="admin-stat-label">
+              TOTAL PRODUCTS
+            </span>
 
-      {/* =================================================
-          STATISTICS
-      ================================================= */}
+            <strong>
+              {loading ? "—" : stats.products}
+            </strong>
 
-      <div className="dashboard-stat-grid">
+            <small>
+              <FaCheckCircle />
+              Available in catalogue
+            </small>
+          </div>
+        </motion.article>
 
-        {/* =================================================
-            PRODUCTS
-        ================================================= */}
-
-        <button
-          type="button"
-          className="dashboard-stat-card"
-          onClick={openProducts}
-          aria-label="Open products"
+        <motion.article
+          className="admin-stat-card orange"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
         >
+          <div className="admin-stat-icon">
+            <FaUsers />
+          </div>
 
-          <div className="stat-card-top">
-
-            <div className="stat-icon stat-icon-products">
-              🍨
-            </div>
-
-            <span className="stat-status">
-              ACTIVE
+          <div className="admin-stat-content">
+            <span className="admin-stat-label">
+              REGISTERED CUSTOMERS
             </span>
 
+            <strong>
+              {loading ? "—" : stats.customers}
+            </strong>
+
+            <small>
+              <FaCheckCircle />
+              Customer database
+            </small>
           </div>
+        </motion.article>
 
-          <div className="stat-number">
-            {loading ? "—" : stats.products}
-          </div>
-
-          <div className="stat-label">
-            Total Products
-          </div>
-
-          <div className="stat-footer">
-
-            <span className="stat-trend">
-              ●
-            </span>
-
-            Available in catalogue
-
-          </div>
-
-        </button>
-
-        {/* =================================================
-            CUSTOMERS
-        ================================================= */}
-
-        <button
-          type="button"
-          className="dashboard-stat-card"
-          onClick={openCustomers}
-          aria-label="Open customers"
+        <motion.article
+          className="admin-stat-card green"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
         >
+          <div className="admin-stat-icon">
+            <FaBoxes />
+          </div>
 
-          <div className="stat-card-top">
-
-            <div className="stat-icon stat-icon-customers">
-              ♙
-            </div>
-
-            <span className="stat-status">
-              USERS
+          <div className="admin-stat-content">
+            <span className="admin-stat-label">
+              INVENTORY ITEMS
             </span>
 
+            <strong>
+              {loading ? "—" : stats.inventory}
+            </strong>
+
+            <small>
+              <FaCheckCircle />
+              Stock records
+            </small>
           </div>
+        </motion.article>
 
-          <div className="stat-number">
-            {loading ? "—" : stats.customers}
-          </div>
-
-          <div className="stat-label">
-            Registered Customers
-          </div>
-
-          <div className="stat-footer">
-
-            <span className="stat-trend">
-              ●
-            </span>
-
-            Customer database
-
-          </div>
-
-        </button>
-
-        {/* =================================================
-            INVENTORY
-        ================================================= */}
-
-        <button
-          type="button"
-          className="dashboard-stat-card"
-          onClick={openInventory}
-          aria-label="Open inventory"
+        <motion.article
+          className="admin-stat-card blue"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
         >
+          <div className="admin-stat-icon">
+            <FaShoppingBag />
+          </div>
 
-          <div className="stat-card-top">
-
-            <div className="stat-icon stat-icon-inventory">
-              📦
-            </div>
-
-            <span className="stat-status">
-              STOCK
+          <div className="admin-stat-content">
+            <span className="admin-stat-label">
+              COLLECTED REVENUE
             </span>
 
+            <strong>
+              {loading ? "—" : formatCurrency(stats.revenue)}
+            </strong>
+
+            <small>
+              <FaChartLine />
+              Recorded payments
+            </small>
           </div>
+        </motion.article>
+      </section>
 
-          <div className="stat-number">
-            {loading ? "—" : stats.inventory}
-          </div>
+      {/* =====================================================
+          MAIN WORKSPACE
+          ===================================================== */}
 
-          <div className="stat-label">
-            Inventory Items
-          </div>
+      <section className="admin-dashboard-workspace">
+        {/* QUICK ACTIONS */}
 
-          <div className="stat-footer">
-
-            <span className="stat-trend">
-              ●
-            </span>
-
-            Stock records
-
-          </div>
-
-        </button>
-
-        {/* =================================================
-            LOW STOCK
-        ================================================= */}
-
-        <button
-          type="button"
-          className="dashboard-stat-card"
-          onClick={openInventory}
-          aria-label="Open low stock inventory"
+        <motion.article
+          className="admin-dashboard-panel quick-actions-panel"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
         >
-
-          <div className="stat-card-top">
-
-            <div className="stat-icon stat-icon-warning">
-              ⚠
-            </div>
-
-            <span className="stat-status warning">
-              ATTENTION
-            </span>
-
-          </div>
-
-          <div className="stat-number">
-            {loading ? "—" : stats.lowStock}
-          </div>
-
-          <div className="stat-label">
-            Low Stock Items
-          </div>
-
-          <div className="stat-footer">
-
-            <span className="stat-trend warning-dot">
-              ●
-            </span>
-
-            Requires attention
-
-          </div>
-
-        </button>
-
-      </div>
-
-      {/* =================================================
-          MAIN DASHBOARD GRID
-      ================================================= */}
-
-      <div className="dashboard-main-grid">
-
-        {/* =================================================
-            QUICK ACTIONS
-        ================================================= */}
-
-        <section className="dashboard-panel">
-
-          <div className="panel-header">
-
+          <div className="admin-panel-heading">
             <div>
-
-              <span className="panel-eyebrow">
-                WORKSPACE
-              </span>
-
-              <h3>
-                Quick Actions
-              </h3>
-
+              <span>WORKSPACE</span>
+              <h2>Quick Actions</h2>
             </div>
 
-            <span className="panel-header-icon">
-              ✦
-            </span>
-
+            <div className="admin-panel-heading-icon">
+              <FaArrowRight />
+            </div>
           </div>
 
-          <div className="quick-actions">
+          <div className="admin-quick-actions">
+            {quickActions.map((action) => {
+              const Icon = action.icon;
 
-            {/* PRODUCTS */}
+              return (
+                <button
+                  type="button"
+                  key={action.title}
+                  className="admin-quick-action"
+                  onClick={() => navigate(action.path)}
+                >
+                  <span
+                    className={`admin-quick-action-icon ${action.className}`}
+                  >
+                    <Icon />
+                  </span>
 
-            <button
-              type="button"
-              className="quick-action"
-              onClick={openProducts}
-            >
+                  <span className="admin-quick-action-copy">
+                    <strong>{action.title}</strong>
+                    <small>{action.description}</small>
+                  </span>
 
-              <div className="quick-action-icon">
-                🍦
-              </div>
-
-              <div>
-
-                <strong>
-                  Products
-                </strong>
-
-                <span>
-                  Manage ice cream catalogue
-                </span>
-
-              </div>
-
-              <b>
-                →
-              </b>
-
-            </button>
-
-            {/* INVENTORY */}
-
-            <button
-              type="button"
-              className="quick-action"
-              onClick={openInventory}
-            >
-
-              <div className="quick-action-icon">
-                📦
-              </div>
-
-              <div>
-
-                <strong>
-                  Inventory
-                </strong>
-
-                <span>
-                  Monitor stock levels
-                </span>
-
-              </div>
-
-              <b>
-                →
-              </b>
-
-            </button>
-
-            {/* CUSTOMERS */}
-
-            <button
-              type="button"
-              className="quick-action"
-              onClick={openCustomers}
-            >
-
-              <div className="quick-action-icon">
-                👥
-              </div>
-
-              <div>
-
-                <strong>
-                  Customers
-                </strong>
-
-                <span>
-                  View customer records
-                </span>
-
-              </div>
-
-              <b>
-                →
-              </b>
-
-            </button>
-
+                  <span className="admin-quick-action-arrow">
+                    <FaArrowRight />
+                  </span>
+                </button>
+              );
+            })}
           </div>
+        </motion.article>
 
-        </section>
+        {/* SYSTEM STATUS */}
 
-        {/* =================================================
-            SYSTEM STATUS
-        ================================================= */}
-
-        <section className="dashboard-panel system-panel">
-
-          <div className="panel-header">
-
+        <motion.article
+          className="admin-dashboard-panel system-status-panel"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <div className="admin-panel-heading">
             <div>
-
-              <span className="panel-eyebrow">
-                SYSTEM
-              </span>
-
-              <h3>
-                System Status
-              </h3>
-
+              <span>SYSTEM</span>
+              <h2>System Status</h2>
             </div>
 
-            <span className="system-live">
-              ● LIVE
-            </span>
-
+            <div className="admin-live-status">
+              <i />
+              LIVE
+            </div>
           </div>
 
-          <div className="system-status-list">
+          <div className="admin-system-list">
+            {systemStatus.map((item) => {
+              const Icon = item.icon;
 
-            {/* APPLICATION */}
+              return (
+                <div
+                  className="admin-system-row"
+                  key={item.title}
+                >
+                  <span className="admin-system-check">
+                    <FaCheckCircle />
+                  </span>
 
-            <div className="system-status-item">
+                  <span className="admin-system-copy">
+                    <strong>{item.title}</strong>
+                    <small>{item.description}</small>
+                  </span>
 
-              <div className="status-indicator">
-                ✓
-              </div>
-
-              <div>
-
-                <strong>
-                  Application
-                </strong>
-
-                <span>
-                  System operational
-                </span>
-
-              </div>
-
-              <em>
-                Online
-              </em>
-
-            </div>
-
-            {/* AUTHENTICATION */}
-
-            <div className="system-status-item">
-
-              <div className="status-indicator">
-                ✓
-              </div>
-
-              <div>
-
-                <strong>
-                  Authentication
-                </strong>
-
-                <span>
-                  Secure session active
-                </span>
-
-              </div>
-
-              <em>
-                Secure
-              </em>
-
-            </div>
-
-            {/* DATABASE */}
-
-            <div className="system-status-item">
-
-              <div className="status-indicator">
-                ✓
-              </div>
-
-              <div>
-
-                <strong>
-                  Database
-                </strong>
-
-                <span>
-                  Data services connected
-                </span>
-
-              </div>
-
-              <em>
-                Connected
-              </em>
-
-            </div>
-
+                  <span className="admin-system-value">
+                    {item.value}
+                  </span>
+                </div>
+              );
+            })}
           </div>
+        </motion.article>
+      </section>
 
-        </section>
-
-      </div>
-
-      {/* =================================================
+      {/* =====================================================
           INVENTORY ALERTS
-      ================================================= */}
+          ===================================================== */}
 
-      <section className="dashboard-panel inventory-panel">
-
-        <div className="panel-header">
-
+      <motion.section
+        className="admin-dashboard-panel admin-stock-panel"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+      >
+        <div className="admin-panel-heading">
           <div>
-
-            <span className="panel-eyebrow">
-              INVENTORY
-            </span>
-
-            <h3>
-              Stock Alerts
-            </h3>
-
+            <span>INVENTORY</span>
+            <h2>Stock Alerts</h2>
           </div>
 
           <button
             type="button"
-            className="panel-link"
-            onClick={openInventory}
+            className="admin-panel-link"
+            onClick={() => navigate("/admin/inventory")}
           >
-            View Inventory →
+            View Inventory
+            <FaArrowRight />
           </button>
-
         </div>
 
-        {/* =================================================
-            LOADING
-        ================================================= */}
-
         {loading ? (
-
-          <div className="dashboard-empty">
-
-            <div className="empty-loader" />
-
-            <p>
-              Loading inventory...
-            </p>
-
+          <div className="admin-stock-loading">
+            <FaSyncAlt className="admin-spin" />
+            Loading inventory information...
           </div>
-
-        ) : lowStockItems.length === 0 ? (
-
-          /* =================================================
-             HEALTHY INVENTORY
-          ================================================= */
-
-          <div className="dashboard-empty success-empty">
-
-            <div className="empty-success-icon">
-              ✓
-            </div>
+        ) : inventoryItems.length === 0 ? (
+          <div className="admin-stock-success">
+            <span className="admin-stock-success-icon">
+              <FaCheckCircle />
+            </span>
 
             <div>
-
-              <strong>
-                Inventory looks healthy
-              </strong>
-
+              <strong>Inventory looks healthy</strong>
               <p>
-                No low-stock items require immediate
-                attention.
+                No low-stock items require immediate attention.
               </p>
-
             </div>
-
           </div>
-
         ) : (
-
-          /* =================================================
-             LOW STOCK LIST
-          ================================================= */
-
-          <div className="stock-list">
-
-            {lowStockItems.map((item, index) => {
-
-              const productName =
-                item?.product?.name ||
-                item?.productName ||
-                item?.name ||
-                `Inventory Item ${index + 1}`;
+          <div className="admin-stock-list">
+            {inventoryItems.map((item, index) => {
+              const stock = getStockValue(item);
 
               return (
                 <div
-                  className="stock-row"
+                  className="admin-stock-row"
                   key={
                     item?._id ||
                     item?.id ||
+                    item?.product?._id ||
                     index
                   }
                 >
-
-                  <div className="stock-product-icon">
-                    🍨
-                  </div>
-
-                  <div className="stock-product-info">
-
-                    <strong>
-                      {productName}
-                    </strong>
-
-                    <span>
-                      Minimum level:{" "}
-                      {item.calculatedMinimum}
-                    </span>
-
-                  </div>
-
-                  <div className="stock-quantity">
-
-                    <strong>
-                      {item.calculatedQuantity}
-                    </strong>
-
-                    <span>
-                      remaining
-                    </span>
-
-                  </div>
-
-                  <span className="low-stock-badge">
-                    LOW STOCK
+                  <span className="admin-stock-warning-icon">
+                    <FaExclamationTriangle />
                   </span>
 
+                  <div className="admin-stock-copy">
+                    <strong>
+                      {item?.product?.name ||
+                        item?.productName ||
+                        item?.name ||
+                        "Inventory Item"}
+                    </strong>
+
+                    <span>
+                      Only {stock} unit
+                      {stock === 1 ? "" : "s"} remaining
+                    </span>
+                  </div>
+
+                  <span className="admin-stock-badge">
+                    LOW STOCK
+                  </span>
                 </div>
               );
             })}
+          </div>
+        )}
+      </motion.section>
 
+      {/* =====================================================
+          RECENT ORDERS
+          ===================================================== */}
+
+      <motion.section
+        className="admin-dashboard-panel admin-recent-orders-panel"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <div className="admin-panel-heading">
+          <div>
+            <span>SALES</span>
+            <h2>Recent Orders</h2>
           </div>
 
+          <button
+            type="button"
+            className="admin-panel-link"
+            onClick={() => navigate("/admin/orders")}
+          >
+            View Orders
+            <FaArrowRight />
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="admin-orders-empty">
+            <FaSyncAlt className="admin-spin" />
+            Loading recent orders...
+          </div>
+        ) : recentOrders.length === 0 ? (
+          <div className="admin-orders-empty">
+            <span className="admin-orders-empty-icon">
+              <FaClipboardList />
+            </span>
+
+            <strong>No recent orders</strong>
+
+            <p>
+              New orders will appear here once customers make
+              purchases.
+            </p>
+          </div>
+        ) : (
+          <div className="admin-orders-table-wrapper">
+            <table className="admin-orders-table">
+              <thead>
+                <tr>
+                  <th>ORDER</th>
+                  <th>CUSTOMER</th>
+                  <th>DATE</th>
+                  <th>AMOUNT</th>
+                  <th>STATUS</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {recentOrders.map((order, index) => {
+                  const status = getOrderStatus(order);
+
+                  return (
+                    <tr
+                      key={
+                        order?._id ||
+                        order?.id ||
+                        index
+                      }
+                    >
+                      <td>
+                        <div className="admin-order-number">
+                          <span>
+                            <FaClipboardList />
+                          </span>
+
+                          <strong>
+                            {getOrderNumber(order)}
+                          </strong>
+                        </div>
+                      </td>
+
+                      <td>
+                        <div className="admin-order-customer">
+                          <span>
+                            {getInitials(
+                              getOrderCustomer(order)
+                            )}
+                          </span>
+
+                          <strong>
+                            {getOrderCustomer(order)}
+                          </strong>
+                        </div>
+                      </td>
+
+                      <td>
+                        {formatDate(
+                          order?.createdAt ||
+                            order?.date
+                        )}
+                      </td>
+
+                      <td>
+                        <strong className="admin-order-amount">
+                          {formatCurrency(
+                            getOrderTotal(order)
+                          )}
+                        </strong>
+                      </td>
+
+                      <td>
+                        <span
+                          className={`admin-order-status ${status}`}
+                        >
+                          {status}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
+      </motion.section>
 
-      </section>
-
-      {/* =================================================
+      {/* =====================================================
           FOOTER
-      ================================================= */}
+          ===================================================== */}
 
-      <footer className="dashboard-footer">
-
+      <footer className="admin-dashboard-footer">
         <div>
-
-          <strong>
-            🍦 IceCream Billing System
-          </strong>
-
-          <span>
-            Admin Control Center
+          <span className="admin-footer-logo">
+            <FaIceCream />
           </span>
 
+          <strong>IceCream Billing System</strong>
+          <span>Admin Control Center</span>
         </div>
 
         <span>
           © {new Date().getFullYear()} All rights reserved.
         </span>
-
       </footer>
-
-    </section>
+    </main>
   );
 };
 
