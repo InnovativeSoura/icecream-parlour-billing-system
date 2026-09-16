@@ -469,8 +469,7 @@
 
 .staff-orders-table tbody tr {
   border-bottom: 1px solid #f1eff5;
-  transition:
-    background 0.18s ease;
+  transition: background 0.18s ease;
 }
 
 .staff-orders-table tbody tr:last-child {
@@ -673,53 +672,51 @@
 
 /* =========================================================
    STATUS
+   STATUS HIGHLIGHTING REMOVED
    ========================================================= */
 
 .staff-order-status-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 6px;
   min-height: 27px;
-  padding: 0 9px;
-  border-radius: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #59627a;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 750;
   white-space: nowrap;
 }
 
 .staff-order-status-badge svg {
+  color: #8b92a4;
   font-size: 9px;
 }
 
-.status-pending {
-  background: #fff7e5;
-  color: #c98a19;
-}
+/* All statuses intentionally use the same neutral appearance */
 
-.status-confirmed {
-  background: #eaf4ff;
-  color: #397fc6;
-}
-
-.status-processing {
-  background: #f0ebff;
-  color: #7044cc;
-}
-
-.status-completed {
-  background: #e8faf1;
-  color: #149561;
-}
-
-.status-cancelled {
-  background: #f1f1f5;
-  color: #767d8f;
-}
-
+.status-pending,
+.status-confirmed,
+.status-processing,
+.status-completed,
+.status-cancelled,
 .status-refunded {
-  background: #fff0f5;
-  color: #c14c78;
+  background: transparent;
+  color: #59627a;
+}
+
+/* Status icon also stays neutral */
+
+.status-pending svg,
+.status-confirmed svg,
+.status-processing svg,
+.status-completed svg,
+.status-cancelled svg,
+.status-refunded svg {
+  color: #8b92a4;
 }
 
 /* =========================================================
