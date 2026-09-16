@@ -6,19 +6,22 @@ import generateToken from "../utils/generateToken.js";
 |--------------------------------------------------------------------------
 | Ensure Customer Profile
 |--------------------------------------------------------------------------
-| User = authentication / authorization
+|
+| User = authentication / authorization identity
 | Customer = actual business/customer profile
 |
-| This function makes sure every customer-role User has
-| a corresponding Customer document.
+| Only customer-role users need a Customer business profile.
 |--------------------------------------------------------------------------
 */
+
 const ensureCustomerProfile = async (user) => {
   if (!user || user.role !== "customer") {
     return null;
   }
 
-  // 1. Try to find customer already linked to this User
+  /*
+   * 1. Find customer already linked to this User.
+   */
   let customer = await Customer.findOne({
     user: user._id,
   });
@@ -27,8 +30,10 @@ const ensureCustomerProfile = async (user) => {
     return customer;
   }
 
-  // 2. Try to find an existing customer using the same email
-  // This repairs old customer records created before User linking.
+  /*
+   * 2. Try to repair an older customer record
+   *    using the same email.
+   */
   if (user.email) {
     customer = await Customer.findOne({
       email: user.email.toLowerCase(),
@@ -57,11 +62,17 @@ const ensureCustomerProfile = async (user) => {
     }
   }
 
-  // 3. No existing customer profile -> create one
+  /*
+   * 3. Create a new Customer profile.
+   *
+   * IMPORTANT:
+   * Empty phone numbers are stored as null instead of "".
+   * This prevents conflicts with old unique phone indexes.
+   */
   customer = await Customer.create({
     user: user._id,
     name: user.name,
-    phone: user.phone || "",
+    phone: user.phone?.trim() || null,
     email: user.email.toLowerCase(),
     customerType: "registered",
     isActive: true,
@@ -74,12 +85,12 @@ const ensureCustomerProfile = async (user) => {
   return customer;
 };
 
-
 /*
 |--------------------------------------------------------------------------
 | Register User
 |--------------------------------------------------------------------------
 */
+
 export const registerUser = async (req, res) => {
   try {
     const {
@@ -87,57 +98,150 @@ export const registerUser = async (req, res) => {
       email,
       phone,
       password,
+      role,
     } = req.body;
 
-    if (!name || !email || !password) {
+    /*
+     * Basic validation.
+     */
+    if (
+      !name ||
+      !email ||
+      !password
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Name, email and password are required",
+        message:
+          "Name, email and password are required",
       });
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedName = name.trim();
 
-    const existingUser = await User.findOne({
-      email: normalizedEmail,
-    });
+    const normalizedEmail =
+      email.trim().toLowerCase();
 
-    if (existingUser) {
-      return res.status(409).json({
+    const normalizedPhone =
+      phone?.trim() || null;
+
+    /*
+     * Validate name.
+     */
+    if (normalizedName.length < 2) {
+      return res.status(400).json({
         success: false,
-        message: "An account with this email already exists",
+        message:
+          "Name must contain at least 2 characters",
       });
     }
 
     /*
-     * Public registration ALWAYS creates a customer User.
-     * Admin/staff accounts should be created separately.
+     * Validate password.
      */
-    const user = await User.create({
-      name: name.trim(),
-      email: normalizedEmail,
-      phone: phone?.trim() || "",
-      password,
-      role: "customer",
-    });
-
-    try {
-      // Create the actual customer business profile
-      await ensureCustomerProfile(user);
-    } catch (customerError) {
-      // If Customer creation fails, remove the User as well
-      // so registration doesn't leave inconsistent data.
-      await User.findByIdAndDelete(user._id);
-
-      throw customerError;
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Password must contain at least 6 characters",
+      });
     }
 
-    const token = generateToken(user._id);
+    /*
+     * Public registration is allowed only for:
+     *
+     * customer
+     * staff
+     *
+     * ADMIN accounts must never be created
+     * through the public registration page.
+     */
+    const normalizedRole =
+      String(role || "customer")
+        .trim()
+        .toLowerCase();
 
+    if (
+      !["customer", "staff"].includes(
+        normalizedRole
+      )
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid registration role",
+      });
+    }
+
+    /*
+     * Check whether email already exists.
+     */
+    const existingUser =
+      await User.findOne({
+        email: normalizedEmail,
+      });
+
+    if (existingUser) {
+      return res.status(409).json({
+        success: false,
+        message:
+          "An account with this email already exists",
+      });
+    }
+
+    /*
+     * Create User.
+     *
+     * IMPORTANT:
+     * We now use the role selected on the
+     * registration page.
+     */
+    const user = await User.create({
+      name: normalizedName,
+      email: normalizedEmail,
+      phone: normalizedPhone,
+      password,
+      role: normalizedRole,
+    });
+
+    /*
+     * Customer users require a Customer business profile.
+     *
+     * Staff users do NOT need a Customer profile.
+     */
+    if (normalizedRole === "customer") {
+      try {
+        await ensureCustomerProfile(user);
+      } catch (customerError) {
+        /*
+         * Roll back User if Customer creation fails.
+         */
+        await User.findByIdAndDelete(
+          user._id
+        );
+
+        throw customerError;
+      }
+    }
+
+    /*
+     * Generate authentication token.
+     */
+    const token =
+      generateToken(user._id);
+
+    /*
+     * Return authenticated user.
+     */
     return res.status(201).json({
       success: true,
-      message: "Account created successfully",
+
+      message:
+        normalizedRole === "staff"
+          ? "Staff account created successfully"
+          : "Customer account created successfully",
+
       token,
+
       user: {
         id: user._id,
         name: user.name,
@@ -145,26 +249,90 @@ export const registerUser = async (req, res) => {
         phone: user.phone,
         role: user.role,
         avatar: user.avatar,
+        isActive: user.isActive,
       },
     });
-
   } catch (error) {
-    console.error("Register error:", error);
+    console.error(
+      "Register error:",
+      error
+    );
+
+    /*
+     * Handle duplicate MongoDB key errors
+     * more clearly.
+     */
+    if (error?.code === 11000) {
+      const duplicateField =
+        Object.keys(
+          error.keyPattern || {}
+        )[0];
+
+      if (
+        duplicateField === "email"
+      ) {
+        return res.status(409).json({
+          success: false,
+          message:
+            "An account with this email already exists",
+        });
+      }
+
+      if (
+        duplicateField === "phone"
+      ) {
+        return res.status(409).json({
+          success: false,
+          message:
+            "This phone number is already registered",
+        });
+      }
+
+      return res.status(409).json({
+        success: false,
+        message:
+          "A record with the provided information already exists",
+      });
+    }
+
+    /*
+     * Mongoose validation errors.
+     */
+    if (
+      error?.name ===
+      "ValidationError"
+    ) {
+      const firstError =
+        Object.values(
+          error.errors || {}
+        )[0];
+
+      return res.status(400).json({
+        success: false,
+        message:
+          firstError?.message ||
+          "Invalid registration data",
+      });
+    }
 
     return res.status(500).json({
       success: false,
-      message: "Unable to create account",
+      message:
+        "Unable to create account",
     });
   }
 };
-
 
 /*
 |--------------------------------------------------------------------------
 | Login User
 |--------------------------------------------------------------------------
 */
-export const loginUser = async (req, res) => {
+
+export const loginUser = async (
+  req,
+  res
+) => {
   try {
     const {
       email,
@@ -174,74 +342,90 @@ export const loginUser = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email and password are required",
+        message:
+          "Email and password are required",
       });
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail =
+      email.trim().toLowerCase();
 
     /*
      * password is select:false in User.js,
      * therefore explicitly select it.
      */
-    const user = await User.findOne({
-      email: normalizedEmail,
-    }).select("+password");
+    const user =
+      await User.findOne({
+        email: normalizedEmail,
+      }).select("+password");
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
-      });
-    }
-
-    if (!user.isActive) {
-      return res.status(403).json({
-        success: false,
-        message: "Your account has been deactivated",
+        message:
+          "Invalid email or password",
       });
     }
 
     /*
-     * Compare the plain-text login password against
-     * the bcrypt hash stored in MongoDB.
+     * Check account status.
+     */
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Your account has been deactivated",
+      });
+    }
+
+    /*
+     * Compare password.
      */
     const isPasswordValid =
-      await user.comparePassword(password);
+      await user.comparePassword(
+        password
+      );
 
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password",
+        message:
+          "Invalid email or password",
       });
     }
 
     /*
-     * Update login timestamp.
+     * Update last login.
      */
     user.lastLogin = new Date();
 
     await user.save();
 
     /*
-     * IMPORTANT:
-     * After authentication succeeds, make sure the
-     * corresponding Customer document exists.
+     * Ensure Customer profile for customer accounts.
      *
-     * This also repairs older accounts such as Customer01
-     * whose Customer document exists but wasn't linked
-     * to the User document.
+     * Staff and admin accounts do not need
+     * Customer documents.
      */
     if (user.role === "customer") {
-      await ensureCustomerProfile(user);
+      await ensureCustomerProfile(
+        user
+      );
     }
 
-    const token = generateToken(user._id);
+    /*
+     * Generate token.
+     */
+    const token =
+      generateToken(user._id);
 
     return res.status(200).json({
       success: true,
-      message: "Login successful",
+      message:
+        "Login successful",
+
       token,
+
       user: {
         id: user._id,
         name: user.name,
@@ -249,39 +433,50 @@ export const loginUser = async (req, res) => {
         phone: user.phone,
         role: user.role,
         avatar: user.avatar,
+        isActive: user.isActive,
         lastLogin: user.lastLogin,
       },
     });
-
   } catch (error) {
-    console.error("Login error:", error);
+    console.error(
+      "Login error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: "Unable to login",
+      message:
+        "Unable to login",
     });
   }
 };
-
 
 /*
 |--------------------------------------------------------------------------
 | Get Current User
 |--------------------------------------------------------------------------
 */
-export const getCurrentUser = async (req, res) => {
-  try {
 
+export const getCurrentUser = async (
+  req,
+  res
+) => {
+  try {
     /*
-     * Repair/create Customer profile if necessary.
-     * protect middleware has already authenticated req.user.
+     * Only customer accounts require
+     * a Customer profile.
      */
-    if (req.user.role === "customer") {
-      await ensureCustomerProfile(req.user);
+    if (
+      req.user.role === "customer"
+    ) {
+      await ensureCustomerProfile(
+        req.user
+      );
     }
 
     return res.status(200).json({
       success: true,
+
       user: {
         id: req.user._id,
         name: req.user.name,
@@ -294,13 +489,16 @@ export const getCurrentUser = async (req, res) => {
         createdAt: req.user.createdAt,
       },
     });
-
   } catch (error) {
-    console.error("Current user error:", error);
+    console.error(
+      "Current user error:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
-      message: "Unable to retrieve user",
+      message:
+        "Unable to retrieve user",
     });
   }
 };
