@@ -9,9 +9,10 @@ import { useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // =========================================================
-// AUTH PAGES
+// AUTH / PUBLIC PAGES
 // =========================================================
 
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -51,12 +52,11 @@ import CustomerCart from "./pages/customer/MyCart";
 import CustomerInvoices from "./pages/customer/Invoices";
 import CustomerProfile from "./pages/customer/Profile";
 
-
 // =========================================================
-// HOME REDIRECT
+// AUTHENTICATED USER REDIRECT
 // =========================================================
 
-const HomeRedirect = () => {
+const AuthenticatedRedirect = () => {
   const { user, loading } = useAuth();
 
   // -------------------------------------------------------
@@ -90,7 +90,7 @@ const HomeRedirect = () => {
   // -------------------------------------------------------
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Home />;
   }
 
   // -------------------------------------------------------
@@ -113,9 +113,8 @@ const HomeRedirect = () => {
   // FALLBACK
   // -------------------------------------------------------
 
-  return <Navigate to="/login" replace />;
+  return <Home />;
 };
-
 
 // =========================================================
 // APP
@@ -127,14 +126,13 @@ const App = () => {
       <Routes>
 
         {/* =================================================
-            ROOT
+            PUBLIC HOME PAGE
             ================================================= */}
 
         <Route
           path="/"
-          element={<HomeRedirect />}
+          element={<AuthenticatedRedirect />}
         />
-
 
         {/* =================================================
             AUTHENTICATION
@@ -149,7 +147,6 @@ const App = () => {
           path="/register"
           element={<Register />}
         />
-
 
         {/* =================================================
             ADMIN ROUTES
@@ -167,6 +164,7 @@ const App = () => {
             element={<AdminLayout />}
           >
             {/* /admin */}
+
             <Route
               index
               element={
@@ -178,31 +176,34 @@ const App = () => {
             />
 
             {/* Dashboard */}
+
             <Route
               path="dashboard"
               element={<AdminDashboard />}
             />
 
             {/* Products */}
+
             <Route
               path="products"
               element={<Products />}
             />
 
             {/* Inventory */}
+
             <Route
               path="inventory"
               element={<Inventory />}
             />
 
             {/* Customers */}
+
             <Route
               path="customers"
               element={<Customers />}
             />
           </Route>
         </Route>
-
 
         {/* =================================================
             STAFF ROUTES
@@ -220,6 +221,7 @@ const App = () => {
             element={<StaffLayout />}
           >
             {/* /staff */}
+
             <Route
               index
               element={
@@ -231,37 +233,41 @@ const App = () => {
             />
 
             {/* Staff Dashboard */}
+
             <Route
               path="dashboard"
               element={<StaffDashboard />}
             />
 
             {/* Staff Billing */}
+
             <Route
               path="billing"
               element={<StaffBilling />}
             />
 
             {/* Staff Orders */}
+
             <Route
               path="orders"
               element={<StaffOrders />}
             />
 
             {/* Staff Customers */}
+
             <Route
               path="customers"
               element={<StaffCustomers />}
             />
 
             {/* Staff Reports */}
+
             <Route
               path="reports"
               element={<StaffReports />}
             />
           </Route>
         </Route>
-
 
         {/* =================================================
             CUSTOMER ROUTES
@@ -279,6 +285,7 @@ const App = () => {
             element={<CustomerLayout />}
           >
             {/* /customer */}
+
             <Route
               index
               element={
@@ -290,36 +297,42 @@ const App = () => {
             />
 
             {/* Dashboard */}
+
             <Route
               path="dashboard"
               element={<CustomerDashboard />}
             />
 
             {/* Products */}
+
             <Route
               path="products"
               element={<CustomerProducts />}
             />
 
             {/* Orders */}
+
             <Route
               path="orders"
               element={<CustomerOrders />}
             />
 
             {/* Cart */}
+
             <Route
               path="cart"
               element={<CustomerCart />}
             />
 
             {/* Invoices */}
+
             <Route
               path="invoices"
               element={<CustomerInvoices />}
             />
 
             {/* Profile */}
+
             <Route
               path="profile"
               element={<CustomerProfile />}
@@ -327,18 +340,16 @@ const App = () => {
           </Route>
         </Route>
 
-
         {/* =================================================
             UNKNOWN ROUTES
             ================================================= */}
 
         <Route
           path="*"
-          element={<HomeRedirect />}
+          element={<AuthenticatedRedirect />}
         />
 
       </Routes>
-
 
       {/* ===================================================
           GLOBAL TOAST CONTAINER
