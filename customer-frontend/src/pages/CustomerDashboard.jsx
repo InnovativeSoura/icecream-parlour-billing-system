@@ -17,8 +17,8 @@ import {
   FaWallet,
 } from "react-icons/fa";
 
-import { useAuth } from "../../../frontend/src/context/AuthContext";
-import api from "../../../frontend/src/api/api";
+import { useAuth } from "./../../src/context/AuthContext";
+import api from "./../api/api";
 
 import "./CustomerDashboard.css";
 
