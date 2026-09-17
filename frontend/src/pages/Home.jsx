@@ -1,388 +1,1127 @@
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+// frontend/src/pages/Home.jsx
+
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import {
-  FaIceCream,
   FaArrowRight,
   FaCheckCircle,
+  FaIceCream,
+  FaLock,
   FaReceipt,
+  FaShieldAlt,
+  FaShoppingCart,
+  FaStore,
+  FaUser,
+  FaUserTie,
   FaUsers,
-  FaBoxes,
-  FaChartLine,
 } from "react-icons/fa";
+
+import { useAuth } from "../context/AuthContext";
 
 import "./Home.css";
 
-const features = [
-  {
-    icon: FaReceipt,
-    title: "Smart Billing",
-    description:
-      "Create accurate bills and manage orders quickly from one centralized system.",
-  },
-  {
-    icon: FaBoxes,
-    title: "Inventory Control",
-    description:
-      "Monitor products, stock levels and inventory activity with ease.",
-  },
-  {
-    icon: FaUsers,
-    title: "Customer Management",
-    description:
-      "Keep customer records organized and accessible whenever you need them.",
-  },
-  {
-    icon: FaChartLine,
-    title: "Business Insights",
-    description:
-      "Track sales, revenue and operational activity through useful reports.",
-  },
-];
-
-const highlights = [
-  "Fast and reliable billing",
-  "Role-based access control",
-  "Product and inventory management",
-  "Customer order tracking",
-  "Razorpay payment support",
-  "Sales and business reports",
-];
+// =========================================================
+// HOME
+// =========================================================
 
 const Home = () => {
-  return (
-    <main className="home-page">
-      {/* Background decoration */}
-      <div className="home-orb home-orb-one" />
-      <div className="home-orb home-orb-two" />
-      <div className="home-grid" />
+  const navigate = useNavigate();
 
-      {/* NAVBAR */}
-      <header className="home-navbar">
-        <Link to="/" className="home-brand">
+  const {
+    user,
+    loading,
+    login,
+    register,
+  } = useAuth();
+
+  // -------------------------------------------------------
+  // AUTH MODE
+  // -------------------------------------------------------
+
+  const [authMode, setAuthMode] = useState("login");
+
+  // -------------------------------------------------------
+  // LOGIN FORM
+  // -------------------------------------------------------
+
+  const [loginForm, setLoginForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  // -------------------------------------------------------
+  // REGISTER FORM
+  // -------------------------------------------------------
+
+  const [registerForm, setRegisterForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  // -------------------------------------------------------
+  // REGISTRATION ROLE
+  // -------------------------------------------------------
+
+  const [role, setRole] = useState("customer");
+
+  // -------------------------------------------------------
+  // SUBMITTING
+  // -------------------------------------------------------
+
+  const [submitting, setSubmitting] = useState(false);
+
+  // =======================================================
+  // REDIRECT AFTER AUTHENTICATION
+  // =======================================================
+
+  const redirectByRole = (authenticatedUser) => {
+    if (!authenticatedUser?.role) {
+      navigate("/", { replace: true });
+      return;
+    }
+
+    switch (authenticatedUser.role) {
+      case "admin":
+        navigate("/admin/dashboard", { replace: true });
+        break;
+
+      case "staff":
+        navigate("/staff/dashboard", { replace: true });
+        break;
+
+      case "customer":
+        navigate("/customer/dashboard", { replace: true });
+        break;
+
+      default:
+        navigate("/", { replace: true });
+        break;
+    }
+  };
+
+  // =======================================================
+  // LOGIN INPUT
+  // =======================================================
+
+  const handleLoginChange = (event) => {
+    const { name, value } = event.target;
+
+    setLoginForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  // =======================================================
+  // REGISTER INPUT
+  // =======================================================
+
+  const handleRegisterChange = (event) => {
+    const { name, value } = event.target;
+
+    setRegisterForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  // =======================================================
+  // LOGIN SUBMIT
+  // =======================================================
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    const email = loginForm.email.trim();
+    const password = loginForm.password;
+
+    if (!email) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+
+    if (!password) {
+      toast.error("Please enter your password.");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      const loggedInUser = await login(
+        email,
+        password
+      );
+
+      toast.success("Welcome back!");
+
+      redirectByRole(loggedInUser);
+    } catch (error) {
+      console.error("Login failed:", error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Unable to sign in. Please try again.";
+
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // =======================================================
+  // REGISTER SUBMIT
+  // =======================================================
+
+  const handleRegister = async (event) => {
+    event.preventDefault();
+
+    const name = registerForm.name.trim();
+    const email = registerForm.email.trim();
+    const phone = registerForm.phone.trim();
+    const password = registerForm.password;
+    const confirmPassword =
+      registerForm.confirmPassword;
+
+    if (!name) {
+      toast.error("Please enter your name.");
+      return;
+    }
+
+    if (name.length < 2) {
+      toast.error(
+        "Name must contain at least 2 characters."
+      );
+      return;
+    }
+
+    if (!email) {
+      toast.error("Please enter your email address.");
+      return;
+    }
+
+    if (!password) {
+      toast.error("Please create a password.");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error(
+        "Password must contain at least 6 characters."
+      );
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
+    if (!["customer", "staff"].includes(role)) {
+      toast.error("Please select a valid account type.");
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      const registeredUser = await register({
+        name,
+        email,
+        phone,
+        password,
+        role,
+      });
+
+      toast.success(
+        role === "staff"
+          ? "Staff account created successfully!"
+          : "Customer account created successfully!"
+      );
+
+      redirectByRole(registeredUser);
+    } catch (error) {
+      console.error(
+        "Registration failed:",
+        error
+      );
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Unable to create your account.";
+
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // =======================================================
+  // TOGGLE AUTH MODE
+  // =======================================================
+
+  const switchAuthMode = (mode) => {
+    if (submitting) return;
+
+    setAuthMode(mode);
+
+    // Reset forms when switching
+    setLoginForm({
+      email: "",
+      password: "",
+    });
+
+    setRegisterForm({
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    });
+  };
+
+  // =======================================================
+  // AUTHENTICATED USER
+  // =======================================================
+
+  if (!loading && user) {
+    return (
+      <div className="home-authenticated">
+        <div className="home-authenticated-card">
           <div className="home-brand-icon">
             <FaIceCream />
           </div>
 
-          <div className="home-brand-text">
-            <strong>IceCream</strong>
-            <span>BILLING SYSTEM</span>
-          </div>
-        </Link>
-
-        <nav className="home-nav">
-          <a href="#features">Features</a>
-          <a href="#about">About</a>
-
-          <Link to="/login" className="home-login-link">
-            Login
-          </Link>
-
-          <Link to="/register" className="home-register-link">
-            Register
-          </Link>
-        </nav>
-      </header>
-
-      {/* HERO */}
-      <section className="home-hero">
-        <div className="home-hero-content">
-          <motion.div
-            className="home-eyebrow"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <span className="home-eyebrow-dot" />
-            MODERN PARLOUR MANAGEMENT
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.1 }}
-          >
-            Run your ice cream parlour
-            <span> smarter and faster.</span>
-          </motion.h1>
-
-          <motion.p
-            className="home-hero-description"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            A complete billing and business management platform built for
-            modern ice cream parlours. Manage billing, products, inventory,
-            customers, payments and reports from one place.
-          </motion.p>
-
-          <motion.div
-            className="home-hero-actions"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <Link to="/login" className="home-primary-button">
-              Login to Dashboard
-              <FaArrowRight />
-            </Link>
-
-            <Link to="/register" className="home-secondary-button">
-              Create Account
-            </Link>
-          </motion.div>
-
-          <motion.div
-            className="home-trust-row"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.45 }}
-          >
-            <div className="home-trust-item">
-              <FaCheckCircle />
-              <span>Secure authentication</span>
-            </div>
-
-            <div className="home-trust-item">
-              <FaCheckCircle />
-              <span>Role-based access</span>
-            </div>
-
-            <div className="home-trust-item">
-              <FaCheckCircle />
-              <span>Razorpay ready</span>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* HERO VISUAL */}
-        <motion.div
-          className="home-hero-visual"
-          initial={{ opacity: 0, x: 45 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <div className="home-dashboard-card">
-            <div className="home-dashboard-top">
-              <div>
-                <span>PARLOUR OVERVIEW</span>
-                <h3>Today's Overview</h3>
-              </div>
-
-              <div className="home-dashboard-avatar">
-                <FaIceCream />
-              </div>
-            </div>
-
-            <div className="home-dashboard-stats">
-              <div className="home-mini-stat">
-                <span>ORDERS</span>
-                <strong>128</strong>
-                <small>Today's orders</small>
-              </div>
-
-              <div className="home-mini-stat">
-                <span>REVENUE</span>
-                <strong>₹18.4K</strong>
-                <small>Today's revenue</small>
-              </div>
-            </div>
-
-            <div className="home-dashboard-chart">
-              <div className="home-chart-heading">
-                <span>Sales Activity</span>
-                <strong>+24.8%</strong>
-              </div>
-
-              <div className="home-chart-bars">
-                <i style={{ height: "38%" }} />
-                <i style={{ height: "52%" }} />
-                <i style={{ height: "44%" }} />
-                <i style={{ height: "67%" }} />
-                <i style={{ height: "58%" }} />
-                <i style={{ height: "82%" }} />
-                <i style={{ height: "73%" }} />
-                <i style={{ height: "94%" }} />
-              </div>
-            </div>
-
-            <div className="home-dashboard-bottom">
-              <div className="home-status-dot" />
-
-              <div>
-                <strong>System operational</strong>
-                <span>All services are running normally</span>
-              </div>
-
-              <FaCheckCircle />
-            </div>
-          </div>
-
-          <div className="home-floating-card home-floating-orders">
-            <div className="home-floating-icon">
-              <FaReceipt />
-            </div>
-
-            <div>
-              <strong>New Order</strong>
-              <span>Order #000128</span>
-            </div>
-
-            <b>₹420</b>
-          </div>
-
-          <div className="home-floating-card home-floating-stock">
-            <div className="home-floating-icon">
-              <FaBoxes />
-            </div>
-
-            <div>
-              <strong>Inventory</strong>
-              <span>Stock monitored</span>
-            </div>
-
-            <FaCheckCircle />
-          </div>
-        </motion.div>
-      </section>
-
-      {/* FEATURES */}
-      <section className="home-features-section" id="features">
-        <div className="home-section-heading">
-          <span>POWERFUL FEATURES</span>
-
           <h2>
-            Everything your parlour needs,
-            <strong> in one system.</strong>
+            Welcome back, {user.name}
           </h2>
 
           <p>
-            Manage your day-to-day operations through a clean, centralized
-            workspace designed for speed and simplicity.
+            Your IceCream Parlour account is already
+            signed in.
           </p>
-        </div>
 
-        <div className="home-feature-grid">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
-
-            return (
-              <motion.article
-                className="home-feature-card"
-                key={feature.title}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{
-                  duration: 0.5,
-                  delay: index * 0.08,
-                }}
-              >
-                <div className="home-feature-icon">
-                  <Icon />
-                </div>
-
-                <h3>{feature.title}</h3>
-
-                <p>{feature.description}</p>
-
-                <span className="home-feature-arrow">
-                  <FaArrowRight />
-                </span>
-              </motion.article>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ABOUT / HIGHLIGHTS */}
-      <section className="home-about-section" id="about">
-        <div className="home-about-card">
-          <div className="home-about-content">
-            <span className="home-about-eyebrow">
-              BUILT FOR YOUR BUSINESS
-            </span>
-
-            <h2>
-              From the first order
-              <span> to the final report.</span>
-            </h2>
-
-            <p>
-              IceCream Billing System brings your core parlour operations
-              together so your team can spend less time managing systems and
-              more time serving customers.
-            </p>
-
-            <Link to="/register" className="home-about-button">
-              Create Your Account
-              <FaArrowRight />
-            </Link>
-          </div>
-
-          <div className="home-highlights">
-            {highlights.map((item) => (
-              <div className="home-highlight" key={item}>
-                <FaCheckCircle />
-                <span>{item}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="home-cta">
-        <div className="home-cta-icon">
-          <FaIceCream />
-        </div>
-
-        <span>READY TO GET STARTED?</span>
-
-        <h2>
-          Your parlour deserves
-          <strong> a smarter workflow.</strong>
-        </h2>
-
-        <p>
-          Sign in to your existing account or create a new account to begin.
-        </p>
-
-        <div className="home-cta-actions">
-          <Link to="/login" className="home-primary-button">
-            Login
+          <button
+            type="button"
+            className="home-primary-button"
+            onClick={() => redirectByRole(user)}
+          >
+            Open Dashboard
             <FaArrowRight />
-          </Link>
-
-          <Link to="/register" className="home-secondary-button">
-            Register
-          </Link>
+          </button>
         </div>
-      </section>
+      </div>
+    );
+  }
 
-      {/* FOOTER */}
-      <footer className="home-footer">
-        <div className="home-footer-brand">
-          <div className="home-brand-icon">
+  // =======================================================
+  // RENDER
+  // =======================================================
+
+  return (
+    <main className="home-page">
+
+      {/* =================================================
+          BACKGROUND DECORATION
+          ================================================= */}
+
+      <div className="home-background">
+        <div className="home-orb home-orb-one" />
+        <div className="home-orb home-orb-two" />
+        <div className="home-orb home-orb-three" />
+      </div>
+
+      {/* =================================================
+          NAVBAR
+          ================================================= */}
+
+      <header className="home-navbar">
+
+        <div className="home-logo">
+          <div className="home-logo-icon">
             <FaIceCream />
           </div>
 
-          <div className="home-brand-text">
-            <strong>IceCream</strong>
-            <span>BILLING SYSTEM</span>
+          <div className="home-logo-text">
+            <strong>
+              IceCream
+            </strong>
+
+            <span>
+              BILLING SYSTEM
+            </span>
           </div>
         </div>
 
-        <p>
-          © {new Date().getFullYear()} IceCream Billing System. All rights
-          reserved.
-        </p>
+        <div className="home-nav-actions">
+          <button
+            type="button"
+            className={
+              authMode === "login"
+                ? "home-nav-button active"
+                : "home-nav-button"
+            }
+            onClick={() =>
+              switchAuthMode("login")
+            }
+          >
+            Login
+          </button>
 
-        <div className="home-footer-links">
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
+          <button
+            type="button"
+            className={
+              authMode === "register"
+                ? "home-nav-button primary"
+                : "home-nav-button primary"
+            }
+            onClick={() =>
+              switchAuthMode("register")
+            }
+          >
+            Register
+          </button>
         </div>
+
+      </header>
+
+      {/* =================================================
+          MAIN HERO
+          ================================================= */}
+
+      <section className="home-hero">
+
+        {/* =================================================
+            LEFT CONTENT
+            ================================================= */}
+
+        <div className="home-hero-content">
+
+          <div className="home-eyebrow">
+            <span className="home-eyebrow-dot" />
+            ICE CREAM PARLOUR MANAGEMENT
+          </div>
+
+          <h1>
+            Sweet moments.
+            <br />
+
+            <span>
+              Smarter management.
+            </span>
+          </h1>
+
+          <p className="home-hero-description">
+            A modern billing and ordering platform
+            designed to make ice cream parlour
+            operations faster, simpler, and more
+            delightful.
+          </p>
+
+          {/* -----------------------------------------------
+              FEATURE LIST
+              ----------------------------------------------- */}
+
+          <div className="home-feature-list">
+
+            <div className="home-feature-item">
+              <div className="home-feature-icon">
+                <FaReceipt />
+              </div>
+
+              <div>
+                <strong>
+                  Smart Billing
+                </strong>
+
+                <span>
+                  Fast and organized POS billing
+                </span>
+              </div>
+            </div>
+
+            <div className="home-feature-item">
+              <div className="home-feature-icon">
+                <FaShoppingCart />
+              </div>
+
+              <div>
+                <strong>
+                  Easy Ordering
+                </strong>
+
+                <span>
+                  Seamless customer ordering
+                </span>
+              </div>
+            </div>
+
+            <div className="home-feature-item">
+              <div className="home-feature-icon">
+                <FaShieldAlt />
+              </div>
+
+              <div>
+                <strong>
+                  Secure Payments
+                </strong>
+
+                <span>
+                  Reliable online payment processing
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          {/* -----------------------------------------------
+              TRUST INDICATORS
+              ----------------------------------------------- */}
+
+          <div className="home-trust-row">
+
+            <div>
+              <FaCheckCircle />
+              <span>
+                Secure authentication
+              </span>
+            </div>
+
+            <div>
+              <FaCheckCircle />
+              <span>
+                Real-time operations
+              </span>
+            </div>
+
+            <div>
+              <FaCheckCircle />
+              <span>
+                Easy to use
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* =================================================
+            AUTH CARD
+            ================================================= */}
+
+        <div className="home-auth-wrapper">
+
+          <div className="home-auth-card">
+
+            {/* ---------------------------------------------
+                AUTH HEADER
+                --------------------------------------------- */}
+
+            <div className="home-auth-header">
+
+              <div className="home-auth-brand">
+
+                <div className="home-auth-brand-icon">
+                  <FaIceCream />
+                </div>
+
+                <div>
+                  <strong>
+                    IceCream Parlour
+                  </strong>
+
+                  <span>
+                    Billing & Ordering System
+                  </span>
+                </div>
+
+              </div>
+
+              <div className="home-auth-heading">
+
+                <h2>
+                  {authMode === "login"
+                    ? "Welcome back"
+                    : "Create your account"}
+                </h2>
+
+                <p>
+                  {authMode === "login"
+                    ? "Sign in to continue to your account."
+                    : "Join our ice cream parlour platform today."}
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* ---------------------------------------------
+                AUTH TOGGLE
+                --------------------------------------------- */}
+
+            <div className="home-auth-toggle">
+
+              <button
+                type="button"
+                className={
+                  authMode === "login"
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  switchAuthMode("login")
+                }
+              >
+                Login
+              </button>
+
+              <button
+                type="button"
+                className={
+                  authMode === "register"
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  switchAuthMode("register")
+                }
+              >
+                Register
+              </button>
+
+            </div>
+
+            {/* =================================================
+                LOGIN FORM
+                ================================================= */}
+
+            {authMode === "login" && (
+              <form
+                className="home-auth-form"
+                onSubmit={handleLogin}
+              >
+
+                <div className="home-form-group">
+
+                  <label htmlFor="home-login-email">
+                    Email address
+                  </label>
+
+                  <div className="home-input-wrapper">
+
+                    <FaUser />
+
+                    <input
+                      id="home-login-email"
+                      type="email"
+                      name="email"
+                      value={loginForm.email}
+                      onChange={handleLoginChange}
+                      placeholder="Enter your email"
+                      autoComplete="email"
+                      disabled={submitting}
+                    />
+
+                  </div>
+
+                </div>
+
+                <div className="home-form-group">
+
+                  <label htmlFor="home-login-password">
+                    Password
+                  </label>
+
+                  <div className="home-input-wrapper">
+
+                    <FaLock />
+
+                    <input
+                      id="home-login-password"
+                      type="password"
+                      name="password"
+                      value={loginForm.password}
+                      onChange={handleLoginChange}
+                      placeholder="Enter your password"
+                      autoComplete="current-password"
+                      disabled={submitting}
+                    />
+
+                  </div>
+
+                </div>
+
+                <button
+                  type="submit"
+                  className="home-submit-button"
+                  disabled={submitting}
+                >
+                  {submitting
+                    ? "Signing in..."
+                    : "Sign In"}
+
+                  {!submitting && (
+                    <FaArrowRight />
+                  )}
+                </button>
+
+                <div className="home-form-footer">
+
+                  <span>
+                    Don't have an account?
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      switchAuthMode("register")
+                    }
+                    disabled={submitting}
+                  >
+                    Create one
+                  </button>
+
+                </div>
+
+              </form>
+            )}
+
+            {/* =================================================
+                REGISTER FORM
+                ================================================= */}
+
+            {authMode === "register" && (
+              <form
+                className="home-auth-form register-form"
+                onSubmit={handleRegister}
+              >
+
+                {/* ---------------------------------------------
+                    ROLE SECTION
+                    --------------------------------------------- */}
+
+                <div className="home-role-section">
+
+                  <div className="home-role-heading">
+
+                    <div>
+                      <span>
+                        ACCOUNT TYPE
+                      </span>
+
+                      <strong>
+                        Choose your role
+                      </strong>
+                    </div>
+
+                  </div>
+
+                  <div className="home-role-options">
+
+                    {/* CUSTOMER */}
+
+                    <button
+                      type="button"
+                      className={
+                        role === "customer"
+                          ? "home-role-card active"
+                          : "home-role-card"
+                      }
+                      onClick={() =>
+                        setRole("customer")
+                      }
+                      disabled={submitting}
+                    >
+
+                      <div className="home-role-icon">
+                        <FaUsers />
+                      </div>
+
+                      <div className="home-role-copy">
+                        <strong>
+                          Customer
+                        </strong>
+
+                        <span>
+                          Browse, order & track
+                        </span>
+                      </div>
+
+                      <div className="home-role-check">
+                        {role === "customer" && (
+                          <FaCheckCircle />
+                        )}
+                      </div>
+
+                    </button>
+
+                    {/* STAFF */}
+
+                    <button
+                      type="button"
+                      className={
+                        role === "staff"
+                          ? "home-role-card active"
+                          : "home-role-card"
+                      }
+                      onClick={() =>
+                        setRole("staff")
+                      }
+                      disabled={submitting}
+                    >
+
+                      <div className="home-role-icon">
+                        <FaUserTie />
+                      </div>
+
+                      <div className="home-role-copy">
+                        <strong>
+                          Staff
+                        </strong>
+
+                        <span>
+                          Billing & daily operations
+                        </span>
+                      </div>
+
+                      <div className="home-role-check">
+                        {role === "staff" && (
+                          <FaCheckCircle />
+                        )}
+                      </div>
+
+                    </button>
+
+                  </div>
+
+                </div>
+
+                {/* ---------------------------------------------
+                    NAME
+                    --------------------------------------------- */}
+
+                <div className="home-form-group">
+
+                  <label htmlFor="home-register-name">
+                    Full name
+                  </label>
+
+                  <div className="home-input-wrapper">
+
+                    <FaUser />
+
+                    <input
+                      id="home-register-name"
+                      type="text"
+                      name="name"
+                      value={registerForm.name}
+                      onChange={handleRegisterChange}
+                      placeholder="Enter your full name"
+                      autoComplete="name"
+                      disabled={submitting}
+                    />
+
+                  </div>
+
+                </div>
+
+                {/* ---------------------------------------------
+                    EMAIL
+                    --------------------------------------------- */}
+
+                <div className="home-form-group">
+
+                  <label htmlFor="home-register-email">
+                    Email address
+                  </label>
+
+                  <div className="home-input-wrapper">
+
+                    <FaUser />
+
+                    <input
+                      id="home-register-email"
+                      type="email"
+                      name="email"
+                      value={registerForm.email}
+                      onChange={handleRegisterChange}
+                      placeholder="Enter your email"
+                      autoComplete="email"
+                      disabled={submitting}
+                    />
+
+                  </div>
+
+                </div>
+
+                {/* ---------------------------------------------
+                    PHONE
+                    --------------------------------------------- */}
+
+                <div className="home-form-group">
+
+                  <label htmlFor="home-register-phone">
+                    Phone number
+                    <span className="optional-label">
+                      Optional
+                    </span>
+                  </label>
+
+                  <div className="home-input-wrapper">
+
+                    <FaStore />
+
+                    <input
+                      id="home-register-phone"
+                      type="tel"
+                      name="phone"
+                      value={registerForm.phone}
+                      onChange={handleRegisterChange}
+                      placeholder="Enter your phone number"
+                      autoComplete="tel"
+                      maxLength={20}
+                      disabled={submitting}
+                    />
+
+                  </div>
+
+                </div>
+
+                {/* ---------------------------------------------
+                    PASSWORD
+                    --------------------------------------------- */}
+
+                <div className="home-form-row">
+
+                  <div className="home-form-group">
+
+                    <label htmlFor="home-register-password">
+                      Password
+                    </label>
+
+                    <div className="home-input-wrapper">
+
+                      <FaLock />
+
+                      <input
+                        id="home-register-password"
+                        type="password"
+                        name="password"
+                        value={registerForm.password}
+                        onChange={handleRegisterChange}
+                        placeholder="Minimum 6 characters"
+                        autoComplete="new-password"
+                        disabled={submitting}
+                      />
+
+                    </div>
+
+                  </div>
+
+                  <div className="home-form-group">
+
+                    <label htmlFor="home-register-confirm-password">
+                      Confirm password
+                    </label>
+
+                    <div className="home-input-wrapper">
+
+                      <FaLock />
+
+                      <input
+                        id="home-register-confirm-password"
+                        type="password"
+                        name="confirmPassword"
+                        value={
+                          registerForm.confirmPassword
+                        }
+                        onChange={handleRegisterChange}
+                        placeholder="Repeat password"
+                        autoComplete="new-password"
+                        disabled={submitting}
+                      />
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* ---------------------------------------------
+                    REGISTER BUTTON
+                    --------------------------------------------- */}
+
+                <button
+                  type="submit"
+                  className="home-submit-button"
+                  disabled={submitting}
+                >
+
+                  {submitting
+                    ? "Creating account..."
+                    : role === "staff"
+                    ? "Create Staff Account"
+                    : "Create Customer Account"}
+
+                  {!submitting && (
+                    <FaArrowRight />
+                  )}
+
+                </button>
+
+                {/* ---------------------------------------------
+                    REGISTER FOOTER
+                    --------------------------------------------- */}
+
+                <div className="home-form-footer">
+
+                  <span>
+                    Already have an account?
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      switchAuthMode("login")
+                    }
+                    disabled={submitting}
+                  >
+                    Sign in
+                  </button>
+
+                </div>
+
+              </form>
+            )}
+
+          </div>
+
+          {/* =================================================
+              AUTH CARD FOOTER
+              ================================================= */}
+
+          <div className="home-auth-security">
+
+            <FaShieldAlt />
+
+            <span>
+              Your account information is securely protected.
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* =================================================
+          BOTTOM SERVICES
+          ================================================= */}
+
+      <section className="home-services">
+
+        <div className="home-service-card">
+
+          <div className="home-service-icon">
+            <FaReceipt />
+          </div>
+
+          <div>
+            <strong>
+              Billing
+            </strong>
+
+            <span>
+              Fast POS transactions
+            </span>
+          </div>
+
+        </div>
+
+        <div className="home-service-card">
+
+          <div className="home-service-icon">
+            <FaShoppingCart />
+          </div>
+
+          <div>
+            <strong>
+              Orders
+            </strong>
+
+            <span>
+              Simple order management
+            </span>
+          </div>
+
+        </div>
+
+        <div className="home-service-card">
+
+          <div className="home-service-icon">
+            <FaStore />
+          </div>
+
+          <div>
+            <strong>
+              Inventory
+            </strong>
+
+            <span>
+              Keep stock under control
+            </span>
+          </div>
+
+        </div>
+
+        <div className="home-service-card">
+
+          <div className="home-service-icon">
+            <FaShieldAlt />
+          </div>
+
+          <div>
+            <strong>
+              Secure
+            </strong>
+
+            <span>
+              Protected account access
+            </span>
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* =================================================
+          FOOTER
+          ================================================= */}
+
+      <footer className="home-footer">
+
+        <div className="home-footer-brand">
+          <FaIceCream />
+
+          <span>
+            IceCream Billing System
+          </span>
+        </div>
+
+        <span>
+          © {new Date().getFullYear()} IceCream Parlour.
+          All rights reserved.
+        </span>
+
       </footer>
+
     </main>
   );
 };

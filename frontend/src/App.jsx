@@ -9,12 +9,10 @@ import { useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // =========================================================
-// AUTH / PUBLIC PAGES
+// PUBLIC HOME PAGE
 // =========================================================
 
 import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 
 // =========================================================
 // ADMIN
@@ -53,34 +51,34 @@ import CustomerInvoices from "./pages/customer/Invoices";
 import CustomerProfile from "./pages/customer/Profile";
 
 // =========================================================
-// AUTHENTICATED USER REDIRECT
+// HOME / AUTH ROUTER
 // =========================================================
 
-const AuthenticatedRedirect = () => {
+const HomeRedirect = () => {
   const { user, loading } = useAuth();
 
   // -------------------------------------------------------
-  // AUTH LOADING
+  // AUTHENTICATION LOADING
   // -------------------------------------------------------
 
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          width: "100%",
-          display: "grid",
-          placeItems: "center",
-          background:
-            "linear-gradient(135deg, #f8f7ff 0%, #ffffff 100%)",
-          color: "#6d4aff",
-          fontFamily:
-            'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-          fontSize: "15px",
-          fontWeight: 700,
-        }}
-      >
-        Loading...
+      <div className="app-loading-screen">
+        <div className="app-loading-content">
+          <div className="app-loading-icon">
+            🍦
+          </div>
+
+          <div className="app-loading-title">
+            IceCream Parlour
+          </div>
+
+          <div className="app-loading-text">
+            Loading your account...
+          </div>
+
+          <div className="app-loading-spinner" />
+        </div>
       </div>
     );
   }
@@ -88,32 +86,159 @@ const AuthenticatedRedirect = () => {
   // -------------------------------------------------------
   // NOT AUTHENTICATED
   // -------------------------------------------------------
+  //
+  // IMPORTANT:
+  //
+  // Do NOT redirect to /login.
+  //
+  // The Home page itself contains:
+  //
+  // Login <-> Register
+  //
+  // toggle logic.
+  // -------------------------------------------------------
 
   if (!user) {
     return <Home />;
   }
 
   // -------------------------------------------------------
-  // ROLE BASED REDIRECT
+  // ADMIN
   // -------------------------------------------------------
 
   if (user.role === "admin") {
-    return <Navigate to="/admin/dashboard" replace />;
+    return (
+      <Navigate
+        to="/admin/dashboard"
+        replace
+      />
+    );
   }
+
+  // -------------------------------------------------------
+  // STAFF
+  // -------------------------------------------------------
 
   if (user.role === "staff") {
-    return <Navigate to="/staff/dashboard" replace />;
+    return (
+      <Navigate
+        to="/staff/dashboard"
+        replace
+      />
+    );
   }
 
+  // -------------------------------------------------------
+  // CUSTOMER
+  // -------------------------------------------------------
+
   if (user.role === "customer") {
-    return <Navigate to="/customer/dashboard" replace />;
+    return (
+      <Navigate
+        to="/customer/dashboard"
+        replace
+      />
+    );
+  }
+
+  // -------------------------------------------------------
+  // INVALID / UNKNOWN ROLE
+  // -------------------------------------------------------
+
+  return <Home />;
+};
+
+// =========================================================
+// UNKNOWN ROUTE HANDLER
+// =========================================================
+
+const UnknownRoute = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="app-loading-screen">
+        <div className="app-loading-content">
+          <div className="app-loading-icon">
+            🍦
+          </div>
+
+          <div className="app-loading-title">
+            IceCream Parlour
+          </div>
+
+          <div className="app-loading-text">
+            Loading...
+          </div>
+
+          <div className="app-loading-spinner" />
+        </div>
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------
+  // GUEST
+  // -------------------------------------------------------
+
+  if (!user) {
+    return (
+      <Navigate
+        to="/"
+        replace
+      />
+    );
+  }
+
+  // -------------------------------------------------------
+  // ADMIN
+  // -------------------------------------------------------
+
+  if (user.role === "admin") {
+    return (
+      <Navigate
+        to="/admin/dashboard"
+        replace
+      />
+    );
+  }
+
+  // -------------------------------------------------------
+  // STAFF
+  // -------------------------------------------------------
+
+  if (user.role === "staff") {
+    return (
+      <Navigate
+        to="/staff/dashboard"
+        replace
+      />
+    );
+  }
+
+  // -------------------------------------------------------
+  // CUSTOMER
+  // -------------------------------------------------------
+
+  if (user.role === "customer") {
+    return (
+      <Navigate
+        to="/customer/dashboard"
+        replace
+      />
+    );
   }
 
   // -------------------------------------------------------
   // FALLBACK
   // -------------------------------------------------------
 
-  return <Home />;
+  return (
+    <Navigate
+      to="/"
+      replace
+    />
+  );
 };
 
 // =========================================================
@@ -126,27 +251,14 @@ const App = () => {
       <Routes>
 
         {/* =================================================
-            PUBLIC HOME PAGE
+            PUBLIC HOME
             ================================================= */}
 
         <Route
           path="/"
-          element={<AuthenticatedRedirect />}
+          element={<HomeRedirect />}
         />
 
-        {/* =================================================
-            AUTHENTICATION
-            ================================================= */}
-
-        <Route
-          path="/login"
-          element={<Login />}
-        />
-
-        <Route
-          path="/register"
-          element={<Register />}
-        />
 
         {/* =================================================
             ADMIN ROUTES
@@ -163,6 +275,7 @@ const App = () => {
             path="/admin"
             element={<AdminLayout />}
           >
+
             {/* /admin */}
 
             <Route
@@ -175,35 +288,45 @@ const App = () => {
               }
             />
 
-            {/* Dashboard */}
+            {/* ---------------------------------------------
+                ADMIN DASHBOARD
+                --------------------------------------------- */}
 
             <Route
               path="dashboard"
               element={<AdminDashboard />}
             />
 
-            {/* Products */}
+            {/* ---------------------------------------------
+                PRODUCTS
+                --------------------------------------------- */}
 
             <Route
               path="products"
               element={<Products />}
             />
 
-            {/* Inventory */}
+            {/* ---------------------------------------------
+                INVENTORY
+                --------------------------------------------- */}
 
             <Route
               path="inventory"
               element={<Inventory />}
             />
 
-            {/* Customers */}
+            {/* ---------------------------------------------
+                CUSTOMERS
+                --------------------------------------------- */}
 
             <Route
               path="customers"
               element={<Customers />}
             />
+
           </Route>
         </Route>
+
 
         {/* =================================================
             STAFF ROUTES
@@ -220,6 +343,7 @@ const App = () => {
             path="/staff"
             element={<StaffLayout />}
           >
+
             {/* /staff */}
 
             <Route
@@ -232,42 +356,54 @@ const App = () => {
               }
             />
 
-            {/* Staff Dashboard */}
+            {/* ---------------------------------------------
+                STAFF DASHBOARD
+                --------------------------------------------- */}
 
             <Route
               path="dashboard"
               element={<StaffDashboard />}
             />
 
-            {/* Staff Billing */}
+            {/* ---------------------------------------------
+                STAFF BILLING
+                --------------------------------------------- */}
 
             <Route
               path="billing"
               element={<StaffBilling />}
             />
 
-            {/* Staff Orders */}
+            {/* ---------------------------------------------
+                STAFF ORDERS
+                --------------------------------------------- */}
 
             <Route
               path="orders"
               element={<StaffOrders />}
             />
 
-            {/* Staff Customers */}
+            {/* ---------------------------------------------
+                STAFF CUSTOMERS
+                --------------------------------------------- */}
 
             <Route
               path="customers"
               element={<StaffCustomers />}
             />
 
-            {/* Staff Reports */}
+            {/* ---------------------------------------------
+                STAFF REPORTS
+                --------------------------------------------- */}
 
             <Route
               path="reports"
               element={<StaffReports />}
             />
+
           </Route>
         </Route>
+
 
         {/* =================================================
             CUSTOMER ROUTES
@@ -284,6 +420,7 @@ const App = () => {
             path="/customer"
             element={<CustomerLayout />}
           >
+
             {/* /customer */}
 
             <Route
@@ -296,49 +433,63 @@ const App = () => {
               }
             />
 
-            {/* Dashboard */}
+            {/* ---------------------------------------------
+                CUSTOMER DASHBOARD
+                --------------------------------------------- */}
 
             <Route
               path="dashboard"
               element={<CustomerDashboard />}
             />
 
-            {/* Products */}
+            {/* ---------------------------------------------
+                PRODUCTS
+                --------------------------------------------- */}
 
             <Route
               path="products"
               element={<CustomerProducts />}
             />
 
-            {/* Orders */}
+            {/* ---------------------------------------------
+                ORDERS
+                --------------------------------------------- */}
 
             <Route
               path="orders"
               element={<CustomerOrders />}
             />
 
-            {/* Cart */}
+            {/* ---------------------------------------------
+                CART
+                --------------------------------------------- */}
 
             <Route
               path="cart"
               element={<CustomerCart />}
             />
 
-            {/* Invoices */}
+            {/* ---------------------------------------------
+                INVOICES
+                --------------------------------------------- */}
 
             <Route
               path="invoices"
               element={<CustomerInvoices />}
             />
 
-            {/* Profile */}
+            {/* ---------------------------------------------
+                PROFILE
+                --------------------------------------------- */}
 
             <Route
               path="profile"
               element={<CustomerProfile />}
             />
+
           </Route>
         </Route>
+
 
         {/* =================================================
             UNKNOWN ROUTES
@@ -346,10 +497,11 @@ const App = () => {
 
         <Route
           path="*"
-          element={<AuthenticatedRedirect />}
+          element={<UnknownRoute />}
         />
 
       </Routes>
+
 
       {/* ===================================================
           GLOBAL TOAST CONTAINER

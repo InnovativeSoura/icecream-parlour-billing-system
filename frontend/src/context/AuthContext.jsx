@@ -23,7 +23,9 @@ export const AuthProvider = ({ children }) => {
     const restoreSession = async () => {
       const token = localStorage.getItem("icecream_token");
 
+      // No existing session
       if (!token) {
+        setUser(null);
         setLoading(false);
         return;
       }
@@ -31,7 +33,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const response = await api.get("/auth/me");
 
-        if (response.data?.success) {
+        if (response.data?.success && response.data?.user) {
           const restoredUser = response.data.user;
 
           setUser(restoredUser);
@@ -69,35 +71,54 @@ export const AuthProvider = ({ children }) => {
   // =========================================================
 
   const login = async (email, password) => {
-    const response = await api.post("/auth/login", {
-      email,
-      password,
-    });
+    try {
+      const response = await api.post("/auth/login", {
+        email: email?.trim(),
+        password,
+      });
 
-    if (!response.data?.success) {
+      if (!response.data?.success) {
+        throw new Error(
+          response.data?.message || "Login failed"
+        );
+      }
+
+      const {
+        token,
+        user: loggedInUser,
+      } = response.data;
+
+      if (!token || !loggedInUser) {
+        throw new Error(
+          "Invalid login response from server."
+        );
+      }
+
+      // Save authentication token
+      localStorage.setItem(
+        "icecream_token",
+        token
+      );
+
+      // Save user information
+      localStorage.setItem(
+        "icecream_user",
+        JSON.stringify(loggedInUser)
+      );
+
+      // Update context
+      setUser(loggedInUser);
+
+      return loggedInUser;
+    } catch (error) {
+      console.error("Login failed:", error);
+
       throw new Error(
-        response.data?.message || "Login failed"
+        error?.response?.data?.message ||
+          error?.message ||
+          "Unable to login. Please try again."
       );
     }
-
-    const {
-      token,
-      user: loggedInUser,
-    } = response.data;
-
-    localStorage.setItem(
-      "icecream_token",
-      token
-    );
-
-    localStorage.setItem(
-      "icecream_user",
-      JSON.stringify(loggedInUser)
-    );
-
-    setUser(loggedInUser);
-
-    return loggedInUser;
   };
 
   // =========================================================
@@ -112,17 +133,24 @@ export const AuthProvider = ({ children }) => {
     role = "customer",
   }) => {
     /*
-     * Public registration is intentionally limited to:
-     * - customer
-     * - staff
+     * Public registration supports:
      *
-     * Admin accounts should NOT be created through the
-     * public registration page.
+     * customer
+     * staff
+     *
+     * Admin accounts must NOT be created
+     * through the public registration page.
      */
 
-    const normalizedRole = String(role || "customer")
+    const normalizedRole = String(
+      role || "customer"
+    )
       .trim()
       .toLowerCase();
+
+    // -------------------------------------------------------
+    // Validate registration role
+    // -------------------------------------------------------
 
     if (
       !["customer", "staff"].includes(
@@ -134,42 +162,73 @@ export const AuthProvider = ({ children }) => {
       );
     }
 
-    const response = await api.post(
-      "/auth/register",
-      {
-        name,
-        email,
-        phone,
-        password,
-        role: normalizedRole,
-      }
-    );
+    try {
+      const response = await api.post(
+        "/auth/register",
+        {
+          name: name?.trim(),
+          email: email?.trim(),
+          phone: phone?.trim() || "",
+          password,
+          role: normalizedRole,
+        }
+      );
 
-    if (!response.data?.success) {
+      if (!response.data?.success) {
+        throw new Error(
+          response.data?.message ||
+            "Registration failed"
+        );
+      }
+
+      const {
+        token,
+        user: registeredUser,
+      } = response.data;
+
+      if (!token || !registeredUser) {
+        throw new Error(
+          "Invalid registration response from server."
+        );
+      }
+
+      // -----------------------------------------------------
+      // Save authentication token
+      // -----------------------------------------------------
+
+      localStorage.setItem(
+        "icecream_token",
+        token
+      );
+
+      // -----------------------------------------------------
+      // Save registered user
+      // -----------------------------------------------------
+
+      localStorage.setItem(
+        "icecream_user",
+        JSON.stringify(registeredUser)
+      );
+
+      // -----------------------------------------------------
+      // Update authentication context
+      // -----------------------------------------------------
+
+      setUser(registeredUser);
+
+      return registeredUser;
+    } catch (error) {
+      console.error(
+        "Registration failed:",
+        error
+      );
+
       throw new Error(
-        response.data?.message ||
-          "Registration failed"
+        error?.response?.data?.message ||
+          error?.message ||
+          "Unable to create account. Please try again."
       );
     }
-
-    const {
-      token,
-      user: registeredUser,
-    } = response.data;
-
-    localStorage.setItem(
-      "icecream_token",
-      token
-    );
-
-    localStorage.setItem(
-      "icecream_user",
-      JSON.stringify(registeredUser)
-    );
-
-    setUser(registeredUser);
-
-    return registeredUser;
   };
 
   // =========================================================
@@ -177,30 +236,70 @@ export const AuthProvider = ({ children }) => {
   // =========================================================
 
   const logout = () => {
+    // Remove authentication data
     localStorage.removeItem("icecream_token");
     localStorage.removeItem("icecream_user");
 
+    // Clear React authentication state
     setUser(null);
 
-    window.location.href = "/login";
+    /*
+     * IMPORTANT:
+     *
+     * The Home page now contains the Login/Register
+     * interface.
+     *
+     * Therefore logout must return to "/"
+     * instead of "/login".
+     */
+
+    window.location.href = "/";
   };
 
   // =========================================================
-  // AUTH VALUE
+  // ROLE HELPERS
+  // =========================================================
+
+  const isAdmin =
+    user?.role === "admin";
+
+  const isStaff =
+    user?.role === "staff";
+
+  const isCustomer =
+    user?.role === "customer";
+
+  // =========================================================
+  // AUTH CONTEXT VALUE
   // =========================================================
 
   const value = {
+    // -------------------------------------------------------
+    // User state
+    // -------------------------------------------------------
+
     user,
+    setUser,
+
     loading,
+
     isAuthenticated,
+
+    // -------------------------------------------------------
+    // Authentication methods
+    // -------------------------------------------------------
 
     login,
     register,
     logout,
 
-    isAdmin: user?.role === "admin",
-    isStaff: user?.role === "staff",
-    isCustomer: user?.role === "customer",
+    // -------------------------------------------------------
+    // Role helpers
+    // -------------------------------------------------------
+
+    isAdmin,
+    isStaff,
+    isCustomer,
   };
 
   return (
@@ -211,7 +310,7 @@ export const AuthProvider = ({ children }) => {
 };
 
 // ===========================================================
-// USE AUTH
+// USE AUTH HOOK
 // ===========================================================
 
 export const useAuth = () => {
