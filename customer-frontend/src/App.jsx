@@ -7,7 +7,7 @@ import { useAuth } from "./context/AuthContext";
 // ==================================================
 // CUSTOMER LAYOUT
 // ==================================================
-import CustomerLayout from "./layouts/customer/CustomerLayout";
+import CustomerLayout from "./Layout/Layout";
 
 // ==================================================
 // CUSTOMER PAGES
