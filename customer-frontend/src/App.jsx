@@ -4,7 +4,14 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { useAuth } from "./context/AuthContext";
 
-// Customer pages
+// ==================================================
+// CUSTOMER LAYOUT
+// ==================================================
+import CustomerLayout from "./layouts/customer/CustomerLayout";
+
+// ==================================================
+// CUSTOMER PAGES
+// ==================================================
 import Home from "./pages/Home";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import Products from "./pages/Products";
@@ -13,9 +20,9 @@ import Cart from "./pages/Cart";
 import Invoices from "./pages/Invoices";
 import Profile from "./pages/Profile";
 
-// --------------------------------------------------
-// Loading Screen
-// --------------------------------------------------
+// ==================================================
+// LOADING SCREEN
+// ==================================================
 const LoadingScreen = () => {
   return (
     <div className="app-loading">
@@ -25,21 +32,28 @@ const LoadingScreen = () => {
   );
 };
 
-// --------------------------------------------------
-// Customer Protected Route
-// --------------------------------------------------
+// ==================================================
+// CUSTOMER PROTECTED ROUTE
+// ==================================================
 const ProtectedRoute = ({ children }) => {
-  const { user, loading, isAuthenticated, isCustomer } = useAuth();
+  const {
+    user,
+    loading,
+    isAuthenticated,
+    isCustomer,
+  } = useAuth();
 
+  // Wait for authentication restoration
   if (loading) {
     return <LoadingScreen />;
   }
 
+  // Not authenticated
   if (!isAuthenticated || !user) {
     return <Navigate to="/" replace />;
   }
 
-  // Customer frontend accepts customers only
+  // This frontend is CUSTOMER ONLY
   if (!isCustomer || user.role !== "customer") {
     return <Navigate to="/" replace />;
   }
@@ -47,114 +61,136 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// --------------------------------------------------
-// Authenticated Customer Redirect
-// --------------------------------------------------
+// ==================================================
+// CUSTOMER ENTRY
+// ==================================================
 const CustomerEntry = () => {
-  const { user, loading, isAuthenticated, isCustomer } = useAuth();
+  const {
+    user,
+    loading,
+    isAuthenticated,
+    isCustomer,
+  } = useAuth();
 
   if (loading) {
     return <LoadingScreen />;
   }
 
-  // Not logged in → customer homepage
+  // ------------------------------------------------
+  // Guest
+  // ------------------------------------------------
   if (!isAuthenticated || !user) {
     return <Home />;
   }
 
-  // Logged-in customer → dashboard
+  // ------------------------------------------------
+  // Authenticated customer
+  // ------------------------------------------------
   if (isCustomer && user.role === "customer") {
     return <Navigate to="/dashboard" replace />;
   }
 
+  // ------------------------------------------------
   // Safety fallback
+  // ------------------------------------------------
   return <Home />;
 };
 
-// --------------------------------------------------
-// App
-// --------------------------------------------------
+// ==================================================
+// APP
+// ==================================================
 const App = () => {
   return (
     <>
       <Routes>
-        {/* ==========================================
+
+        {/* ==================================================
             CUSTOMER PUBLIC WEBSITE
-           ========================================== */}
-
-        <Route path="/" element={<CustomerEntry />} />
-
-        {/* Optional direct access to homepage */}
-        <Route path="/home" element={<Home />} />
-
-        {/* ==========================================
-            CUSTOMER PROTECTED ROUTES
-           ========================================== */}
+           ================================================== */}
 
         <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <CustomerDashboard />
-            </ProtectedRoute>
-          }
+          path="/"
+          element={<CustomerEntry />}
         />
 
         <Route
-          path="/products"
-          element={
-            <ProtectedRoute>
-              <Products />
-            </ProtectedRoute>
-          }
+          path="/home"
+          element={<Home />}
         />
+
+
+        {/* ==================================================
+            CUSTOMER PROTECTED AREA
+
+            CustomerLayout wraps all authenticated
+            customer pages.
+
+            Layout location:
+            src/layouts/customer/CustomerLayout.jsx
+           ================================================== */}
 
         <Route
-          path="/orders"
           element={
             <ProtectedRoute>
-              <Orders />
+              <CustomerLayout />
             </ProtectedRoute>
           }
-        />
+        >
 
-        <Route
-          path="/cart"
-          element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          }
-        />
+          {/* Customer Dashboard */}
+          <Route
+            path="/dashboard"
+            element={<CustomerDashboard />}
+          />
 
-        <Route
-          path="/invoices"
-          element={
-            <ProtectedRoute>
-              <Invoices />
-            </ProtectedRoute>
-          }
-        />
+          {/* Products */}
+          <Route
+            path="/products"
+            element={<Products />}
+          />
 
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
+          {/* Orders */}
+          <Route
+            path="/orders"
+            element={<Orders />}
+          />
 
-        {/* ==========================================
+          {/* Cart */}
+          <Route
+            path="/cart"
+            element={<Cart />}
+          />
+
+          {/* Invoices */}
+          <Route
+            path="/invoices"
+            element={<Invoices />}
+          />
+
+          {/* Profile */}
+          <Route
+            path="/profile"
+            element={<Profile />}
+          />
+
+        </Route>
+
+
+        {/* ==================================================
             UNKNOWN ROUTES
-           ========================================== */}
+           ================================================== */}
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route
+          path="*"
+          element={<Navigate to="/" replace />}
+        />
+
       </Routes>
 
-      {/* ==========================================
+
+      {/* ==================================================
           GLOBAL TOAST NOTIFICATIONS
-         ========================================== */}
+         ================================================== */}
 
       <ToastContainer
         position="top-right"
