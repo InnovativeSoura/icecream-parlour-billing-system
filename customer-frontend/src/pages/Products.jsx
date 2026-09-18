@@ -20,7 +20,7 @@ import {
 import api from "../api/api";
 import { useCart } from "../context/CartContext";
 
-
+import "./Products.css";
 const Products = () => {
   const navigate = useNavigate();
 
