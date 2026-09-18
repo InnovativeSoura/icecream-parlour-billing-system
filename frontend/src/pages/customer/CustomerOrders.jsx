@@ -642,7 +642,7 @@ const CustomerOrders = () => {
             type="button"
             className="back-button"
             onClick={() =>
-              navigate("/customer/dashboard")
+              navigate("/dashboard")
             }
           >
             <FaArrowLeft />

@@ -336,7 +336,7 @@ const CustomerInvoices = () => {
             type="button"
             className="customer-invoices-back"
             onClick={() =>
-              navigate("/customer/dashboard")
+              navigate("/dashboard")
             }
             aria-label="Back to dashboard"
           >

@@ -227,7 +227,7 @@ const CustomerLayout = () => {
             type="button"
             className="customer-brand-logo"
             onClick={() =>
-              navigate("/customer/dashboard")
+              navigate("/dashboard")
             }
             aria-label="Go to customer dashboard"
           >
@@ -270,7 +270,7 @@ const CustomerLayout = () => {
                   <NavLink
                     key={item.path}
                     to={item.path}
-                    end={item.path === "/customer/dashboard"}
+                    end={item.path === "/dashboard"}
                     onClick={handleNavigation}
                     className={({ isActive }) =>
                       `customer-nav-item ${
@@ -461,7 +461,7 @@ const CustomerLayout = () => {
               type="button"
               className="customer-topbar-profile"
               onClick={() =>
-                navigate("/customer/profile")
+                navigate("/profile")
               }
             >
               <div className="customer-avatar customer-avatar-topbar">
