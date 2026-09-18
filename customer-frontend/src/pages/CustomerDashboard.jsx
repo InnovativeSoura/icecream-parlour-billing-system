@@ -662,7 +662,7 @@ const CustomerDashboard = () => {
               className="hero-primary-button"
               onClick={() =>
                 navigate(
-                  "/customer/products"
+                  "/products"
                 )
               }
               whileHover={{
@@ -771,7 +771,7 @@ const CustomerDashboard = () => {
             }}
             onClick={() =>
               navigate(
-                "/customer/orders"
+                "/orders"
               )
             }
           >
@@ -818,7 +818,7 @@ const CustomerDashboard = () => {
             }}
             onClick={() =>
               navigate(
-                "/customer/orders"
+                "orders"
               )
             }
           >
@@ -865,7 +865,7 @@ const CustomerDashboard = () => {
             }}
             onClick={() =>
               navigate(
-                "/customer/orders"
+                "/orders"
               )
             }
           >
@@ -912,7 +912,7 @@ const CustomerDashboard = () => {
             }}
             onClick={() =>
               navigate(
-                "/customer/cart"
+                "/cart"
               )
             }
           >
@@ -1068,7 +1068,7 @@ const CustomerDashboard = () => {
             className="view-all-button"
             onClick={() =>
               navigate(
-                "/customer/orders"
+                "/orders"
               )
             }
           >
@@ -1143,7 +1143,7 @@ const CustomerDashboard = () => {
                 className="start-shopping-button"
                 onClick={() =>
                   navigate(
-                    "/customer/products"
+                    "/products"
                   )
                 }
                 whileHover={{
@@ -1221,7 +1221,7 @@ const CustomerDashboard = () => {
                       className="recent-order-row"
                       onClick={() =>
                         navigate(
-                          "/customer/orders"
+                          "/orders"
                         )
                       }
                       initial={{
@@ -1373,7 +1373,7 @@ const CustomerDashboard = () => {
             }}
             onClick={() =>
               navigate(
-                "/customer/cart"
+                "/cart"
               )
             }
             whileHover={{
