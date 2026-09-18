@@ -166,6 +166,7 @@ if (
 const allowedOrigins = [
   "http://localhost:5173",
   process.env.CLIENT_URL,
+  process.env.Customer_URL
 ].filter(Boolean);
 
 app.use(
