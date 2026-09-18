@@ -17,11 +17,11 @@ import CustomerLayout from "./Layout/CustomerLayout";
 
 import Home from "./pages/Home";
 import CustomerDashboard from "./pages/CustomerDashboard";
-import Products from "./pages/Products";
-import Orders from "./pages/Orders";
-import Cart from "./pages/Cart";
-import Invoices from "./pages/Invoices";
-import Profile from "./pages/Profile";
+import CustomerProducts from "./pages/Products";
+import CustomerOrders from "./pages/Orders";
+import CustomerCart from "./pages/Cart";
+import CustomerInvoices from "./pages/Invoices";
+import CustomerProfile from "./pages/Profile";
 
 // ==================================================
 // LOADING SCREEN
@@ -48,14 +48,17 @@ const ProtectedRoute = ({ children }) => {
     isCustomer,
   } = useAuth();
 
+  // Authentication/session is still being restored
   if (loading) {
     return <LoadingScreen />;
   }
 
+  // No authenticated user
   if (!isAuthenticated || !user) {
     return <Navigate to="/" replace />;
   }
 
+  // Only customer accounts can access this frontend
   if (!isCustomer || user.role !== "customer") {
     return <Navigate to="/" replace />;
   }
@@ -79,15 +82,25 @@ const CustomerEntry = () => {
     return <LoadingScreen />;
   }
 
-  // Guest → homepage
+  // ==================================================
+  // GUEST
+  // ==================================================
+
   if (!isAuthenticated || !user) {
     return <Home />;
   }
 
-  // Customer → dashboard
+  // ==================================================
+  // CUSTOMER
+  // ==================================================
+
   if (isCustomer && user.role === "customer") {
     return <Navigate to="/dashboard" replace />;
   }
+
+  // ==================================================
+  // FALLBACK
+  // ==================================================
 
   return <Home />;
 };
@@ -100,6 +113,7 @@ const App = () => {
   return (
     <>
       <Routes>
+
         {/* ==================================================
             PUBLIC CUSTOMER WEBSITE
         ================================================== */}
@@ -133,47 +147,61 @@ const App = () => {
             </ProtectedRoute>
           }
         >
-          {/* DASHBOARD */}
+
+          {/* ==================================================
+              DASHBOARD
+          ================================================== */}
 
           <Route
             path="/dashboard"
             element={<CustomerDashboard />}
           />
 
-          {/* PRODUCTS */}
+          {/* ==================================================
+              PRODUCTS
+          ================================================== */}
 
           <Route
             path="/products"
-            element={<Products />}
+            element={<CustomerProducts />}
           />
 
-          {/* ORDERS */}
+          {/* ==================================================
+              ORDERS
+          ================================================== */}
 
           <Route
             path="/orders"
-            element={<Orders />}
+            element={<CustomerOrders />}
           />
 
-          {/* CART */}
+          {/* ==================================================
+              CART
+          ================================================== */}
 
           <Route
             path="/cart"
-            element={<Cart />}
+            element={<CustomerCart />}
           />
 
-          {/* INVOICES */}
+          {/* ==================================================
+              INVOICES
+          ================================================== */}
 
           <Route
             path="/invoices"
-            element={<Invoices />}
+            element={<CustomerInvoices />}
           />
 
-          {/* PROFILE */}
+          {/* ==================================================
+              PROFILE
+          ================================================== */}
 
           <Route
             path="/profile"
-            element={<Profile />}
+            element={<CustomerProfile />}
           />
+
         </Route>
 
         {/* ==================================================
@@ -184,6 +212,7 @@ const App = () => {
           path="*"
           element={<Navigate to="/" replace />}
         />
+
       </Routes>
 
       {/* ==================================================
