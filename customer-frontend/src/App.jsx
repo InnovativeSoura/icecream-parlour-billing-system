@@ -7,7 +7,7 @@ import { useAuth } from "./context/AuthContext";
 // ==================================================
 // CUSTOMER LAYOUT
 // ==================================================
-import CustomerLayout from "./Layout/Layout";
+import CustomerLayout from "./Layout/CustomerLayout";
 
 // ==================================================
 // CUSTOMER PAGES
@@ -43,17 +43,15 @@ const ProtectedRoute = ({ children }) => {
     isCustomer,
   } = useAuth();
 
-  // Wait for authentication restoration
   if (loading) {
     return <LoadingScreen />;
   }
 
-  // Not authenticated
   if (!isAuthenticated || !user) {
     return <Navigate to="/" replace />;
   }
 
-  // This frontend is CUSTOMER ONLY
+  // Customer frontend accepts customers only
   if (!isCustomer || user.role !== "customer") {
     return <Navigate to="/" replace />;
   }
@@ -76,23 +74,16 @@ const CustomerEntry = () => {
     return <LoadingScreen />;
   }
 
-  // ------------------------------------------------
-  // Guest
-  // ------------------------------------------------
+  // Guest → public customer homepage
   if (!isAuthenticated || !user) {
     return <Home />;
   }
 
-  // ------------------------------------------------
-  // Authenticated customer
-  // ------------------------------------------------
+  // Authenticated customer → dashboard
   if (isCustomer && user.role === "customer") {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // ------------------------------------------------
-  // Safety fallback
-  // ------------------------------------------------
   return <Home />;
 };
 
@@ -105,7 +96,7 @@ const App = () => {
       <Routes>
 
         {/* ==================================================
-            CUSTOMER PUBLIC WEBSITE
+            PUBLIC CUSTOMER HOMEPAGE
            ================================================== */}
 
         <Route
@@ -120,13 +111,15 @@ const App = () => {
 
 
         {/* ==================================================
-            CUSTOMER PROTECTED AREA
+            PROTECTED CUSTOMER AREA
 
-            CustomerLayout wraps all authenticated
-            customer pages.
-
-            Layout location:
-            src/layouts/customer/CustomerLayout.jsx
+            CustomerLayout provides:
+            - Sidebar
+            - Topbar
+            - Customer profile
+            - Navigation
+            - Logout
+            - Outlet for page content
            ================================================== */}
 
         <Route
@@ -137,7 +130,7 @@ const App = () => {
           }
         >
 
-          {/* Customer Dashboard */}
+          {/* Dashboard */}
           <Route
             path="/dashboard"
             element={<CustomerDashboard />}
@@ -189,7 +182,7 @@ const App = () => {
 
 
       {/* ==================================================
-          GLOBAL TOAST NOTIFICATIONS
+          GLOBAL TOAST
          ================================================== */}
 
       <ToastContainer

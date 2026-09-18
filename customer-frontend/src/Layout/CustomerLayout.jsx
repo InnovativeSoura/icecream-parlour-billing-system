@@ -23,9 +23,9 @@ import {
   FaCalendarAlt,
 } from "react-icons/fa";
 
-import { useAuth } from "./../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
-import "./Layout.css";
+import "./CustomerLayout.css";
 
 /* =========================================================
    HELPERS
@@ -491,4 +491,4 @@ const CustomerLayout = () => {
   );
 };
 
-export default Layout;
+export default CustomerLayout;
