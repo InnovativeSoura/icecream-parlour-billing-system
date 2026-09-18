@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -7,11 +8,13 @@ import { useAuth } from "./context/AuthContext";
 // ==================================================
 // CUSTOMER LAYOUT
 // ==================================================
+
 import CustomerLayout from "./Layout/CustomerLayout";
 
 // ==================================================
 // CUSTOMER PAGES
 // ==================================================
+
 import Home from "./pages/Home";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import Products from "./pages/Products";
@@ -23,6 +26,7 @@ import Profile from "./pages/Profile";
 // ==================================================
 // LOADING SCREEN
 // ==================================================
+
 const LoadingScreen = () => {
   return (
     <div className="app-loading">
@@ -33,8 +37,9 @@ const LoadingScreen = () => {
 };
 
 // ==================================================
-// CUSTOMER PROTECTED ROUTE
+// PROTECTED CUSTOMER ROUTE
 // ==================================================
+
 const ProtectedRoute = ({ children }) => {
   const {
     user,
@@ -51,7 +56,6 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/" replace />;
   }
 
-  // Customer frontend accepts customers only
   if (!isCustomer || user.role !== "customer") {
     return <Navigate to="/" replace />;
   }
@@ -62,6 +66,7 @@ const ProtectedRoute = ({ children }) => {
 // ==================================================
 // CUSTOMER ENTRY
 // ==================================================
+
 const CustomerEntry = () => {
   const {
     user,
@@ -74,12 +79,12 @@ const CustomerEntry = () => {
     return <LoadingScreen />;
   }
 
-  // Guest → public customer homepage
+  // Guest → homepage
   if (!isAuthenticated || !user) {
     return <Home />;
   }
 
-  // Authenticated customer → dashboard
+  // Customer → dashboard
   if (isCustomer && user.role === "customer") {
     return <Navigate to="/dashboard" replace />;
   }
@@ -90,14 +95,14 @@ const CustomerEntry = () => {
 // ==================================================
 // APP
 // ==================================================
+
 const App = () => {
   return (
     <>
       <Routes>
-
         {/* ==================================================
-            PUBLIC CUSTOMER HOMEPAGE
-           ================================================== */}
+            PUBLIC CUSTOMER WEBSITE
+        ================================================== */}
 
         <Route
           path="/"
@@ -109,18 +114,17 @@ const App = () => {
           element={<Home />}
         />
 
-
         {/* ==================================================
             PROTECTED CUSTOMER AREA
 
-            CustomerLayout provides:
+            CustomerLayout contains:
             - Sidebar
             - Topbar
             - Customer profile
             - Navigation
             - Logout
-            - Outlet for page content
-           ================================================== */}
+            - Outlet
+        ================================================== */}
 
         <Route
           element={
@@ -129,61 +133,62 @@ const App = () => {
             </ProtectedRoute>
           }
         >
+          {/* DASHBOARD */}
 
-          {/* Dashboard */}
           <Route
             path="/dashboard"
             element={<CustomerDashboard />}
           />
 
-          {/* Products */}
+          {/* PRODUCTS */}
+
           <Route
             path="/products"
             element={<Products />}
           />
 
-          {/* Orders */}
+          {/* ORDERS */}
+
           <Route
             path="/orders"
             element={<Orders />}
           />
 
-          {/* Cart */}
+          {/* CART */}
+
           <Route
             path="/cart"
             element={<Cart />}
           />
 
-          {/* Invoices */}
+          {/* INVOICES */}
+
           <Route
             path="/invoices"
             element={<Invoices />}
           />
 
-          {/* Profile */}
+          {/* PROFILE */}
+
           <Route
             path="/profile"
             element={<Profile />}
           />
-
         </Route>
-
 
         {/* ==================================================
             UNKNOWN ROUTES
-           ================================================== */}
+        ================================================== */}
 
         <Route
           path="*"
           element={<Navigate to="/" replace />}
         />
-
       </Routes>
-
 
       {/* ==================================================
           GLOBAL TOAST
-         ================================================== */}
+      ================================================== */}
 
       <ToastContainer
         position="top-right"

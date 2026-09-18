@@ -1,5 +1,3 @@
-// frontend/src/layouts/costomer/CustomerLayout.jsx
-
 import { useMemo, useState } from "react";
 import {
   NavLink,
@@ -37,7 +35,7 @@ const getInitials = (name = "Customer") => {
     .split(/\s+/)
     .filter(Boolean);
 
-  if (!words.length) {
+  if (words.length === 0) {
     return "CU";
   }
 
@@ -64,27 +62,27 @@ const formatToday = () => {
 const MAIN_NAVIGATION = [
   {
     label: "Dashboard",
-    path: "/customer/dashboard",
+    path: "/dashboard",
     icon: FaHome,
   },
   {
     label: "Products",
-    path: "/customer/products",
+    path: "/products",
     icon: FaIceCream,
   },
   {
     label: "Orders",
-    path: "/customer/orders",
+    path: "/orders",
     icon: FaShoppingBag,
   },
   {
     label: "Cart",
-    path: "/customer/cart",
+    path: "/cart",
     icon: FaShoppingCart,
   },
   {
     label: "Invoices",
-    path: "/customer/invoices",
+    path: "/invoices",
     icon: FaFileInvoice,
   },
 ];
@@ -92,7 +90,7 @@ const MAIN_NAVIGATION = [
 const ACCOUNT_NAVIGATION = [
   {
     label: "Profile",
-    path: "/customer/profile",
+    path: "/profile",
     icon: FaUser,
   },
 ];
@@ -113,38 +111,42 @@ const CustomerLayout = () => {
   const customerName = user?.name || "Customer";
   const initials = getInitials(customerName);
 
+  /* =======================================================
+     CURRENT PAGE
+  ======================================================= */
+
   const currentPage = useMemo(() => {
     const pathname = location.pathname;
 
-    if (pathname.includes("/products")) {
+    if (pathname === "/products" || pathname.startsWith("/products/")) {
       return {
         eyebrow: "CUSTOMER",
         title: "Products",
       };
     }
 
-    if (pathname.includes("/orders")) {
+    if (pathname === "/orders" || pathname.startsWith("/orders/")) {
       return {
         eyebrow: "CUSTOMER",
         title: "My Orders",
       };
     }
 
-    if (pathname.includes("/cart")) {
+    if (pathname === "/cart" || pathname.startsWith("/cart/")) {
       return {
         eyebrow: "CUSTOMER",
         title: "Shopping Cart",
       };
     }
 
-    if (pathname.includes("/invoices")) {
+    if (pathname === "/invoices" || pathname.startsWith("/invoices/")) {
       return {
         eyebrow: "CUSTOMER",
         title: "Invoices",
       };
     }
 
-    if (pathname.includes("/profile")) {
+    if (pathname === "/profile" || pathname.startsWith("/profile/")) {
       return {
         eyebrow: "ACCOUNT",
         title: "My Profile",
@@ -158,19 +160,19 @@ const CustomerLayout = () => {
   }, [location.pathname]);
 
   /* =======================================================
-     SIDEBAR TOGGLE
+     SIDEBAR
   ======================================================= */
 
   const toggleSidebar = () => {
     setSidebarCollapsed((previous) => !previous);
   };
 
-  const closeMobileSidebar = () => {
-    setMobileSidebarOpen(false);
-  };
-
   const openMobileSidebar = () => {
     setMobileSidebarOpen(true);
+  };
+
+  const closeMobileSidebar = () => {
+    setMobileSidebarOpen(false);
   };
 
   /* =======================================================
@@ -188,23 +190,25 @@ const CustomerLayout = () => {
       console.error("Customer logout error:", error);
     }
 
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   };
 
   /* =======================================================
-     NAVIGATION CLICK
+     NAVIGATION
   ======================================================= */
 
   const handleNavigation = () => {
     closeMobileSidebar();
   };
 
+  /* =======================================================
+     RENDER
+  ======================================================= */
+
   return (
     <div
       className={`customer-layout ${
-        sidebarCollapsed
-          ? "customer-sidebar-is-collapsed"
-          : ""
+        sidebarCollapsed ? "customer-sidebar-is-collapsed" : ""
       }`}
     >
       {/* =====================================================
@@ -213,9 +217,7 @@ const CustomerLayout = () => {
 
       <aside
         className={`customer-sidebar ${
-          mobileSidebarOpen
-            ? "customer-mobile-sidebar-open"
-            : ""
+          mobileSidebarOpen ? "customer-mobile-sidebar-open" : ""
         }`}
       >
         {/* ===================================================
@@ -226,9 +228,7 @@ const CustomerLayout = () => {
           <button
             type="button"
             className="customer-brand-logo"
-            onClick={() =>
-              navigate("/customer/dashboard")
-            }
+            onClick={() => navigate("/dashboard")}
             aria-label="Go to customer dashboard"
           >
             <FaIceCream />
@@ -236,7 +236,6 @@ const CustomerLayout = () => {
 
           <div className="customer-brand-copy">
             <strong>IceCream</strong>
-
             <span>BILLING SYSTEM</span>
           </div>
 
@@ -270,13 +269,11 @@ const CustomerLayout = () => {
                   <NavLink
                     key={item.path}
                     to={item.path}
-                    end={item.path === "/customer/dashboard"}
+                    end={item.path === "/dashboard"}
                     onClick={handleNavigation}
                     className={({ isActive }) =>
                       `customer-nav-item ${
-                        isActive
-                          ? "active"
-                          : ""
+                        isActive ? "active" : ""
                       }`
                     }
                   >
@@ -315,9 +312,7 @@ const CustomerLayout = () => {
                     onClick={handleNavigation}
                     className={({ isActive }) =>
                       `customer-nav-item ${
-                        isActive
-                          ? "active"
-                          : ""
+                        isActive ? "active" : ""
                       }`
                     }
                   >
@@ -351,7 +346,6 @@ const CustomerLayout = () => {
 
             <div className="customer-sidebar-profile-info">
               <strong>{customerName}</strong>
-
               <span>Customer</span>
             </div>
           </div>
@@ -438,6 +432,10 @@ const CustomerLayout = () => {
             </div>
           </div>
 
+          {/* =================================================
+              TOPBAR RIGHT
+          ================================================= */}
+
           <div className="customer-topbar-right">
             {/* DATE */}
 
@@ -448,7 +446,6 @@ const CustomerLayout = () => {
 
               <div className="customer-date-copy">
                 <strong>{formatToday()}</strong>
-
                 <span>Today</span>
               </div>
             </div>
@@ -460,9 +457,7 @@ const CustomerLayout = () => {
             <button
               type="button"
               className="customer-topbar-profile"
-              onClick={() =>
-                navigate("/customer/profile")
-              }
+              onClick={() => navigate("/profile")}
             >
               <div className="customer-avatar customer-avatar-topbar">
                 {initials}
@@ -470,7 +465,6 @@ const CustomerLayout = () => {
 
               <div className="customer-topbar-profile-copy">
                 <strong>{customerName}</strong>
-
                 <span>Customer</span>
               </div>
 
