@@ -239,7 +239,7 @@ const Products = () => {
   // =====================================================
 
   const goToCart = () => {
-    navigate("/customer/cart");
+    navigate("/cart");
   };
 
   const clearFilters = () => {
