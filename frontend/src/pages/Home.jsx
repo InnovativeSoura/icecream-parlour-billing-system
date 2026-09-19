@@ -15,7 +15,6 @@ import {
   FaStore,
   FaUser,
   FaUserTie,
-  FaUsers,
 } from "react-icons/fa";
 
 import { useAuth } from "../context/AuthContext";
@@ -62,12 +61,6 @@ const Home = () => {
     password: "",
     confirmPassword: "",
   });
-
-  // -------------------------------------------------------
-  // REGISTRATION ROLE
-  // -------------------------------------------------------
-
-  const [role, setRole] = useState("customer");
 
   // -------------------------------------------------------
   // SUBMITTING
@@ -153,7 +146,10 @@ const Home = () => {
     try {
       setSubmitting(true);
 
-      const loggedInUser = await login(email, password);
+      const loggedInUser = await login(
+        email,
+        password
+      );
 
       toast.success("Welcome back!");
 
@@ -183,7 +179,8 @@ const Home = () => {
     const email = registerForm.email.trim();
     const phone = registerForm.phone.trim();
     const password = registerForm.password;
-    const confirmPassword = registerForm.confirmPassword;
+    const confirmPassword =
+      registerForm.confirmPassword;
 
     if (!name) {
       toast.error("Please enter your name.");
@@ -191,12 +188,16 @@ const Home = () => {
     }
 
     if (name.length < 2) {
-      toast.error("Name must contain at least 2 characters.");
+      toast.error(
+        "Name must contain at least 2 characters."
+      );
       return;
     }
 
     if (!email) {
-      toast.error("Please enter your email address.");
+      toast.error(
+        "Please enter your email address."
+      );
       return;
     }
 
@@ -206,7 +207,9 @@ const Home = () => {
     }
 
     if (password.length < 6) {
-      toast.error("Password must contain at least 6 characters.");
+      toast.error(
+        "Password must contain at least 6 characters."
+      );
       return;
     }
 
@@ -215,31 +218,31 @@ const Home = () => {
       return;
     }
 
-    if (!["customer", "staff"].includes(role)) {
-      toast.error("Please select a valid account type.");
-      return;
-    }
-
     try {
       setSubmitting(true);
+
+      // -----------------------------------------------
+      // ONLY STAFF ACCOUNTS CAN BE CREATED HERE
+      // -----------------------------------------------
 
       const registeredUser = await register({
         name,
         email,
         phone,
         password,
-        role,
+        role: "staff",
       });
 
       toast.success(
-        role === "staff"
-          ? "Staff account created successfully!"
-          : "Customer account created successfully!"
+        "Staff account created successfully!"
       );
 
       redirectByRole(registeredUser);
     } catch (error) {
-      console.error("Registration failed:", error);
+      console.error(
+        "Registration failed:",
+        error
+      );
 
       const message =
         error?.response?.data?.message ||
@@ -293,7 +296,8 @@ const Home = () => {
           </h2>
 
           <p>
-            Your IceCream Parlour account is already signed in.
+            Your IceCream Parlour account is already
+            signed in.
           </p>
 
           <button
@@ -318,7 +322,7 @@ const Home = () => {
     <main className="home-page">
 
       {/* =================================================
-          BACKGROUND DECORATION
+          BACKGROUND
           ================================================= */}
 
       <div className="home-background">
@@ -360,7 +364,9 @@ const Home = () => {
                 ? "home-nav-button active"
                 : "home-nav-button"
             }
-            onClick={() => switchAuthMode("login")}
+            onClick={() =>
+              switchAuthMode("login")
+            }
           >
             Login
           </button>
@@ -368,7 +374,9 @@ const Home = () => {
           <button
             type="button"
             className="home-nav-button primary"
-            onClick={() => switchAuthMode("register")}
+            onClick={() =>
+              switchAuthMode("register")
+            }
           >
             Register
           </button>
@@ -378,21 +386,23 @@ const Home = () => {
       </header>
 
       {/* =================================================
-          MAIN HERO
+          HERO
           ================================================= */}
 
       <section className="home-hero">
 
         {/* =================================================
-            LEFT CONTENT
+            LEFT HERO CONTENT
             ================================================= */}
 
         <div className="home-hero-content">
 
           <div className="home-eyebrow">
+
             <span className="home-eyebrow-dot" />
 
             ICE CREAM PARLOUR MANAGEMENT
+
           </div>
 
           <h1>
@@ -501,16 +511,18 @@ const Home = () => {
         </div>
 
         {/* =================================================
-            AUTH CARD
+            AUTH COLUMN
             ================================================= */}
 
         <div className="home-auth-wrapper">
 
+          {/* =================================================
+              AUTH CARD
+              ================================================= */}
+
           <div className="home-auth-card">
 
-            {/* =================================================
-                AUTH HEADER
-                ================================================= */}
+            {/* AUTH HEADER */}
 
             <div className="home-auth-header">
 
@@ -545,16 +557,14 @@ const Home = () => {
                 <p>
                   {authMode === "login"
                     ? "Sign in to continue to your account."
-                    : "Join our ice cream parlour platform today."}
+                    : "Create your staff account to access the system."}
                 </p>
 
               </div>
 
             </div>
 
-            {/* =================================================
-                AUTH TOGGLE
-                ================================================= */}
+            {/* AUTH TOGGLE */}
 
             <div className="home-auth-toggle">
 
@@ -565,7 +575,9 @@ const Home = () => {
                     ? "active"
                     : ""
                 }
-                onClick={() => switchAuthMode("login")}
+                onClick={() =>
+                  switchAuthMode("login")
+                }
               >
                 Login
               </button>
@@ -577,7 +589,9 @@ const Home = () => {
                     ? "active"
                     : ""
                 }
-                onClick={() => switchAuthMode("register")}
+                onClick={() =>
+                  switchAuthMode("register")
+                }
               >
                 Register
               </button>
@@ -585,7 +599,7 @@ const Home = () => {
             </div>
 
             {/* =================================================
-                LOGIN FORM
+                LOGIN
                 ================================================= */}
 
             {authMode === "login" && (
@@ -649,6 +663,7 @@ const Home = () => {
                   className="home-submit-button"
                   disabled={submitting}
                 >
+
                   {submitting
                     ? "Signing in..."
                     : "Sign In"}
@@ -656,6 +671,7 @@ const Home = () => {
                   {!submitting && (
                     <FaArrowRight />
                   )}
+
                 </button>
 
                 <div className="home-form-footer">
@@ -666,7 +682,9 @@ const Home = () => {
 
                   <button
                     type="button"
-                    onClick={() => switchAuthMode("register")}
+                    onClick={() =>
+                      switchAuthMode("register")
+                    }
                     disabled={submitting}
                   >
                     Create one
@@ -678,7 +696,7 @@ const Home = () => {
             )}
 
             {/* =================================================
-                REGISTER FORM
+                REGISTER
                 ================================================= */}
 
             {authMode === "register" && (
@@ -687,7 +705,9 @@ const Home = () => {
                 onSubmit={handleRegister}
               >
 
-                {/* ROLE SECTION */}
+                {/* -----------------------------------------
+                    STAFF ROLE
+                    ----------------------------------------- */}
 
                 <div className="home-role-section">
 
@@ -700,7 +720,7 @@ const Home = () => {
                       </span>
 
                       <strong>
-                        Choose your role
+                        Staff account
                       </strong>
 
                     </div>
@@ -709,57 +729,7 @@ const Home = () => {
 
                   <div className="home-role-options">
 
-                    {/* CUSTOMER */}
-
-                    <button
-                      type="button"
-                      className={
-                        role === "customer"
-                          ? "home-role-card active"
-                          : "home-role-card"
-                      }
-                      onClick={() => setRole("customer")}
-                      disabled={submitting}
-                    >
-
-                      <div className="home-role-icon">
-                        <FaUsers />
-                      </div>
-
-                      <div className="home-role-copy">
-
-                        <strong>
-                          Customer
-                        </strong>
-
-                        <span>
-                          Browse, order & track
-                        </span>
-
-                      </div>
-
-                      <div className="home-role-check">
-
-                        {role === "customer" && (
-                          <FaCheckCircle />
-                        )}
-
-                      </div>
-
-                    </button>
-
-                    {/* STAFF */}
-
-                    <button
-                      type="button"
-                      className={
-                        role === "staff"
-                          ? "home-role-card active"
-                          : "home-role-card"
-                      }
-                      onClick={() => setRole("staff")}
-                      disabled={submitting}
-                    >
+                    <div className="home-role-card active">
 
                       <div className="home-role-icon">
                         <FaUserTie />
@@ -778,14 +748,10 @@ const Home = () => {
                       </div>
 
                       <div className="home-role-check">
-
-                        {role === "staff" && (
-                          <FaCheckCircle />
-                        )}
-
+                        <FaCheckCircle />
                       </div>
 
-                    </button>
+                    </div>
 
                   </div>
 
@@ -945,9 +911,7 @@ const Home = () => {
 
                   {submitting
                     ? "Creating account..."
-                    : role === "staff"
-                    ? "Create Staff Account"
-                    : "Create Customer Account"}
+                    : "Create Staff Account"}
 
                   {!submitting && (
                     <FaArrowRight />
@@ -965,7 +929,9 @@ const Home = () => {
 
                   <button
                     type="button"
-                    onClick={() => switchAuthMode("login")}
+                    onClick={() =>
+                      switchAuthMode("login")
+                    }
                     disabled={submitting}
                   >
                     Sign in
@@ -976,20 +942,20 @@ const Home = () => {
               </form>
             )}
 
-            {/* =================================================
-                SECURITY MESSAGE
-                INSIDE THE AUTH CARD — BOTTOM
-                ================================================= */}
+          </div>
 
-            <div className="home-auth-security">
+          {/* =================================================
+              SECURITY MESSAGE
+              DIRECTLY UNDER AUTH CARD
+              ================================================= */}
 
-              <FaShieldAlt />
+          <div className="home-auth-security">
 
-              <span>
-                Your account information is securely protected.
-              </span>
+            <FaShieldAlt />
 
-            </div>
+            <span>
+              Your account information is securely protected.
+            </span>
 
           </div>
 
@@ -1010,7 +976,6 @@ const Home = () => {
           </div>
 
           <div>
-
             <strong>
               Billing
             </strong>
@@ -1018,7 +983,6 @@ const Home = () => {
             <span>
               Fast POS transactions
             </span>
-
           </div>
 
         </div>
@@ -1030,7 +994,6 @@ const Home = () => {
           </div>
 
           <div>
-
             <strong>
               Orders
             </strong>
@@ -1038,7 +1001,6 @@ const Home = () => {
             <span>
               Simple order management
             </span>
-
           </div>
 
         </div>
@@ -1050,7 +1012,6 @@ const Home = () => {
           </div>
 
           <div>
-
             <strong>
               Inventory
             </strong>
@@ -1058,7 +1019,6 @@ const Home = () => {
             <span>
               Keep stock under control
             </span>
-
           </div>
 
         </div>
@@ -1070,7 +1030,6 @@ const Home = () => {
           </div>
 
           <div>
-
             <strong>
               Secure
             </strong>
@@ -1078,7 +1037,6 @@ const Home = () => {
             <span>
               Protected account access
             </span>
-
           </div>
 
         </div>
