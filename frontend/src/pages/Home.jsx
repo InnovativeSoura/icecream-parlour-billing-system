@@ -283,11 +283,14 @@ const Home = () => {
     return (
       <div className="home-authenticated">
         <div className="home-authenticated-card">
+
           <div className="home-brand-icon">
             <FaIceCream />
           </div>
 
-          <h2>Welcome back, {user.name}</h2>
+          <h2>
+            Welcome back, {user.name}
+          </h2>
 
           <p>
             Your IceCream Parlour account is already signed in.
@@ -301,6 +304,7 @@ const Home = () => {
             Open Dashboard
             <FaArrowRight />
           </button>
+
         </div>
       </div>
     );
@@ -330,15 +334,21 @@ const Home = () => {
       <header className="home-navbar">
 
         <div className="home-logo">
+
           <div className="home-logo-icon">
             <FaIceCream />
           </div>
 
           <div className="home-logo-text">
-            <strong>IceCream</strong>
+            <strong>
+              IceCream
+            </strong>
 
-            <span>BILLING SYSTEM</span>
+            <span>
+              BILLING SYSTEM
+            </span>
           </div>
+
         </div>
 
         <div className="home-nav-actions">
@@ -381,6 +391,7 @@ const Home = () => {
 
           <div className="home-eyebrow">
             <span className="home-eyebrow-dot" />
+
             ICE CREAM PARLOUR MANAGEMENT
           </div>
 
@@ -388,7 +399,9 @@ const Home = () => {
             Sweet moments.
             <br />
 
-            <span>Smarter management.</span>
+            <span>
+              Smarter management.
+            </span>
           </h1>
 
           <p className="home-hero-description">
@@ -403,45 +416,57 @@ const Home = () => {
           <div className="home-feature-list">
 
             <div className="home-feature-item">
+
               <div className="home-feature-icon">
                 <FaReceipt />
               </div>
 
               <div>
-                <strong>Smart Billing</strong>
+                <strong>
+                  Smart Billing
+                </strong>
 
                 <span>
                   Fast and organized POS billing
                 </span>
               </div>
+
             </div>
 
             <div className="home-feature-item">
+
               <div className="home-feature-icon">
                 <FaShoppingCart />
               </div>
 
               <div>
-                <strong>Easy Ordering</strong>
+                <strong>
+                  Easy Ordering
+                </strong>
 
                 <span>
                   Seamless customer ordering
                 </span>
               </div>
+
             </div>
 
             <div className="home-feature-item">
+
               <div className="home-feature-icon">
                 <FaShieldAlt />
               </div>
 
               <div>
-                <strong>Secure Payments</strong>
+                <strong>
+                  Secure Payments
+                </strong>
 
                 <span>
                   Reliable online payment processing
                 </span>
               </div>
+
             </div>
 
           </div>
@@ -452,17 +477,23 @@ const Home = () => {
 
             <div>
               <FaCheckCircle />
-              <span>Secure authentication</span>
+              <span>
+                Secure authentication
+              </span>
             </div>
 
             <div>
               <FaCheckCircle />
-              <span>Real-time operations</span>
+              <span>
+                Real-time operations
+              </span>
             </div>
 
             <div>
               <FaCheckCircle />
-              <span>Easy to use</span>
+              <span>
+                Easy to use
+              </span>
             </div>
 
           </div>
@@ -477,7 +508,9 @@ const Home = () => {
 
           <div className="home-auth-card">
 
-            {/* AUTH HEADER */}
+            {/* =================================================
+                AUTH HEADER
+                ================================================= */}
 
             <div className="home-auth-header">
 
@@ -488,11 +521,15 @@ const Home = () => {
                 </div>
 
                 <div>
-                  <strong>IceCream Parlour</strong>
+
+                  <strong>
+                    IceCream Parlour
+                  </strong>
 
                   <span>
                     Billing & Ordering System
                   </span>
+
                 </div>
 
               </div>
@@ -515,14 +552,18 @@ const Home = () => {
 
             </div>
 
-            {/* AUTH TOGGLE */}
+            {/* =================================================
+                AUTH TOGGLE
+                ================================================= */}
 
             <div className="home-auth-toggle">
 
               <button
                 type="button"
                 className={
-                  authMode === "login" ? "active" : ""
+                  authMode === "login"
+                    ? "active"
+                    : ""
                 }
                 onClick={() => switchAuthMode("login")}
               >
@@ -532,7 +573,9 @@ const Home = () => {
               <button
                 type="button"
                 className={
-                  authMode === "register" ? "active" : ""
+                  authMode === "register"
+                    ? "active"
+                    : ""
                 }
                 onClick={() => switchAuthMode("register")}
               >
@@ -606,14 +649,20 @@ const Home = () => {
                   className="home-submit-button"
                   disabled={submitting}
                 >
-                  {submitting ? "Signing in..." : "Sign In"}
+                  {submitting
+                    ? "Signing in..."
+                    : "Sign In"}
 
-                  {!submitting && <FaArrowRight />}
+                  {!submitting && (
+                    <FaArrowRight />
+                  )}
                 </button>
 
                 <div className="home-form-footer">
 
-                  <span>Don't have an account?</span>
+                  <span>
+                    Don't have an account?
+                  </span>
 
                   <button
                     type="button"
@@ -645,9 +694,15 @@ const Home = () => {
                   <div className="home-role-heading">
 
                     <div>
-                      <span>ACCOUNT TYPE</span>
 
-                      <strong>Choose your role</strong>
+                      <span>
+                        ACCOUNT TYPE
+                      </span>
+
+                      <strong>
+                        Choose your role
+                      </strong>
+
                     </div>
 
                   </div>
@@ -673,7 +728,9 @@ const Home = () => {
 
                       <div className="home-role-copy">
 
-                        <strong>Customer</strong>
+                        <strong>
+                          Customer
+                        </strong>
 
                         <span>
                           Browse, order & track
@@ -710,7 +767,9 @@ const Home = () => {
 
                       <div className="home-role-copy">
 
-                        <strong>Staff</strong>
+                        <strong>
+                          Staff
+                        </strong>
 
                         <span>
                           Billing & daily operations
@@ -890,7 +949,9 @@ const Home = () => {
                     ? "Create Staff Account"
                     : "Create Customer Account"}
 
-                  {!submitting && <FaArrowRight />}
+                  {!submitting && (
+                    <FaArrowRight />
+                  )}
 
                 </button>
 
@@ -915,22 +976,22 @@ const Home = () => {
               </form>
             )}
 
+            {/* =================================================
+                SECURITY MESSAGE
+                INSIDE THE AUTH CARD — BOTTOM
+                ================================================= */}
+
+            <div className="home-auth-security">
+
+              <FaShieldAlt />
+
+              <span>
+                Your account information is securely protected.
+              </span>
+
+            </div>
+
           </div>
-
-        </div>
-
-        {/* =================================================
-            SECURITY MESSAGE
-            NOW AT THE BOTTOM OF THE HERO SECTION
-            ================================================= */}
-
-        <div className="home-auth-security">
-
-          <FaShieldAlt />
-
-          <span>
-            Your account information is securely protected.
-          </span>
 
         </div>
 
@@ -949,11 +1010,15 @@ const Home = () => {
           </div>
 
           <div>
-            <strong>Billing</strong>
+
+            <strong>
+              Billing
+            </strong>
 
             <span>
               Fast POS transactions
             </span>
+
           </div>
 
         </div>
@@ -965,11 +1030,15 @@ const Home = () => {
           </div>
 
           <div>
-            <strong>Orders</strong>
+
+            <strong>
+              Orders
+            </strong>
 
             <span>
               Simple order management
             </span>
+
           </div>
 
         </div>
@@ -981,11 +1050,15 @@ const Home = () => {
           </div>
 
           <div>
-            <strong>Inventory</strong>
+
+            <strong>
+              Inventory
+            </strong>
 
             <span>
               Keep stock under control
             </span>
+
           </div>
 
         </div>
@@ -997,11 +1070,15 @@ const Home = () => {
           </div>
 
           <div>
-            <strong>Secure</strong>
+
+            <strong>
+              Secure
+            </strong>
 
             <span>
               Protected account access
             </span>
+
           </div>
 
         </div>
