@@ -80,15 +80,21 @@ const Home = () => {
 
     switch (authenticatedUser.role) {
       case "admin":
-        navigate("/admin/dashboard", { replace: true });
+        navigate("/admin/dashboard", {
+          replace: true,
+        });
         break;
 
       case "staff":
-        navigate("/staff/dashboard", { replace: true });
+        navigate("/staff/dashboard", {
+          replace: true,
+        });
         break;
 
       case "customer":
-        navigate("/customer/dashboard", { replace: true });
+        navigate("/customer/dashboard", {
+          replace: true,
+        });
         break;
 
       default:
@@ -202,7 +208,9 @@ const Home = () => {
     }
 
     if (!password) {
-      toast.error("Please create a password.");
+      toast.error(
+        "Please create a password."
+      );
       return;
     }
 
@@ -214,16 +222,18 @@ const Home = () => {
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match.");
+      toast.error(
+        "Passwords do not match."
+      );
       return;
     }
 
     try {
       setSubmitting(true);
 
-      // -----------------------------------------------
-      // ONLY STAFF ACCOUNTS CAN BE CREATED HERE
-      // -----------------------------------------------
+      // ---------------------------------------------------
+      // THIS FRONTEND CREATES STAFF ACCOUNTS ONLY
+      // ---------------------------------------------------
 
       const registeredUser = await register({
         name,
@@ -303,7 +313,9 @@ const Home = () => {
           <button
             type="button"
             className="home-primary-button"
-            onClick={() => redirectByRole(user)}
+            onClick={() =>
+              redirectByRole(user)
+            }
           >
             Open Dashboard
             <FaArrowRight />
@@ -322,13 +334,17 @@ const Home = () => {
     <main className="home-page">
 
       {/* =================================================
-          BACKGROUND
+          BACKGROUND DECORATION
           ================================================= */}
 
       <div className="home-background">
+
         <div className="home-orb home-orb-one" />
+
         <div className="home-orb home-orb-two" />
+
         <div className="home-orb home-orb-three" />
+
       </div>
 
       {/* =================================================
@@ -344,6 +360,7 @@ const Home = () => {
           </div>
 
           <div className="home-logo-text">
+
             <strong>
               IceCream
             </strong>
@@ -351,6 +368,7 @@ const Home = () => {
             <span>
               BILLING SYSTEM
             </span>
+
           </div>
 
         </div>
@@ -386,7 +404,7 @@ const Home = () => {
       </header>
 
       {/* =================================================
-          HERO
+          MAIN HERO
           ================================================= */}
 
       <section className="home-hero">
@@ -406,22 +424,29 @@ const Home = () => {
           </div>
 
           <h1>
+
             Sweet moments.
+
             <br />
 
             <span>
               Smarter management.
             </span>
+
           </h1>
 
           <p className="home-hero-description">
+
             A modern billing and ordering platform
             designed to make ice cream parlour
             operations faster, simpler, and more
             delightful.
+
           </p>
 
-          {/* FEATURE LIST */}
+          {/* -----------------------------------------------
+              FEATURE LIST
+              ----------------------------------------------- */}
 
           <div className="home-feature-list">
 
@@ -432,6 +457,7 @@ const Home = () => {
               </div>
 
               <div>
+
                 <strong>
                   Smart Billing
                 </strong>
@@ -439,6 +465,7 @@ const Home = () => {
                 <span>
                   Fast and organized POS billing
                 </span>
+
               </div>
 
             </div>
@@ -450,6 +477,7 @@ const Home = () => {
               </div>
 
               <div>
+
                 <strong>
                   Easy Ordering
                 </strong>
@@ -457,6 +485,7 @@ const Home = () => {
                 <span>
                   Seamless customer ordering
                 </span>
+
               </div>
 
             </div>
@@ -468,6 +497,7 @@ const Home = () => {
               </div>
 
               <div>
+
                 <strong>
                   Secure Payments
                 </strong>
@@ -475,35 +505,47 @@ const Home = () => {
                 <span>
                   Reliable online payment processing
                 </span>
+
               </div>
 
             </div>
 
           </div>
 
-          {/* TRUST INDICATORS */}
+          {/* -----------------------------------------------
+              TRUST INDICATORS
+              ----------------------------------------------- */}
 
           <div className="home-trust-row">
 
             <div>
+
               <FaCheckCircle />
+
               <span>
                 Secure authentication
               </span>
+
             </div>
 
             <div>
+
               <FaCheckCircle />
+
               <span>
                 Real-time operations
               </span>
+
             </div>
 
             <div>
+
               <FaCheckCircle />
+
               <span>
                 Easy to use
               </span>
+
             </div>
 
           </div>
@@ -511,7 +553,7 @@ const Home = () => {
         </div>
 
         {/* =================================================
-            AUTH COLUMN
+            RIGHT AUTH AREA
             ================================================= */}
 
         <div className="home-auth-wrapper">
@@ -522,7 +564,9 @@ const Home = () => {
 
           <div className="home-auth-card">
 
-            {/* AUTH HEADER */}
+            {/* ---------------------------------------------
+                AUTH HEADER
+                --------------------------------------------- */}
 
             <div className="home-auth-header">
 
@@ -549,22 +593,28 @@ const Home = () => {
               <div className="home-auth-heading">
 
                 <h2>
+
                   {authMode === "login"
                     ? "Welcome back"
                     : "Create your account"}
+
                 </h2>
 
                 <p>
+
                   {authMode === "login"
                     ? "Sign in to continue to your account."
-                    : "Create your staff account to access the system."}
+                    : "Join our ice cream parlour platform today."}
+
                 </p>
 
               </div>
 
             </div>
 
-            {/* AUTH TOGGLE */}
+            {/* ---------------------------------------------
+                AUTH TOGGLE
+                --------------------------------------------- */}
 
             <div className="home-auth-toggle">
 
@@ -599,14 +649,17 @@ const Home = () => {
             </div>
 
             {/* =================================================
-                LOGIN
+                LOGIN FORM
                 ================================================= */}
 
             {authMode === "login" && (
+
               <form
                 className="home-auth-form"
                 onSubmit={handleLogin}
               >
+
+                {/* EMAIL */}
 
                 <div className="home-form-group">
 
@@ -633,6 +686,8 @@ const Home = () => {
 
                 </div>
 
+                {/* PASSWORD */}
+
                 <div className="home-form-group">
 
                   <label htmlFor="home-login-password">
@@ -658,6 +713,8 @@ const Home = () => {
 
                 </div>
 
+                {/* SUBMIT */}
+
                 <button
                   type="submit"
                   className="home-submit-button"
@@ -673,6 +730,8 @@ const Home = () => {
                   )}
 
                 </button>
+
+                {/* FOOTER */}
 
                 <div className="home-form-footer">
 
@@ -693,21 +752,23 @@ const Home = () => {
                 </div>
 
               </form>
+
             )}
 
             {/* =================================================
-                REGISTER
+                REGISTER FORM
                 ================================================= */}
 
             {authMode === "register" && (
+
               <form
                 className="home-auth-form register-form"
                 onSubmit={handleRegister}
               >
 
-                {/* -----------------------------------------
+                {/* ---------------------------------------------
                     STAFF ROLE
-                    ----------------------------------------- */}
+                    --------------------------------------------- */}
 
                 <div className="home-role-section">
 
@@ -720,7 +781,7 @@ const Home = () => {
                       </span>
 
                       <strong>
-                        Staff account
+                        Staff Account
                       </strong>
 
                     </div>
@@ -748,7 +809,9 @@ const Home = () => {
                       </div>
 
                       <div className="home-role-check">
+
                         <FaCheckCircle />
+
                       </div>
 
                     </div>
@@ -757,7 +820,9 @@ const Home = () => {
 
                 </div>
 
-                {/* NAME */}
+                {/* ---------------------------------------------
+                    NAME
+                    --------------------------------------------- */}
 
                 <div className="home-form-group">
 
@@ -784,7 +849,9 @@ const Home = () => {
 
                 </div>
 
-                {/* EMAIL */}
+                {/* ---------------------------------------------
+                    EMAIL
+                    --------------------------------------------- */}
 
                 <div className="home-form-group">
 
@@ -811,7 +878,9 @@ const Home = () => {
 
                 </div>
 
-                {/* PHONE */}
+                {/* ---------------------------------------------
+                    PHONE
+                    --------------------------------------------- */}
 
                 <div className="home-form-group">
 
@@ -845,7 +914,9 @@ const Home = () => {
 
                 </div>
 
-                {/* PASSWORD */}
+                {/* ---------------------------------------------
+                    PASSWORDS
+                    --------------------------------------------- */}
 
                 <div className="home-form-row">
 
@@ -888,7 +959,9 @@ const Home = () => {
                         id="home-register-confirm-password"
                         type="password"
                         name="confirmPassword"
-                        value={registerForm.confirmPassword}
+                        value={
+                          registerForm.confirmPassword
+                        }
                         onChange={handleRegisterChange}
                         placeholder="Repeat password"
                         autoComplete="new-password"
@@ -901,7 +974,9 @@ const Home = () => {
 
                 </div>
 
-                {/* REGISTER BUTTON */}
+                {/* ---------------------------------------------
+                    REGISTER BUTTON
+                    --------------------------------------------- */}
 
                 <button
                   type="submit"
@@ -919,7 +994,9 @@ const Home = () => {
 
                 </button>
 
-                {/* REGISTER FOOTER */}
+                {/* ---------------------------------------------
+                    REGISTER FOOTER
+                    --------------------------------------------- */}
 
                 <div className="home-form-footer">
 
@@ -940,13 +1017,17 @@ const Home = () => {
                 </div>
 
               </form>
+
             )}
 
           </div>
 
           {/* =================================================
               SECURITY MESSAGE
-              DIRECTLY UNDER AUTH CARD
+              IMPORTANT:
+              THIS IS OUTSIDE THE CARD BUT INSIDE THE
+              AUTH WRAPPER, SO IT APPEARS DIRECTLY BELOW
+              THE LOGIN / REGISTER CONTAINER.
               ================================================= */}
 
           <div className="home-auth-security">
@@ -976,6 +1057,7 @@ const Home = () => {
           </div>
 
           <div>
+
             <strong>
               Billing
             </strong>
@@ -983,6 +1065,7 @@ const Home = () => {
             <span>
               Fast POS transactions
             </span>
+
           </div>
 
         </div>
@@ -994,6 +1077,7 @@ const Home = () => {
           </div>
 
           <div>
+
             <strong>
               Orders
             </strong>
@@ -1001,6 +1085,7 @@ const Home = () => {
             <span>
               Simple order management
             </span>
+
           </div>
 
         </div>
@@ -1012,6 +1097,7 @@ const Home = () => {
           </div>
 
           <div>
+
             <strong>
               Inventory
             </strong>
@@ -1019,6 +1105,7 @@ const Home = () => {
             <span>
               Keep stock under control
             </span>
+
           </div>
 
         </div>
@@ -1030,6 +1117,7 @@ const Home = () => {
           </div>
 
           <div>
+
             <strong>
               Secure
             </strong>
@@ -1037,6 +1125,7 @@ const Home = () => {
             <span>
               Protected account access
             </span>
+
           </div>
 
         </div>
