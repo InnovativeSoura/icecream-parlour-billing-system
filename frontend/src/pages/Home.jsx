@@ -23,6 +23,7 @@ import "./Home.css";
 
 // =========================================================
 // HOME
+// ADMIN + STAFF AUTHENTICATION
 // =========================================================
 
 const Home = () => {
@@ -80,21 +81,22 @@ const Home = () => {
 
     switch (authenticatedUser.role) {
       case "admin":
-        navigate("/admin/dashboard", {
-          replace: true,
-        });
+        navigate("/admin/dashboard", { replace: true });
         break;
 
       case "staff":
-        navigate("/staff/dashboard", {
-          replace: true,
-        });
+        navigate("/staff/dashboard", { replace: true });
         break;
 
       case "customer":
-        navigate("/customer/dashboard", {
-          replace: true,
-        });
+        // Customer accounts belong to the separate
+        // customer frontend. They should not enter the
+        // Admin + Staff frontend.
+        toast.error(
+          "Customer accounts must use the customer portal."
+        );
+
+        navigate("/", { replace: true });
         break;
 
       default:
@@ -139,6 +141,10 @@ const Home = () => {
     const email = loginForm.email.trim();
     const password = loginForm.password;
 
+    // -----------------------------------------------------
+    // VALIDATION
+    // -----------------------------------------------------
+
     if (!email) {
       toast.error("Please enter your email address.");
       return;
@@ -149,13 +155,29 @@ const Home = () => {
       return;
     }
 
+    // -----------------------------------------------------
+    // LOGIN
+    // -----------------------------------------------------
+
     try {
       setSubmitting(true);
 
-      const loggedInUser = await login(
-        email,
-        password
-      );
+      const loggedInUser = await login(email, password);
+
+      // ---------------------------------------------------
+      // ONLY ADMIN + STAFF CAN USE THIS FRONTEND
+      // ---------------------------------------------------
+
+      if (
+        loggedInUser?.role !== "admin" &&
+        loggedInUser?.role !== "staff"
+      ) {
+        toast.error(
+          "Customer accounts must use the customer portal."
+        );
+
+        return;
+      }
 
       toast.success("Welcome back!");
 
@@ -185,8 +207,11 @@ const Home = () => {
     const email = registerForm.email.trim();
     const phone = registerForm.phone.trim();
     const password = registerForm.password;
-    const confirmPassword =
-      registerForm.confirmPassword;
+    const confirmPassword = registerForm.confirmPassword;
+
+    // -----------------------------------------------------
+    // VALIDATION
+    // -----------------------------------------------------
 
     if (!name) {
       toast.error("Please enter your name.");
@@ -194,52 +219,45 @@ const Home = () => {
     }
 
     if (name.length < 2) {
-      toast.error(
-        "Name must contain at least 2 characters."
-      );
+      toast.error("Name must contain at least 2 characters.");
       return;
     }
 
     if (!email) {
-      toast.error(
-        "Please enter your email address."
-      );
+      toast.error("Please enter your email address.");
       return;
     }
 
     if (!password) {
-      toast.error(
-        "Please create a password."
-      );
+      toast.error("Please create a password.");
       return;
     }
 
     if (password.length < 6) {
-      toast.error(
-        "Password must contain at least 6 characters."
-      );
+      toast.error("Password must contain at least 6 characters.");
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error(
-        "Passwords do not match."
-      );
+      toast.error("Passwords do not match.");
       return;
     }
 
+    // -----------------------------------------------------
+    // REGISTER STAFF
+    // -----------------------------------------------------
+
     try {
       setSubmitting(true);
-
-      // ---------------------------------------------------
-      // THIS FRONTEND CREATES STAFF ACCOUNTS ONLY
-      // ---------------------------------------------------
 
       const registeredUser = await register({
         name,
         email,
         phone,
         password,
+
+        // IMPORTANT:
+        // This frontend creates STAFF accounts only.
         role: "staff",
       });
 
@@ -249,10 +267,7 @@ const Home = () => {
 
       redirectByRole(registeredUser);
     } catch (error) {
-      console.error(
-        "Registration failed:",
-        error
-      );
+      console.error("Registration failed:", error);
 
       const message =
         error?.response?.data?.message ||
@@ -313,9 +328,7 @@ const Home = () => {
           <button
             type="button"
             className="home-primary-button"
-            onClick={() =>
-              redirectByRole(user)
-            }
+            onClick={() => redirectByRole(user)}
           >
             Open Dashboard
             <FaArrowRight />
@@ -338,13 +351,9 @@ const Home = () => {
           ================================================= */}
 
       <div className="home-background">
-
         <div className="home-orb home-orb-one" />
-
         <div className="home-orb home-orb-two" />
-
         <div className="home-orb home-orb-three" />
-
       </div>
 
       {/* =================================================
@@ -382,9 +391,7 @@ const Home = () => {
                 ? "home-nav-button active"
                 : "home-nav-button"
             }
-            onClick={() =>
-              switchAuthMode("login")
-            }
+            onClick={() => switchAuthMode("login")}
           >
             Login
           </button>
@@ -392,9 +399,7 @@ const Home = () => {
           <button
             type="button"
             className="home-nav-button primary"
-            onClick={() =>
-              switchAuthMode("register")
-            }
+            onClick={() => switchAuthMode("register")}
           >
             Register
           </button>
@@ -410,7 +415,7 @@ const Home = () => {
       <section className="home-hero">
 
         {/* =================================================
-            LEFT HERO CONTENT
+            LEFT CONTENT
             ================================================= */}
 
         <div className="home-hero-content">
@@ -424,29 +429,22 @@ const Home = () => {
           </div>
 
           <h1>
-
             Sweet moments.
-
             <br />
 
             <span>
               Smarter management.
             </span>
-
           </h1>
 
           <p className="home-hero-description">
-
             A modern billing and ordering platform
             designed to make ice cream parlour
             operations faster, simpler, and more
             delightful.
-
           </p>
 
-          {/* -----------------------------------------------
-              FEATURE LIST
-              ----------------------------------------------- */}
+          {/* FEATURE LIST */}
 
           <div className="home-feature-list">
 
@@ -512,40 +510,29 @@ const Home = () => {
 
           </div>
 
-          {/* -----------------------------------------------
-              TRUST INDICATORS
-              ----------------------------------------------- */}
+          {/* TRUST INDICATORS */}
 
           <div className="home-trust-row">
 
             <div>
-
               <FaCheckCircle />
-
               <span>
                 Secure authentication
               </span>
-
             </div>
 
             <div>
-
               <FaCheckCircle />
-
               <span>
                 Real-time operations
               </span>
-
             </div>
 
             <div>
-
               <FaCheckCircle />
-
               <span>
                 Easy to use
               </span>
-
             </div>
 
           </div>
@@ -553,20 +540,16 @@ const Home = () => {
         </div>
 
         {/* =================================================
-            RIGHT AUTH AREA
+            AUTH WRAPPER
             ================================================= */}
 
         <div className="home-auth-wrapper">
 
-          {/* =================================================
-              AUTH CARD
-              ================================================= */}
-
           <div className="home-auth-card">
 
-            {/* ---------------------------------------------
+            {/* =================================================
                 AUTH HEADER
-                --------------------------------------------- */}
+                ================================================= */}
 
             <div className="home-auth-header">
 
@@ -593,28 +576,24 @@ const Home = () => {
               <div className="home-auth-heading">
 
                 <h2>
-
                   {authMode === "login"
                     ? "Welcome back"
-                    : "Create your account"}
-
+                    : "Create staff account"}
                 </h2>
 
                 <p>
-
                   {authMode === "login"
                     ? "Sign in to continue to your account."
-                    : "Join our ice cream parlour platform today."}
-
+                    : "Create a staff account to manage daily parlour operations."}
                 </p>
 
               </div>
 
             </div>
 
-            {/* ---------------------------------------------
+            {/* =================================================
                 AUTH TOGGLE
-                --------------------------------------------- */}
+                ================================================= */}
 
             <div className="home-auth-toggle">
 
@@ -653,7 +632,6 @@ const Home = () => {
                 ================================================= */}
 
             {authMode === "login" && (
-
               <form
                 className="home-auth-form"
                 onSubmit={handleLogin}
@@ -713,7 +691,7 @@ const Home = () => {
 
                 </div>
 
-                {/* SUBMIT */}
+                {/* LOGIN BUTTON */}
 
                 <button
                   type="submit"
@@ -731,7 +709,7 @@ const Home = () => {
 
                 </button>
 
-                {/* FOOTER */}
+                {/* LOGIN FOOTER */}
 
                 <div className="home-form-footer">
 
@@ -752,23 +730,21 @@ const Home = () => {
                 </div>
 
               </form>
-
             )}
 
             {/* =================================================
-                REGISTER FORM
+                STAFF REGISTER FORM
                 ================================================= */}
 
             {authMode === "register" && (
-
               <form
                 className="home-auth-form register-form"
                 onSubmit={handleRegister}
               >
 
-                {/* ---------------------------------------------
-                    STAFF ROLE
-                    --------------------------------------------- */}
+                {/* =================================================
+                    ACCOUNT TYPE
+                    ================================================= */}
 
                 <div className="home-role-section">
 
@@ -781,12 +757,14 @@ const Home = () => {
                       </span>
 
                       <strong>
-                        Staff Account
+                        Staff account
                       </strong>
 
                     </div>
 
                   </div>
+
+                  {/* ONLY STAFF */}
 
                   <div className="home-role-options">
 
@@ -809,9 +787,7 @@ const Home = () => {
                       </div>
 
                       <div className="home-role-check">
-
                         <FaCheckCircle />
-
                       </div>
 
                     </div>
@@ -820,9 +796,9 @@ const Home = () => {
 
                 </div>
 
-                {/* ---------------------------------------------
+                {/* =================================================
                     NAME
-                    --------------------------------------------- */}
+                    ================================================= */}
 
                 <div className="home-form-group">
 
@@ -849,9 +825,9 @@ const Home = () => {
 
                 </div>
 
-                {/* ---------------------------------------------
+                {/* =================================================
                     EMAIL
-                    --------------------------------------------- */}
+                    ================================================= */}
 
                 <div className="home-form-group">
 
@@ -878,9 +854,9 @@ const Home = () => {
 
                 </div>
 
-                {/* ---------------------------------------------
+                {/* =================================================
                     PHONE
-                    --------------------------------------------- */}
+                    ================================================= */}
 
                 <div className="home-form-group">
 
@@ -914,9 +890,9 @@ const Home = () => {
 
                 </div>
 
-                {/* ---------------------------------------------
-                    PASSWORDS
-                    --------------------------------------------- */}
+                {/* =================================================
+                    PASSWORD ROW
+                    ================================================= */}
 
                 <div className="home-form-row">
 
@@ -959,9 +935,7 @@ const Home = () => {
                         id="home-register-confirm-password"
                         type="password"
                         name="confirmPassword"
-                        value={
-                          registerForm.confirmPassword
-                        }
+                        value={registerForm.confirmPassword}
                         onChange={handleRegisterChange}
                         placeholder="Repeat password"
                         autoComplete="new-password"
@@ -974,9 +948,9 @@ const Home = () => {
 
                 </div>
 
-                {/* ---------------------------------------------
+                {/* =================================================
                     REGISTER BUTTON
-                    --------------------------------------------- */}
+                    ================================================= */}
 
                 <button
                   type="submit"
@@ -994,9 +968,9 @@ const Home = () => {
 
                 </button>
 
-                {/* ---------------------------------------------
+                {/* =================================================
                     REGISTER FOOTER
-                    --------------------------------------------- */}
+                    ================================================= */}
 
                 <div className="home-form-footer">
 
@@ -1017,26 +991,23 @@ const Home = () => {
                 </div>
 
               </form>
-
             )}
 
-          </div>
+            {/* =================================================
+                SECURITY MESSAGE
+                IMPORTANT:
+                KEEP THIS INSIDE THE AUTH CARD
+                ================================================= */}
 
-          {/* =================================================
-              SECURITY MESSAGE
-              IMPORTANT:
-              THIS IS OUTSIDE THE CARD BUT INSIDE THE
-              AUTH WRAPPER, SO IT APPEARS DIRECTLY BELOW
-              THE LOGIN / REGISTER CONTAINER.
-              ================================================= */}
+            <div className="home-auth-security">
 
-          <div className="home-auth-security">
+              <FaShieldAlt />
 
-            <FaShieldAlt />
+              <span>
+                Your account information is securely protected.
+              </span>
 
-            <span>
-              Your account information is securely protected.
-            </span>
+            </div>
 
           </div>
 
