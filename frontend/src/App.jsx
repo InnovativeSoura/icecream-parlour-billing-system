@@ -38,19 +38,6 @@ import StaffCustomers from "./pages/staff/StaffCustomers.jsx";
 import StaffReports from "./pages/staff/StaffReports.jsx";
 
 // =========================================================
-// CUSTOMER
-// =========================================================
-
-import CustomerLayout from "./layouts/costomer/CustomerLayout.jsx";
-
-import CustomerDashboard from "./pages/customer/CustomerDashboard.jsx";
-import CustomerProducts from "./pages/CustomerProducts";
-import CustomerOrders from "./pages/customer/CustomerOrders";
-import CustomerCart from "./pages/customer/MyCart";
-import CustomerInvoices from "./pages/customer/Invoices";
-import CustomerProfile from "./pages/customer/Profile";
-
-// =========================================================
 // HOME / AUTH ROUTER
 // =========================================================
 
@@ -65,9 +52,7 @@ const HomeRedirect = () => {
     return (
       <div className="app-loading-screen">
         <div className="app-loading-content">
-          <div className="app-loading-icon">
-            🍦
-          </div>
+          <div className="app-loading-icon">🍦</div>
 
           <div className="app-loading-title">
             IceCream Parlour
@@ -85,17 +70,6 @@ const HomeRedirect = () => {
 
   // -------------------------------------------------------
   // NOT AUTHENTICATED
-  // -------------------------------------------------------
-  //
-  // IMPORTANT:
-  //
-  // Do NOT redirect to /login.
-  //
-  // The Home page itself contains:
-  //
-  // Login <-> Register
-  //
-  // toggle logic.
   // -------------------------------------------------------
 
   if (!user) {
@@ -131,14 +105,18 @@ const HomeRedirect = () => {
   // -------------------------------------------------------
   // CUSTOMER
   // -------------------------------------------------------
+  //
+  // CUSTOMER APPLICATION IS NOW SEPARATE.
+  //
+  // This frontend no longer contains customer routes.
+  // The customer should use the separate customer-frontend
+  // application.
+  //
+  // For safety, do not expose customer pages here.
+  // -------------------------------------------------------
 
   if (user.role === "customer") {
-    return (
-      <Navigate
-        to="/customer/dashboard"
-        replace
-      />
-    );
+    return <Home />;
   }
 
   // -------------------------------------------------------
@@ -155,13 +133,15 @@ const HomeRedirect = () => {
 const UnknownRoute = () => {
   const { user, loading } = useAuth();
 
+  // -------------------------------------------------------
+  // LOADING
+  // -------------------------------------------------------
+
   if (loading) {
     return (
       <div className="app-loading-screen">
         <div className="app-loading-content">
-          <div className="app-loading-icon">
-            🍦
-          </div>
+          <div className="app-loading-icon">🍦</div>
 
           <div className="app-loading-title">
             IceCream Parlour
@@ -219,11 +199,15 @@ const UnknownRoute = () => {
   // -------------------------------------------------------
   // CUSTOMER
   // -------------------------------------------------------
+  //
+  // Customer routes do not exist in this application.
+  // Customer users are handled by customer-frontend.
+  // -------------------------------------------------------
 
   if (user.role === "customer") {
     return (
       <Navigate
-        to="/customer/dashboard"
+        to="/"
         replace
       />
     );
@@ -399,92 +383,6 @@ const App = () => {
             <Route
               path="reports"
               element={<StaffReports />}
-            />
-
-          </Route>
-        </Route>
-
-
-        {/* =================================================
-            CUSTOMER ROUTES
-            ================================================= */}
-
-        <Route
-          element={
-            <ProtectedRoute
-              allowedRoles={["customer"]}
-            />
-          }
-        >
-          <Route
-            path="/customer"
-            element={<CustomerLayout />}
-          >
-
-            {/* /customer */}
-
-            <Route
-              index
-              element={
-                <Navigate
-                  to="/customer/dashboard"
-                  replace
-                />
-              }
-            />
-
-            {/* ---------------------------------------------
-                CUSTOMER DASHBOARD
-                --------------------------------------------- */}
-
-            <Route
-              path="dashboard"
-              element={<CustomerDashboard />}
-            />
-
-            {/* ---------------------------------------------
-                PRODUCTS
-                --------------------------------------------- */}
-
-            <Route
-              path="products"
-              element={<CustomerProducts />}
-            />
-
-            {/* ---------------------------------------------
-                ORDERS
-                --------------------------------------------- */}
-
-            <Route
-              path="orders"
-              element={<CustomerOrders />}
-            />
-
-            {/* ---------------------------------------------
-                CART
-                --------------------------------------------- */}
-
-            <Route
-              path="cart"
-              element={<CustomerCart />}
-            />
-
-            {/* ---------------------------------------------
-                INVOICES
-                --------------------------------------------- */}
-
-            <Route
-              path="invoices"
-              element={<CustomerInvoices />}
-            />
-
-            {/* ---------------------------------------------
-                PROFILE
-                --------------------------------------------- */}
-
-            <Route
-              path="profile"
-              element={<CustomerProfile />}
             />
 
           </Route>
