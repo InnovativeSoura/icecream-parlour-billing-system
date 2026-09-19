@@ -1,33 +1,34 @@
 /* =========================================================
-   HOME PAGE
-   IceCream Parlour Billing System
+   ICE CREAM PARLOUR
+   ADMIN + STAFF HOME / AUTH PAGE
    ========================================================= */
 
 .home-page {
+  position: relative;
   min-height: 100vh;
   width: 100%;
-  position: relative;
   overflow-x: hidden;
+
   background:
     radial-gradient(
-      circle at 12% 20%,
-      rgba(124, 58, 237, 0.14),
-      transparent 32%
+      circle at 10% 18%,
+      rgba(124, 58, 237, 0.13),
+      transparent 30%
     ),
     radial-gradient(
-      circle at 88% 18%,
+      circle at 90% 15%,
       rgba(236, 72, 153, 0.12),
-      transparent 32%
+      transparent 31%
     ),
     radial-gradient(
-      circle at 72% 82%,
-      rgba(59, 130, 246, 0.08),
+      circle at 75% 82%,
+      rgba(59, 130, 246, 0.09),
       transparent 30%
     ),
     linear-gradient(
       135deg,
       #faf9ff 0%,
-      #f6f7ff 45%,
+      #f6f7ff 48%,
       #ffffff 100%
     );
 
@@ -37,36 +38,53 @@
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
     sans-serif;
 }
 
 /* =========================================================
-   BACKGROUND DECORATION
+   BACKGROUND
    ========================================================= */
 
-.home-page::before,
-.home-page::after {
-  content: "";
+.home-background {
   position: absolute;
+  inset: 0;
+  overflow: hidden;
   pointer-events: none;
-  border-radius: 50%;
-  filter: blur(10px);
+  z-index: 0;
 }
 
-.home-page::before {
-  width: 420px;
-  height: 420px;
-  left: -180px;
-  top: 220px;
+.home-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(12px);
+  pointer-events: none;
+}
+
+.home-orb-one {
+  width: 430px;
+  height: 430px;
+  left: -220px;
+  top: 180px;
   background: rgba(124, 58, 237, 0.08);
 }
 
-.home-page::after {
-  width: 460px;
-  height: 460px;
-  right: -180px;
-  bottom: 20px;
+.home-orb-two {
+  width: 500px;
+  height: 500px;
+  right: -250px;
+  top: 80px;
   background: rgba(236, 72, 153, 0.08);
+}
+
+.home-orb-three {
+  width: 380px;
+  height: 380px;
+  right: 20%;
+  bottom: -180px;
+  background: rgba(59, 130, 246, 0.07);
 }
 
 /* =========================================================
@@ -74,47 +92,47 @@
    ========================================================= */
 
 .home-navbar {
+  position: relative;
+  z-index: 20;
+
   width: 100%;
-  height: 82px;
+  min-height: 78px;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  padding: 0 6%;
-  position: relative;
-  z-index: 20;
+  padding: 0 5.5%;
 
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.82);
 
   border-bottom: 1px solid rgba(148, 163, 184, 0.14);
 
   box-shadow:
     0 8px 30px rgba(15, 23, 42, 0.04);
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
 }
 
 /* =========================================================
-   BRAND
+   LOGO
    ========================================================= */
 
-.home-brand {
+.home-logo {
   display: flex;
   align-items: center;
-  gap: 13px;
-  text-decoration: none;
-  color: inherit;
+  gap: 12px;
 }
 
-.home-brand-icon {
-  width: 46px;
-  height: 46px;
+.home-logo-icon {
+  width: 44px;
+  height: 44px;
 
   display: grid;
   place-items: center;
 
-  border-radius: 14px;
+  border-radius: 13px;
 
   background:
     linear-gradient(
@@ -125,122 +143,136 @@
 
   color: #ffffff;
 
-  font-size: 21px;
+  font-size: 19px;
 
   box-shadow:
-    0 10px 25px rgba(124, 58, 237, 0.25);
+    0 10px 25px rgba(124, 58, 237, 0.24);
 }
 
-.home-brand-text {
+.home-logo-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
-.home-brand-name {
-  font-size: 17px;
+.home-logo-text strong {
+  font-size: 16px;
   line-height: 1;
-  font-weight: 800;
+
+  font-weight: 900;
   letter-spacing: -0.02em;
+
   color: #182238;
 }
 
-.home-brand-subtitle {
-  font-size: 9px;
+.home-logo-text span {
+  font-size: 8px;
   line-height: 1;
-  font-weight: 800;
+
+  font-weight: 850;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
+
   color: #7c3aed;
 }
 
 /* =========================================================
-   NAVIGATION ACTIONS
+   NAV BUTTONS
    ========================================================= */
 
 .home-nav-actions {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 9px;
 }
 
-.home-nav-login,
-.home-nav-register {
-  min-height: 42px;
-  padding: 0 20px;
+.home-nav-button {
+  min-height: 38px;
 
-  border-radius: 11px;
+  padding: 0 17px;
+
+  border-radius: 10px;
+
+  border: 1px solid rgba(124, 58, 237, 0.15);
+
+  background: rgba(255, 255, 255, 0.88);
+
+  color: #5b21b6;
 
   font-family: inherit;
-  font-size: 13px;
-  font-weight: 750;
+  font-size: 11px;
+  font-weight: 800;
 
   cursor: pointer;
 
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease,
     background 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.home-nav-login {
-  border: 1px solid rgba(124, 58, 237, 0.18);
-  background: rgba(255, 255, 255, 0.85);
-  color: #5b21b6;
+.home-nav-button:hover {
+  transform: translateY(-1px);
+
+  background: #f5f3ff;
+
+  box-shadow:
+    0 7px 18px rgba(124, 58, 237, 0.1);
 }
 
-.home-nav-register {
-  border: 1px solid transparent;
-  background: linear-gradient(
-    135deg,
-    #7c3aed,
-    #9333ea
-  );
+.home-nav-button.primary {
+  border-color: transparent;
+
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #9333ea
+    );
+
   color: #ffffff;
 
   box-shadow:
     0 8px 20px rgba(124, 58, 237, 0.22);
 }
 
-.home-nav-login:hover,
-.home-nav-register:hover {
-  transform: translateY(-2px);
-}
+.home-nav-button.primary:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #6d28d9,
+      #7e22ce
+    );
 
-.home-nav-login:hover {
-  background: #f5f3ff;
   box-shadow:
-    0 8px 18px rgba(124, 58, 237, 0.12);
-}
-
-.home-nav-register:hover {
-  box-shadow:
-    0 12px 28px rgba(124, 58, 237, 0.3);
+    0 12px 26px rgba(124, 58, 237, 0.3);
 }
 
 /* =========================================================
-   MAIN HERO
+   HERO
    ========================================================= */
 
-.home-main {
+.home-hero {
   position: relative;
   z-index: 5;
 
-  width: min(1280px, 88%);
-  min-height: calc(100vh - 82px);
+  width: min(1280px, 89%);
+
+  min-height: calc(100vh - 78px);
 
   margin: 0 auto;
 
   display: grid;
+
   grid-template-columns:
-    minmax(0, 1.05fr)
-    minmax(380px, 0.75fr);
+    minmax(0, 1.08fr)
+    minmax(390px, 0.78fr);
 
   align-items: center;
-  gap: 90px;
 
-  padding: 70px 0 90px;
+  gap: 80px;
+
+  padding: 60px 0 75px;
 }
 
 /* =========================================================
@@ -254,9 +286,11 @@
 .home-eyebrow {
   display: inline-flex;
   align-items: center;
+  gap: 8px;
 
-  min-height: 34px;
-  padding: 0 15px;
+  min-height: 31px;
+
+  padding: 0 13px;
 
   border-radius: 999px;
 
@@ -264,27 +298,39 @@
     linear-gradient(
       135deg,
       rgba(124, 58, 237, 0.12),
-      rgba(147, 51, 234, 0.06)
+      rgba(147, 51, 234, 0.05)
     );
 
   border: 1px solid rgba(124, 58, 237, 0.1);
 
   color: #6d28d9;
 
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 850;
-  letter-spacing: 0.18em;
+
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 
-  margin-bottom: 24px;
+  margin-bottom: 23px;
 }
 
-.home-hero-title {
+.home-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #8b5cf6;
+
+  box-shadow:
+    0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+.home-hero-content h1 {
   margin: 0;
 
-  max-width: 700px;
+  font-size: clamp(46px, 5vw, 72px);
 
-  font-size: clamp(48px, 5vw, 76px);
   line-height: 1.02;
 
   letter-spacing: -0.055em;
@@ -294,8 +340,8 @@
   color: #182238;
 }
 
-.home-hero-title span {
-  display: block;
+.home-hero-content h1 span {
+  display: inline-block;
 
   background:
     linear-gradient(
@@ -307,15 +353,16 @@
 
   -webkit-background-clip: text;
   background-clip: text;
+
   -webkit-text-fill-color: transparent;
 }
 
 .home-hero-description {
   max-width: 590px;
 
-  margin: 25px 0 0;
+  margin: 24px 0 0;
 
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.75;
 
   color: #64748b;
@@ -327,142 +374,136 @@
    FEATURE LIST
    ========================================================= */
 
-.home-features {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.home-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 
-  gap: 14px;
+  max-width: 560px;
 
-  margin-top: 34px;
-
-  max-width: 620px;
+  margin-top: 29px;
 }
 
-.home-feature {
+.home-feature-item {
   display: flex;
   align-items: center;
+
   gap: 13px;
 
-  min-height: 68px;
+  min-height: 60px;
 
-  padding: 12px 15px;
+  padding: 10px 13px;
 
-  border-radius: 16px;
+  border-radius: 14px;
 
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.67);
 
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  border: 1px solid rgba(148, 163, 184, 0.14);
 
   box-shadow:
-    0 8px 25px rgba(15, 23, 42, 0.035);
+    0 7px 22px rgba(15, 23, 42, 0.035);
 
   transition:
-    transform 0.22s ease,
-    box-shadow 0.22s ease,
-    border-color 0.22s ease;
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.home-feature:hover {
-  transform: translateY(-3px);
+.home-feature-item:hover {
+  transform: translateX(4px);
 
   border-color: rgba(124, 58, 237, 0.16);
 
   box-shadow:
-    0 14px 30px rgba(15, 23, 42, 0.08);
+    0 12px 28px rgba(15, 23, 42, 0.07);
 }
 
 .home-feature-icon {
-  flex: 0 0 42px;
+  flex: 0 0 39px;
 
-  width: 42px;
-  height: 42px;
+  width: 39px;
+  height: 39px;
 
   display: grid;
   place-items: center;
 
-  border-radius: 12px;
+  border-radius: 11px;
 
   background:
     linear-gradient(
       135deg,
-      #f1eaff,
-      #f7f2ff
+      #f0e9ff,
+      #f8f4ff
     );
 
   color: #7c3aed;
 
-  font-size: 17px;
+  font-size: 15px;
 }
 
-.home-feature-content {
-  min-width: 0;
-}
+.home-feature-item strong {
+  display: block;
 
-.home-feature-title {
-  margin: 0 0 3px;
-
-  font-size: 13px;
-  font-weight: 850;
+  margin-bottom: 3px;
 
   color: #202b42;
+
+  font-size: 12px;
+  font-weight: 850;
 }
 
-.home-feature-text {
-  margin: 0;
-
-  font-size: 11px;
-  line-height: 1.4;
+.home-feature-item span {
+  display: block;
 
   color: #7b879b;
+
+  font-size: 10px;
+  line-height: 1.4;
 }
 
 /* =========================================================
-   TRUST / SECURITY
+   TRUST ROW
    ========================================================= */
 
-.home-trust {
+.home-trust-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
 
-  margin-top: 27px;
+  gap: 16px;
+
+  margin-top: 24px;
 
   color: #718096;
 
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 650;
 }
 
-.home-trust-icon {
-  width: 30px;
-  height: 30px;
+.home-trust-row div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
-  display: grid;
-  place-items: center;
-
-  border-radius: 9px;
-
-  background: #ecfdf5;
-  color: #059669;
-
-  font-size: 13px;
+.home-trust-row svg {
+  color: #10b981;
+  font-size: 12px;
 }
 
 /* =========================================================
-   AUTH CARD AREA
+   AUTH WRAPPER
    ========================================================= */
 
 .home-auth-wrapper {
+  position: relative;
+
   width: 100%;
 
   display: flex;
   justify-content: center;
   align-items: center;
-
-  position: relative;
 }
-
-/* Decorative glow behind card */
 
 .home-auth-wrapper::before {
   content: "";
@@ -477,11 +518,11 @@
   background:
     radial-gradient(
       circle,
-      rgba(124, 58, 237, 0.14),
+      rgba(124, 58, 237, 0.13),
       transparent 68%
     );
 
-  filter: blur(10px);
+  filter: blur(12px);
 
   z-index: -1;
 }
@@ -491,29 +532,29 @@
    ========================================================= */
 
 .home-auth-card {
+  position: relative;
+
   width: min(470px, 100%);
 
-  padding: 32px;
+  padding: 30px;
 
-  border-radius: 26px;
+  border-radius: 25px;
 
   background:
     linear-gradient(
       145deg,
-      rgba(255, 255, 255, 0.96),
-      rgba(250, 248, 255, 0.91)
+      rgba(255, 255, 255, 0.97),
+      rgba(250, 248, 255, 0.94)
     );
 
-  border: 1px solid rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.9);
 
   box-shadow:
-    0 35px 80px rgba(15, 23, 42, 0.13),
+    0 35px 80px rgba(15, 23, 42, 0.12),
     0 10px 30px rgba(124, 58, 237, 0.06);
 
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-
-  position: relative;
 
   overflow: hidden;
 }
@@ -542,25 +583,32 @@
 }
 
 /* =========================================================
-   AUTH BRAND
+   AUTH HEADER
    ========================================================= */
+
+.home-auth-header {
+  position: relative;
+  z-index: 2;
+}
 
 .home-auth-brand {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 12px;
 
-  margin-bottom: 25px;
+  margin-bottom: 22px;
 }
 
 .home-auth-brand-icon {
-  width: 48px;
-  height: 48px;
+  width: 45px;
+  height: 45px;
+
+  flex: 0 0 45px;
 
   display: grid;
   place-items: center;
 
-  border-radius: 14px;
+  border-radius: 13px;
 
   background:
     linear-gradient(
@@ -571,57 +619,55 @@
 
   color: #ffffff;
 
-  font-size: 20px;
+  font-size: 18px;
 
   box-shadow:
-    0 10px 25px rgba(124, 58, 237, 0.25);
+    0 10px 24px rgba(124, 58, 237, 0.24);
 }
 
-.home-auth-brand-text {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
+.home-auth-brand strong {
+  display: block;
 
-.home-auth-brand-title {
-  font-size: 16px;
-  font-weight: 850;
   color: #182238;
+
+  font-size: 13px;
+  font-weight: 850;
 }
 
-.home-auth-brand-subtitle {
-  font-size: 10px;
+.home-auth-brand span {
+  display: block;
+
+  margin-top: 3px;
+
   color: #8a94a6;
-}
 
-/* =========================================================
-   AUTH HEADING
-   ========================================================= */
+  font-size: 9px;
+}
 
 .home-auth-heading {
-  margin-bottom: 22px;
+  margin-bottom: 19px;
 }
 
 .home-auth-heading h2 {
   margin: 0;
 
-  font-size: 28px;
+  color: #172033;
+
+  font-size: 27px;
   line-height: 1.15;
 
   letter-spacing: -0.035em;
 
   font-weight: 900;
-
-  color: #172033;
 }
 
 .home-auth-heading p {
-  margin: 8px 0 0;
-
-  font-size: 12px;
-  line-height: 1.6;
+  margin: 7px 0 0;
 
   color: #7a8699;
+
+  font-size: 11px;
+  line-height: 1.6;
 }
 
 /* =========================================================
@@ -629,14 +675,19 @@
    ========================================================= */
 
 .home-auth-toggle {
+  position: relative;
+  z-index: 2;
+
   display: grid;
   grid-template-columns: 1fr 1fr;
 
+  gap: 4px;
+
   padding: 4px;
 
-  margin-bottom: 24px;
+  margin-bottom: 21px;
 
-  border-radius: 13px;
+  border-radius: 12px;
 
   background: #f1f2f7;
 
@@ -644,10 +695,10 @@
 }
 
 .home-auth-toggle button {
-  min-height: 42px;
+  min-height: 39px;
 
   border: 0;
-  border-radius: 10px;
+  border-radius: 9px;
 
   background: transparent;
 
@@ -655,7 +706,7 @@
 
   font-family: inherit;
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
 
   cursor: pointer;
@@ -675,8 +726,117 @@
     0 4px 12px rgba(15, 23, 42, 0.07);
 }
 
-.home-auth-toggle button:hover:not(.active) {
-  color: #5b21b6;
+/* =========================================================
+   AUTH FORM
+   ========================================================= */
+
+.home-auth-form {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.home-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.home-form-group label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #3c4659;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.optional-label {
+  color: #9aa3b2;
+
+  font-size: 8px;
+  font-weight: 650;
+}
+
+.home-input-wrapper {
+  position: relative;
+}
+
+.home-input-wrapper svg {
+  position: absolute;
+
+  left: 13px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #9aa4b4;
+
+  font-size: 12px;
+
+  pointer-events: none;
+}
+
+.home-input-wrapper input {
+  width: 100%;
+
+  height: 43px;
+
+  padding: 0 13px 0 37px;
+
+  border-radius: 11px;
+
+  border: 1px solid #e3e6ed;
+
+  outline: none;
+
+  background: rgba(248, 249, 252, 0.92);
+
+  color: #1f2937;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.home-input-wrapper input::placeholder {
+  color: #a2aaba;
+}
+
+.home-input-wrapper input:focus {
+  background: #ffffff;
+
+  border-color: #8b5cf6;
+
+  box-shadow:
+    0 0 0 4px rgba(124, 58, 237, 0.08);
+}
+
+.home-input-wrapper input:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   REGISTER FORM ROW
+   ========================================================= */
+
+.home-form-row {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 11px;
 }
 
 /* =========================================================
@@ -684,44 +844,64 @@
    ========================================================= */
 
 .home-role-section {
-  margin-bottom: 21px;
+  margin-bottom: 3px;
 }
 
-.home-role-label {
+.home-role-heading {
+  margin-bottom: 9px;
+}
+
+.home-role-heading span {
   display: block;
 
-  margin-bottom: 10px;
+  color: #8a94a6;
 
-  font-size: 10px;
-
+  font-size: 8px;
   font-weight: 850;
 
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
+}
 
-  text-transform: uppercase;
+.home-role-heading strong {
+  display: block;
 
-  color: #6b7280;
+  margin-top: 3px;
+
+  color: #3c4659;
+
+  font-size: 10px;
+  font-weight: 800;
 }
 
 .home-role-options {
   display: grid;
+
   grid-template-columns: 1fr 1fr;
 
-  gap: 10px;
+  gap: 9px;
 }
 
-.home-role-option {
+.home-role-card {
   position: relative;
 
-  min-height: 72px;
+  min-height: 64px;
 
-  padding: 12px;
+  display: flex;
+  align-items: center;
 
-  border-radius: 13px;
+  gap: 9px;
+
+  padding: 9px;
+
+  border-radius: 12px;
 
   border: 1px solid #e5e7eb;
 
   background: #ffffff;
+
+  text-align: left;
+
+  font-family: inherit;
 
   cursor: pointer;
 
@@ -732,16 +912,16 @@
     transform 0.2s ease;
 }
 
-.home-role-option:hover {
-  transform: translateY(-2px);
+.home-role-card:hover {
+  transform: translateY(-1px);
 
-  border-color: rgba(124, 58, 237, 0.3);
+  border-color: rgba(124, 58, 237, 0.28);
 
   box-shadow:
-    0 8px 20px rgba(124, 58, 237, 0.08);
+    0 7px 18px rgba(124, 58, 237, 0.08);
 }
 
-.home-role-option.active {
+.home-role-card.active {
   border-color: #8b5cf6;
 
   background:
@@ -752,175 +932,88 @@
     );
 
   box-shadow:
-    0 8px 22px rgba(124, 58, 237, 0.1);
+    0 7px 20px rgba(124, 58, 237, 0.09);
 }
 
 .home-role-icon {
   width: 30px;
   height: 30px;
 
+  flex: 0 0 30px;
+
   display: grid;
   place-items: center;
 
   border-radius: 9px;
 
-  margin-bottom: 7px;
-
   background: #f3edff;
 
   color: #7c3aed;
 
-  font-size: 13px;
+  font-size: 12px;
 }
 
-.home-role-option strong {
+.home-role-copy {
+  min-width: 0;
+}
+
+.home-role-copy strong {
   display: block;
 
-  font-size: 12px;
-  font-weight: 850;
-
   color: #202b42;
+
+  font-size: 10px;
+  font-weight: 850;
 }
 
-.home-role-option span {
+.home-role-copy span {
   display: block;
 
   margin-top: 2px;
 
-  font-size: 9px;
-
   color: #8993a5;
+
+  font-size: 8px;
 }
 
 .home-role-check {
   position: absolute;
 
-  right: 10px;
-  top: 10px;
+  right: 8px;
+  top: 8px;
 
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
 
   display: grid;
   place-items: center;
 
   border-radius: 50%;
 
-  background: #7c3aed;
-
-  color: #ffffff;
-
-  font-size: 9px;
-}
-
-/* =========================================================
-   AUTH FORM
-   ========================================================= */
-
-.home-auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.home-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.home-form-label {
-  font-size: 11px;
-  font-weight: 800;
-  color: #3c4659;
-}
-
-.home-form-input-wrapper {
-  position: relative;
-}
-
-.home-form-icon {
-  position: absolute;
-
-  left: 14px;
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  color: #9aa4b4;
-
-  font-size: 13px;
-
-  pointer-events: none;
-}
-
-.home-form-input {
-  width: 100%;
-
-  height: 46px;
-
-  padding:
-    0 14px 0 40px;
-
-  border-radius: 12px;
-
-  border: 1px solid #e3e6ed;
-
-  outline: none;
-
-  background: rgba(248, 249, 252, 0.9);
-
-  color: #1f2937;
-
-  font-family: inherit;
+  color: #7c3aed;
 
   font-size: 12px;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
-}
-
-.home-form-input::placeholder {
-  color: #a2aaba;
-}
-
-.home-form-input:focus {
-  background: #ffffff;
-
-  border-color: #8b5cf6;
-
-  box-shadow:
-    0 0 0 4px rgba(124, 58, 237, 0.08);
 }
 
 /* =========================================================
-   PASSWORD ROW
-   ========================================================= */
-
-.home-password-row {
-  display: grid;
-
-  grid-template-columns: 1fr 1fr;
-
-  gap: 12px;
-}
-
-/* =========================================================
-   AUTH SUBMIT BUTTON
+   SUBMIT BUTTON
    ========================================================= */
 
 .home-submit-button {
   width: 100%;
 
-  min-height: 50px;
+  min-height: 46px;
 
-  margin-top: 4px;
+  margin-top: 3px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
 
   border: 0;
-
-  border-radius: 13px;
+  border-radius: 12px;
 
   background:
     linear-gradient(
@@ -933,14 +1026,13 @@
 
   font-family: inherit;
 
-  font-size: 13px;
-
+  font-size: 11px;
   font-weight: 850;
 
   cursor: pointer;
 
   box-shadow:
-    0 12px 28px rgba(124, 58, 237, 0.24);
+    0 11px 25px rgba(124, 58, 237, 0.23);
 
   transition:
     transform 0.2s ease,
@@ -948,38 +1040,41 @@
     opacity 0.2s ease;
 }
 
-.home-submit-button:hover {
+.home-submit-button svg {
+  font-size: 10px;
+}
+
+.home-submit-button:hover:not(:disabled) {
   transform: translateY(-2px);
 
   box-shadow:
-    0 16px 34px rgba(124, 58, 237, 0.3);
-}
-
-.home-submit-button:active {
-  transform: translateY(0);
+    0 15px 32px rgba(124, 58, 237, 0.3);
 }
 
 .home-submit-button:disabled {
   opacity: 0.65;
   cursor: not-allowed;
-  transform: none;
 }
 
 /* =========================================================
-   AUTH FOOTER
+   FORM FOOTER
    ========================================================= */
 
-.home-auth-footer {
-  margin-top: 18px;
+.home-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  text-align: center;
+  gap: 5px;
 
-  font-size: 11px;
+  margin-top: 2px;
 
   color: #8993a5;
+
+  font-size: 9px;
 }
 
-.home-auth-footer button {
+.home-form-footer button {
   border: 0;
 
   padding: 0;
@@ -991,140 +1086,367 @@
   font-family: inherit;
 
   font-size: inherit;
-
   font-weight: 850;
 
   cursor: pointer;
 }
 
-.home-auth-footer button:hover {
+.home-form-footer button:hover {
   color: #4c1d95;
 
   text-decoration: underline;
 }
 
 /* =========================================================
-   LOGIN FORM SPECIFIC
+   AUTH SECURITY
    ========================================================= */
 
-.home-login-form {
+.home-auth-security {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  margin-top: 14px;
+
+  color: #7b8799;
+
+  font-size: 9px;
+  font-weight: 600;
 }
 
-.home-login-options {
+.home-auth-security svg {
+  color: #10b981;
+
+  font-size: 10px;
+}
+
+/* =========================================================
+   SERVICES
+   ========================================================= */
+
+.home-services {
+  position: relative;
+  z-index: 5;
+
+  width: min(1280px, 89%);
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 12px;
+
+  padding: 0 0 35px;
+}
+
+.home-service-card {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  min-height: 63px;
+
+  padding: 11px 13px;
+
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.68);
+
+  border: 1px solid rgba(148, 163, 184, 0.14);
+
+  box-shadow:
+    0 7px 20px rgba(15, 23, 42, 0.035);
+}
+
+.home-service-icon {
+  width: 35px;
+  height: 35px;
+
+  flex: 0 0 35px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 10px;
+
+  background: #f3edff;
+
+  color: #7c3aed;
+
+  font-size: 13px;
+}
+
+.home-service-card strong {
+  display: block;
+
+  color: #202b42;
+
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.home-service-card span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #8993a5;
+
+  font-size: 8px;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.home-footer {
+  position: relative;
+  z-index: 5;
+
+  width: min(1280px, 89%);
+
+  margin: 0 auto;
+
+  padding: 18px 0 25px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  margin-top: -3px;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+
+  color: #8a94a6;
+
+  font-size: 9px;
 }
 
-.home-remember {
+.home-footer-brand {
   display: flex;
   align-items: center;
+
   gap: 7px;
 
-  font-size: 10px;
+  color: #64748b;
 
-  color: #7b8799;
+  font-weight: 750;
 }
 
-.home-remember input {
-  accent-color: #7c3aed;
+.home-footer-brand svg {
+  color: #7c3aed;
 }
 
-.home-forgot {
+/* =========================================================
+   AUTHENTICATED STATE
+   ========================================================= */
+
+.home-authenticated {
+  min-height: 100vh;
+
+  display: grid;
+  place-items: center;
+
+  padding: 30px;
+
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(124, 58, 237, 0.12),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      rgba(236, 72, 153, 0.1),
+      transparent 32%
+    ),
+    #f8f8ff;
+}
+
+.home-authenticated-card {
+  width: min(440px, 100%);
+
+  padding: 40px;
+
+  text-align: center;
+
+  border-radius: 24px;
+
+  background: rgba(255, 255, 255, 0.92);
+
+  border: 1px solid rgba(255, 255, 255, 0.9);
+
+  box-shadow:
+    0 30px 70px rgba(15, 23, 42, 0.12);
+
+  backdrop-filter: blur(20px);
+}
+
+.home-authenticated-card .home-brand-icon {
+  margin: 0 auto 18px;
+}
+
+.home-authenticated-card h2 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.home-authenticated-card p {
+  margin: 10px 0 24px;
+
+  color: #7a8699;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.home-primary-button {
+  width: 100%;
+
+  min-height: 46px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
   border: 0;
+  border-radius: 12px;
 
-  background: transparent;
+  background:
+    linear-gradient(
+      135deg,
+      #7c3aed,
+      #9333ea
+    );
 
-  padding: 0;
-
-  color: #6d28d9;
+  color: #ffffff;
 
   font-family: inherit;
 
-  font-size: 10px;
-
-  font-weight: 750;
+  font-size: 11px;
+  font-weight: 850;
 
   cursor: pointer;
+
+  box-shadow:
+    0 10px 25px rgba(124, 58, 237, 0.23);
+}
+
+.home-primary-button:hover {
+  transform: translateY(-2px);
 }
 
 /* =========================================================
-   ERROR MESSAGE
+   LOADING
    ========================================================= */
 
-.home-form-error {
-  padding: 10px 12px;
+.app-loading-screen {
+  min-height: 100vh;
 
-  border-radius: 10px;
+  display: grid;
+  place-items: center;
 
-  background: #fef2f2;
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(124, 58, 237, 0.12),
+      transparent 30%
+    ),
+    #f8f8ff;
+}
 
-  border: 1px solid #fecaca;
+.app-loading-content {
+  text-align: center;
+}
 
-  color: #b91c1c;
+.app-loading-icon {
+  font-size: 38px;
+
+  margin-bottom: 12px;
+}
+
+.app-loading-title {
+  color: #172033;
+
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.app-loading-text {
+  margin-top: 6px;
+
+  color: #7a8699;
 
   font-size: 11px;
+}
 
-  font-weight: 650;
+.app-loading-spinner {
+  width: 25px;
+  height: 25px;
+
+  margin: 17px auto 0;
+
+  border: 3px solid rgba(124, 58, 237, 0.15);
+
+  border-top-color: #7c3aed;
+
+  border-radius: 50%;
+
+  animation: home-spin 0.8s linear infinite;
+}
+
+@keyframes home-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* =========================================================
-   RESPONSIVE - LARGE TABLETS
+   RESPONSIVE
    ========================================================= */
 
-@media (max-width: 1100px) {
-  .home-main {
-    width: min(92%, 1000px);
-
+@media (max-width: 1050px) {
+  .home-hero {
     grid-template-columns:
       minmax(0, 1fr)
-      minmax(340px, 0.8fr);
+      minmax(350px, 0.8fr);
 
-    gap: 50px;
+    gap: 45px;
   }
 
-  .home-hero-title {
-    font-size: clamp(44px, 5vw, 64px);
-  }
-
-  .home-hero-description {
-    font-size: 15px;
-  }
-
-  .home-auth-card {
-    padding: 27px;
+  .home-hero-content h1 {
+    font-size: clamp(43px, 5vw, 62px);
   }
 }
-
-/* =========================================================
-   RESPONSIVE - TABLET
-   ========================================================= */
 
 @media (max-width: 850px) {
   .home-navbar {
-    height: 74px;
-
+    min-height: 70px;
     padding: 0 5%;
   }
 
-  .home-main {
+  .home-hero {
     width: min(92%, 650px);
 
     grid-template-columns: 1fr;
 
     gap: 45px;
 
-    padding: 55px 0 70px;
+    padding: 50px 0 55px;
   }
 
   .home-hero-content {
     max-width: 100%;
-
     text-align: center;
   }
 
@@ -1133,161 +1455,147 @@
     margin-right: auto;
   }
 
-  .home-hero-title {
-    font-size: clamp(42px, 8vw, 62px);
-  }
-
   .home-hero-description {
     margin-left: auto;
     margin-right: auto;
   }
 
-  .home-features {
-    max-width: 620px;
-
+  .home-feature-list {
     margin-left: auto;
     margin-right: auto;
 
     text-align: left;
   }
 
-  .home-trust {
+  .home-trust-row {
     justify-content: center;
   }
 
   .home-auth-wrapper {
-    max-width: 520px;
+    width: min(520px, 100%);
 
     margin: 0 auto;
   }
-}
 
-/* =========================================================
-   RESPONSIVE - MOBILE
-   ========================================================= */
+  .home-services {
+    width: min(92%, 650px);
+
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .home-footer {
+    width: min(92%, 650px);
+  }
+}
 
 @media (max-width: 600px) {
   .home-navbar {
-    height: 68px;
-
-    padding: 0 18px;
+    padding: 0 16px;
   }
 
-  .home-brand-icon {
-    width: 40px;
-    height: 40px;
+  .home-logo-icon {
+    width: 39px;
+    height: 39px;
 
-    border-radius: 12px;
-
-    font-size: 18px;
+    font-size: 17px;
   }
 
-  .home-brand-name {
-    font-size: 14px;
+  .home-logo-text strong {
+    font-size: 13px;
   }
 
-  .home-brand-subtitle {
+  .home-logo-text span {
     font-size: 7px;
   }
 
   .home-nav-actions {
-    gap: 6px;
+    gap: 5px;
   }
 
-  .home-nav-login,
-  .home-nav-register {
-    min-height: 36px;
+  .home-nav-button {
+    min-height: 34px;
+    padding: 0 11px;
 
-    padding: 0 12px;
-
-    font-size: 10px;
+    font-size: 9px;
   }
 
-  .home-main {
+  .home-hero {
     width: calc(100% - 28px);
 
-    padding: 40px 0 55px;
+    padding: 40px 0 45px;
 
     gap: 35px;
   }
 
   .home-eyebrow {
-    min-height: 30px;
+    min-height: 29px;
 
-    padding: 0 11px;
+    padding: 0 10px;
 
-    font-size: 8px;
+    font-size: 7px;
   }
 
-  .home-hero-title {
-    font-size: 42px;
-
-    letter-spacing: -0.045em;
+  .home-hero-content h1 {
+    font-size: 40px;
   }
 
   .home-hero-description {
-    font-size: 13px;
-
-    line-height: 1.65;
+    font-size: 12px;
   }
 
-  .home-features {
-    grid-template-columns: 1fr;
+  .home-feature-item {
+    min-height: 58px;
+  }
 
+  .home-trust-row {
     gap: 10px;
-
-    margin-top: 25px;
-  }
-
-  .home-feature {
-    min-height: 62px;
   }
 
   .home-auth-card {
-    padding: 23px 18px;
+    padding: 23px 17px;
 
     border-radius: 21px;
   }
 
   .home-auth-heading h2 {
-    font-size: 24px;
+    font-size: 23px;
   }
 
   .home-role-options {
-    gap: 8px;
-  }
-
-  .home-role-option {
-    min-height: 68px;
-
-    padding: 10px;
-  }
-
-  .home-password-row {
     grid-template-columns: 1fr;
+  }
+
+  .home-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .home-services {
+    grid-template-columns: 1fr;
+  }
+
+  .home-footer {
+    flex-direction: column;
+    gap: 9px;
+
+    text-align: center;
   }
 }
 
-/* =========================================================
-   VERY SMALL MOBILE
-   ========================================================= */
-
 @media (max-width: 400px) {
-  .home-brand-subtitle {
+  .home-logo-text span {
     display: none;
   }
 
-  .home-nav-login,
-  .home-nav-register {
-    padding: 0 10px;
+  .home-nav-button {
+    padding: 0 9px;
   }
 
-  .home-hero-title {
-    font-size: 36px;
+  .home-hero-content h1 {
+    font-size: 34px;
   }
 
   .home-auth-card {
-    padding: 20px 15px;
+    padding: 20px 14px;
   }
 }
 
@@ -1295,13 +1603,13 @@
    ACCESSIBILITY
    ========================================================= */
 
-.home-nav-login:focus-visible,
-.home-nav-register:focus-visible,
+.home-nav-button:focus-visible,
 .home-auth-toggle button:focus-visible,
-.home-role-option:focus-visible,
+.home-role-card:focus-visible,
 .home-submit-button:focus-visible,
-.home-auth-footer button:focus-visible,
-.home-forgot:focus-visible {
+.home-form-footer button:focus-visible,
+.home-primary-button:focus-visible,
+.home-input-wrapper input:focus-visible {
   outline: 3px solid rgba(124, 58, 237, 0.22);
   outline-offset: 3px;
 }
@@ -1311,13 +1619,12 @@
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-  .home-feature,
-  .home-nav-login,
-  .home-nav-register,
-  .home-role-option,
-  .home-submit-button,
-  .home-auth-toggle button,
-  .home-form-input {
-    transition: none;
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
