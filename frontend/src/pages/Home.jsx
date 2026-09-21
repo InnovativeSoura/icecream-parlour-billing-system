@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -19,10 +19,19 @@ import { useAuth } from "../context/AuthContext";
 
 import "./Home.css";
 
+const CUSTOMER_PORTAL_URL =
+  "https://icecream-parlour-customer-billing-system.onrender.com";
+
 const Home = () => {
   const navigate = useNavigate();
 
-  const { user, loading, login, register } = useAuth();
+  const {
+    user,
+    loading,
+    login,
+    register,
+    logout,
+  } = useAuth();
 
   const [authMode, setAuthMode] = useState("login");
 
@@ -41,6 +50,43 @@ const Home = () => {
 
   const [submitting, setSubmitting] = useState(false);
 
+  /*
+   * ---------------------------------------------------------
+   * CUSTOMER SESSION CLEANUP
+   * ---------------------------------------------------------
+   *
+   * This frontend belongs to ADMIN + STAFF.
+   *
+   * If a customer accidentally has a session stored here,
+   * remove that session and return to the normal Home page.
+   */
+  useEffect(() => {
+    if (loading) return;
+
+    if (user?.role === "customer") {
+      const removeCustomerSession = async () => {
+        try {
+          await logout();
+        } catch (error) {
+          console.error(
+            "Failed to clear customer session:",
+            error
+          );
+
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        }
+      };
+
+      removeCustomerSession();
+    }
+  }, [user, loading, logout]);
+
+  /*
+   * ---------------------------------------------------------
+   * ROLE REDIRECTION
+   * ---------------------------------------------------------
+   */
   const redirectByRole = (authenticatedUser) => {
     if (!authenticatedUser?.role) {
       navigate("/", { replace: true });
@@ -49,24 +95,42 @@ const Home = () => {
 
     switch (authenticatedUser.role) {
       case "admin":
-        navigate("/admin/dashboard", { replace: true });
+        navigate("/admin/dashboard", {
+          replace: true,
+        });
         break;
 
       case "staff":
-        navigate("/staff/dashboard", { replace: true });
+        navigate("/staff/dashboard", {
+          replace: true,
+        });
         break;
 
       case "customer":
-        toast.error("Customer accounts must use the customer portal.");
-        navigate("/", { replace: true });
+        /*
+         * Customer accounts belong to the separate
+         * customer frontend.
+         */
+        toast.info(
+          "Customer accounts use the customer portal."
+        );
+
+        window.location.href = CUSTOMER_PORTAL_URL;
         break;
 
       default:
-        navigate("/", { replace: true });
+        navigate("/", {
+          replace: true,
+        });
         break;
     }
   };
 
+  /*
+   * ---------------------------------------------------------
+   * LOGIN FORM
+   * ---------------------------------------------------------
+   */
   const handleLoginChange = (event) => {
     const { name, value } = event.target;
 
@@ -76,6 +140,11 @@ const Home = () => {
     }));
   };
 
+  /*
+   * ---------------------------------------------------------
+   * REGISTER FORM
+   * ---------------------------------------------------------
+   */
   const handleRegisterChange = (event) => {
     const { name, value } = event.target;
 
@@ -85,6 +154,11 @@ const Home = () => {
     }));
   };
 
+  /*
+   * ---------------------------------------------------------
+   * LOGIN
+   * ---------------------------------------------------------
+   */
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -104,10 +178,60 @@ const Home = () => {
     try {
       setSubmitting(true);
 
-      const loggedInUser = await login(email, password);
+      const loggedInUser = await login(
+        email,
+        password
+      );
 
-      if (loggedInUser?.role !== "admin" && loggedInUser?.role !== "staff") {
-        toast.error("Customer accounts must use the customer portal.");
+      /*
+       * CUSTOMER
+       * -----------------------------------------------------
+       * The AuthContext may already have stored the user.
+       * Therefore we MUST immediately remove the customer
+       * session before returning to this page.
+       */
+      if (loggedInUser?.role === "customer") {
+        try {
+          await logout();
+        } catch (logoutError) {
+          console.error(
+            "Customer logout failed:",
+            logoutError
+          );
+
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        }
+
+        toast.info(
+          "Customer accounts must use the customer portal."
+        );
+
+        return;
+      }
+
+      /*
+       * Unknown role
+       */
+      if (
+        loggedInUser?.role !== "admin" &&
+        loggedInUser?.role !== "staff"
+      ) {
+        try {
+          await logout();
+        } catch (logoutError) {
+          console.error(
+            "Logout failed:",
+            logoutError
+          );
+
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        }
+
+        toast.error(
+          "This account is not authorized for this portal."
+        );
 
         return;
       }
@@ -129,6 +253,11 @@ const Home = () => {
     }
   };
 
+  /*
+   * ---------------------------------------------------------
+   * STAFF REGISTRATION
+   * ---------------------------------------------------------
+   */
   const handleRegister = async (event) => {
     event.preventDefault();
 
@@ -136,7 +265,8 @@ const Home = () => {
     const email = registerForm.email.trim();
     const phone = registerForm.phone.trim();
     const password = registerForm.password;
-    const confirmPassword = registerForm.confirmPassword;
+    const confirmPassword =
+      registerForm.confirmPassword;
 
     if (!name) {
       toast.error("Please enter your name.");
@@ -144,12 +274,16 @@ const Home = () => {
     }
 
     if (name.length < 2) {
-      toast.error("Name must contain at least 2 characters.");
+      toast.error(
+        "Name must contain at least 2 characters."
+      );
       return;
     }
 
     if (!email) {
-      toast.error("Please enter your email address.");
+      toast.error(
+        "Please enter your email address."
+      );
       return;
     }
 
@@ -159,12 +293,9 @@ const Home = () => {
     }
 
     if (password.length < 6) {
-      toast.error("Password must contain at least 6 characters.");
-      return;
-    }
-
-    if (!confirmPassword) {
-      toast.error("Please confirm your password.");
+      toast.error(
+        "Password must contain at least 6 characters."
+      );
       return;
     }
 
@@ -184,11 +315,16 @@ const Home = () => {
         role: "staff",
       });
 
-      toast.success("Staff account created successfully!");
+      toast.success(
+        "Staff account created successfully!"
+      );
 
       redirectByRole(registeredUser);
     } catch (error) {
-      console.error("Registration failed:", error);
+      console.error(
+        "Registration failed:",
+        error
+      );
 
       const message =
         error?.response?.data?.message ||
@@ -201,6 +337,11 @@ const Home = () => {
     }
   };
 
+  /*
+   * ---------------------------------------------------------
+   * SWITCH LOGIN / REGISTER
+   * ---------------------------------------------------------
+   */
   const switchAuthMode = (mode) => {
     if (submitting) return;
 
@@ -220,7 +361,52 @@ const Home = () => {
     });
   };
 
-  if (!loading && user) {
+  /*
+   * ---------------------------------------------------------
+   * LOADING
+   * ---------------------------------------------------------
+   */
+  if (loading) {
+    return (
+      <div className="app-loading-screen">
+        <div className="app-loading-content">
+          <div className="app-loading-icon">
+            <FaIceCream />
+          </div>
+
+          <div className="app-loading-title">
+            IceCream Parlour
+          </div>
+
+          <div className="app-loading-text">
+            Preparing your workspace...
+          </div>
+
+          <div className="app-loading-spinner" />
+        </div>
+      </div>
+    );
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * IMPORTANT
+   * ---------------------------------------------------------
+   *
+   * Customer users are NOT allowed to see the authenticated
+   * admin/staff card.
+   *
+   * If the customer session is being cleared by useEffect,
+   * we simply render the normal Home page.
+   *
+   * Only admin/staff get the "Welcome back" card.
+   */
+  if (
+    user &&
+    user.role !== "customer" &&
+    (user.role === "admin" ||
+      user.role === "staff")
+  ) {
     return (
       <div className="home-authenticated">
         <div className="home-authenticated-card">
@@ -228,14 +414,21 @@ const Home = () => {
             <FaIceCream />
           </div>
 
-          <h2>Welcome back, {user.name}</h2>
+          <h2>
+            Welcome back, {user.name}
+          </h2>
 
-          <p>Your IceCream Parlour account is already signed in.</p>
+          <p>
+            Your IceCream Parlour account is already
+            signed in.
+          </p>
 
           <button
             type="button"
             className="home-primary-button"
-            onClick={() => redirectByRole(user)}
+            onClick={() =>
+              redirectByRole(user)
+            }
           >
             Open Dashboard
             <FaArrowRight />
@@ -245,6 +438,11 @@ const Home = () => {
     );
   }
 
+  /*
+   * ---------------------------------------------------------
+   * MAIN HOME PAGE
+   * ---------------------------------------------------------
+   */
   return (
     <main className="home-page">
       <div className="home-background">
@@ -253,6 +451,9 @@ const Home = () => {
         <div className="home-orb home-orb-three" />
       </div>
 
+      {/* =====================================================
+          NAVBAR
+          ===================================================== */}
       <header className="home-navbar">
         <div className="home-logo">
           <div className="home-logo-icon">
@@ -273,26 +474,32 @@ const Home = () => {
                 ? "home-nav-button active"
                 : "home-nav-button"
             }
-            onClick={() => switchAuthMode("login")}
+            onClick={() =>
+              switchAuthMode("login")
+            }
           >
             Login
           </button>
 
           <button
             type="button"
-            className={
-              authMode === "register"
-                ? "home-nav-button primary"
-                : "home-nav-button primary"
+            className="home-nav-button primary"
+            onClick={() =>
+              switchAuthMode("register")
             }
-            onClick={() => switchAuthMode("register")}
           >
             Register
           </button>
         </div>
       </header>
 
+      {/* =====================================================
+          HERO
+          ===================================================== */}
       <section className="home-hero">
+        {/* ===================================================
+            LEFT CONTENT
+            =================================================== */}
         <div className="home-hero-content">
           <div className="home-eyebrow">
             <span className="home-eyebrow-dot" />
@@ -306,8 +513,10 @@ const Home = () => {
           </h1>
 
           <p className="home-hero-description">
-            A modern billing and ordering platform designed to make ice cream
-            parlour operations faster, simpler, and more delightful.
+            A modern billing and ordering platform
+            designed to make ice cream parlour
+            operations faster, simpler, and more
+            delightful.
           </p>
 
           <div className="home-feature-list">
@@ -319,7 +528,9 @@ const Home = () => {
               <div>
                 <strong>Smart Billing</strong>
 
-                <span>Fast and organized POS billing</span>
+                <span>
+                  Fast and organized POS billing
+                </span>
               </div>
             </div>
 
@@ -331,7 +542,9 @@ const Home = () => {
               <div>
                 <strong>Easy Ordering</strong>
 
-                <span>Seamless customer ordering</span>
+                <span>
+                  Seamless customer ordering
+                </span>
               </div>
             </div>
 
@@ -343,7 +556,9 @@ const Home = () => {
               <div>
                 <strong>Secure Payments</strong>
 
-                <span>Reliable online payment processing</span>
+                <span>
+                  Reliable online payment processing
+                </span>
               </div>
             </div>
           </div>
@@ -366,6 +581,9 @@ const Home = () => {
           </div>
         </div>
 
+        {/* ===================================================
+            AUTH CARD
+            =================================================== */}
         <div className="home-auth-wrapper">
           <div className="home-auth-card">
             <div className="home-auth-header">
@@ -375,9 +593,13 @@ const Home = () => {
                 </div>
 
                 <div>
-                  <strong>IceCream Parlour</strong>
+                  <strong>
+                    IceCream Parlour
+                  </strong>
 
-                  <span>Billing &amp; Ordering System</span>
+                  <span>
+                    Billing & Ordering System
+                  </span>
                 </div>
               </div>
 
@@ -396,30 +618,51 @@ const Home = () => {
               </div>
             </div>
 
+            {/* =================================================
+                AUTH TOGGLE
+                ================================================= */}
             <div className="home-auth-toggle">
               <button
                 type="button"
-                className={authMode === "login" ? "active" : ""}
-                onClick={() => switchAuthMode("login")}
-                disabled={submitting}
+                className={
+                  authMode === "login"
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  switchAuthMode("login")
+                }
               >
                 Login
               </button>
 
               <button
                 type="button"
-                className={authMode === "register" ? "active" : ""}
-                onClick={() => switchAuthMode("register")}
-                disabled={submitting}
+                className={
+                  authMode === "register"
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  switchAuthMode("register")
+                }
               >
                 Register
               </button>
             </div>
 
+            {/* =================================================
+                LOGIN FORM
+                ================================================= */}
             {authMode === "login" && (
-              <form className="home-auth-form" onSubmit={handleLogin}>
+              <form
+                className="home-auth-form"
+                onSubmit={handleLogin}
+              >
                 <div className="home-form-group">
-                  <label htmlFor="home-login-email">Email address</label>
+                  <label htmlFor="home-login-email">
+                    Email address
+                  </label>
 
                   <div className="home-input-wrapper">
                     <FaUser />
@@ -429,7 +672,9 @@ const Home = () => {
                       type="email"
                       name="email"
                       value={loginForm.email}
-                      onChange={handleLoginChange}
+                      onChange={
+                        handleLoginChange
+                      }
                       placeholder="Enter your email"
                       autoComplete="email"
                       disabled={submitting}
@@ -438,7 +683,9 @@ const Home = () => {
                 </div>
 
                 <div className="home-form-group">
-                  <label htmlFor="home-login-password">Password</label>
+                  <label htmlFor="home-login-password">
+                    Password
+                  </label>
 
                   <div className="home-input-wrapper">
                     <FaLock />
@@ -447,8 +694,12 @@ const Home = () => {
                       id="home-login-password"
                       type="password"
                       name="password"
-                      value={loginForm.password}
-                      onChange={handleLoginChange}
+                      value={
+                        loginForm.password
+                      }
+                      onChange={
+                        handleLoginChange
+                      }
                       placeholder="Enter your password"
                       autoComplete="current-password"
                       disabled={submitting}
@@ -461,17 +712,27 @@ const Home = () => {
                   className="home-submit-button"
                   disabled={submitting}
                 >
-                  {submitting ? "Signing in..." : "Sign In"}
+                  {submitting
+                    ? "Signing in..."
+                    : "Sign In"}
 
-                  {!submitting && <FaArrowRight />}
+                  {!submitting && (
+                    <FaArrowRight />
+                  )}
                 </button>
 
                 <div className="home-form-footer">
-                  <span>Don't have an account?</span>
+                  <span>
+                    Don't have an account?
+                  </span>
 
                   <button
                     type="button"
-                    onClick={() => switchAuthMode("register")}
+                    onClick={() =>
+                      switchAuthMode(
+                        "register"
+                      )
+                    }
                     disabled={submitting}
                   >
                     Create one
@@ -480,6 +741,9 @@ const Home = () => {
               </form>
             )}
 
+            {/* =================================================
+                REGISTER FORM
+                ================================================= */}
             {authMode === "register" && (
               <form
                 className="home-auth-form register-form"
@@ -487,24 +751,32 @@ const Home = () => {
               >
                 <div className="home-role-section">
                   <div className="home-role-heading">
-                    <span>ACCOUNT TYPE</span>
+                    <div>
+                      <span>
+                        ACCOUNT TYPE
+                      </span>
 
-                    <strong>Staff account</strong>
+                      <strong>
+                        Staff account
+                      </strong>
+                    </div>
                   </div>
 
                   <div className="home-role-options">
-                    <div
-                      className="home-role-card active"
-                      aria-label="Staff account"
-                    >
+                    <div className="home-role-card active">
                       <div className="home-role-icon">
                         <FaUserTie />
                       </div>
 
                       <div className="home-role-copy">
-                        <strong>Staff</strong>
+                        <strong>
+                          Staff
+                        </strong>
 
-                        <span>Billing &amp; daily operations</span>
+                        <span>
+                          Billing & daily
+                          operations
+                        </span>
                       </div>
 
                       <div className="home-role-check">
@@ -515,7 +787,9 @@ const Home = () => {
                 </div>
 
                 <div className="home-form-group">
-                  <label htmlFor="home-register-name">Full name</label>
+                  <label htmlFor="home-register-name">
+                    Full name
+                  </label>
 
                   <div className="home-input-wrapper">
                     <FaUser />
@@ -524,8 +798,12 @@ const Home = () => {
                       id="home-register-name"
                       type="text"
                       name="name"
-                      value={registerForm.name}
-                      onChange={handleRegisterChange}
+                      value={
+                        registerForm.name
+                      }
+                      onChange={
+                        handleRegisterChange
+                      }
                       placeholder="Enter your full name"
                       autoComplete="name"
                       disabled={submitting}
@@ -534,7 +812,9 @@ const Home = () => {
                 </div>
 
                 <div className="home-form-group">
-                  <label htmlFor="home-register-email">Email address</label>
+                  <label htmlFor="home-register-email">
+                    Email address
+                  </label>
 
                   <div className="home-input-wrapper">
                     <FaUser />
@@ -543,8 +823,12 @@ const Home = () => {
                       id="home-register-email"
                       type="email"
                       name="email"
-                      value={registerForm.email}
-                      onChange={handleRegisterChange}
+                      value={
+                        registerForm.email
+                      }
+                      onChange={
+                        handleRegisterChange
+                      }
                       placeholder="Enter your email"
                       autoComplete="email"
                       disabled={submitting}
@@ -555,7 +839,9 @@ const Home = () => {
                 <div className="home-form-group">
                   <label htmlFor="home-register-phone">
                     Phone number
-                    <span className="optional-label">Optional</span>
+                    <span className="optional-label">
+                      Optional
+                    </span>
                   </label>
 
                   <div className="home-input-wrapper">
@@ -565,8 +851,12 @@ const Home = () => {
                       id="home-register-phone"
                       type="tel"
                       name="phone"
-                      value={registerForm.phone}
-                      onChange={handleRegisterChange}
+                      value={
+                        registerForm.phone
+                      }
+                      onChange={
+                        handleRegisterChange
+                      }
                       placeholder="Enter your phone number"
                       autoComplete="tel"
                       maxLength={20}
@@ -577,7 +867,9 @@ const Home = () => {
 
                 <div className="home-form-row">
                   <div className="home-form-group">
-                    <label htmlFor="home-register-password">Password</label>
+                    <label htmlFor="home-register-password">
+                      Password
+                    </label>
 
                     <div className="home-input-wrapper">
                       <FaLock />
@@ -586,8 +878,12 @@ const Home = () => {
                         id="home-register-password"
                         type="password"
                         name="password"
-                        value={registerForm.password}
-                        onChange={handleRegisterChange}
+                        value={
+                          registerForm.password
+                        }
+                        onChange={
+                          handleRegisterChange
+                        }
                         placeholder="Minimum 6 characters"
                         autoComplete="new-password"
                         disabled={submitting}
@@ -607,8 +903,12 @@ const Home = () => {
                         id="home-register-confirm-password"
                         type="password"
                         name="confirmPassword"
-                        value={registerForm.confirmPassword}
-                        onChange={handleRegisterChange}
+                        value={
+                          registerForm.confirmPassword
+                        }
+                        onChange={
+                          handleRegisterChange
+                        }
                         placeholder="Repeat password"
                         autoComplete="new-password"
                         disabled={submitting}
@@ -622,17 +922,25 @@ const Home = () => {
                   className="home-submit-button"
                   disabled={submitting}
                 >
-                  {submitting ? "Creating account..." : "Create Staff Account"}
+                  {submitting
+                    ? "Creating account..."
+                    : "Create Staff Account"}
 
-                  {!submitting && <FaArrowRight />}
+                  {!submitting && (
+                    <FaArrowRight />
+                  )}
                 </button>
 
                 <div className="home-form-footer">
-                  <span>Already have an account?</span>
+                  <span>
+                    Already have an account?
+                  </span>
 
                   <button
                     type="button"
-                    onClick={() => switchAuthMode("login")}
+                    onClick={() =>
+                      switchAuthMode("login")
+                    }
                     disabled={submitting}
                   >
                     Sign in
@@ -641,15 +949,24 @@ const Home = () => {
               </form>
             )}
 
+            {/* =================================================
+                SECURITY MESSAGE
+                ================================================= */}
             <div className="home-auth-security">
               <FaShieldAlt />
 
-              <span>Your account information is securely protected.</span>
+              <span>
+                Your account information is securely
+                protected.
+              </span>
             </div>
           </div>
         </div>
       </section>
 
+      {/* =====================================================
+          SERVICES
+          ===================================================== */}
       <section className="home-services">
         <div className="home-service-card">
           <div className="home-service-icon">
@@ -659,7 +976,9 @@ const Home = () => {
           <div>
             <strong>Billing</strong>
 
-            <span>Fast POS transactions</span>
+            <span>
+              Fast POS transactions
+            </span>
           </div>
         </div>
 
@@ -671,7 +990,9 @@ const Home = () => {
           <div>
             <strong>Orders</strong>
 
-            <span>Simple order management</span>
+            <span>
+              Simple order management
+            </span>
           </div>
         </div>
 
@@ -683,7 +1004,9 @@ const Home = () => {
           <div>
             <strong>Inventory</strong>
 
-            <span>Keep stock under control</span>
+            <span>
+              Keep stock under control
+            </span>
           </div>
         </div>
 
@@ -695,20 +1018,28 @@ const Home = () => {
           <div>
             <strong>Secure</strong>
 
-            <span>Protected account access</span>
+            <span>
+              Protected account access
+            </span>
           </div>
         </div>
       </section>
 
+      {/* =====================================================
+          FOOTER
+          ===================================================== */}
       <footer className="home-footer">
         <div className="home-footer-brand">
           <FaIceCream />
 
-          <span>IceCream Billing System</span>
+          <span>
+            IceCream Billing System
+          </span>
         </div>
 
         <span>
-          © {new Date().getFullYear()} IceCream Parlour. All rights reserved.
+          © {new Date().getFullYear()} IceCream
+          Parlour. All rights reserved.
         </span>
       </footer>
     </main>
