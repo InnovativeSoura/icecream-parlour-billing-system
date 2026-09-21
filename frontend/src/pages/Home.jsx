@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -21,25 +19,17 @@ import { useAuth } from "../context/AuthContext";
 
 import "./Home.css";
 
-
-
 const Home = () => {
   const navigate = useNavigate();
 
   const { user, loading, login, register } = useAuth();
 
-  
-
   const [authMode, setAuthMode] = useState("login");
-
-  
 
   const [loginForm, setLoginForm] = useState({
     email: "",
     password: "",
   });
-
-  
 
   const [registerForm, setRegisterForm] = useState({
     name: "",
@@ -49,11 +39,8 @@ const Home = () => {
     confirmPassword: "",
   });
 
-  
-
   const [submitting, setSubmitting] = useState(false);
 
-  
   const redirectByRole = (authenticatedUser) => {
     if (!authenticatedUser?.role) {
       navigate("/", { replace: true });
@@ -70,9 +57,7 @@ const Home = () => {
         break;
 
       case "customer":
-        
         toast.error("Customer accounts must use the customer portal.");
-
         navigate("/", { replace: true });
         break;
 
@@ -81,8 +66,6 @@ const Home = () => {
         break;
     }
   };
-
-  
 
   const handleLoginChange = (event) => {
     const { name, value } = event.target;
@@ -93,8 +76,6 @@ const Home = () => {
     }));
   };
 
-  
-
   const handleRegisterChange = (event) => {
     const { name, value } = event.target;
 
@@ -104,15 +85,11 @@ const Home = () => {
     }));
   };
 
-  
-
   const handleLogin = async (event) => {
     event.preventDefault();
 
     const email = loginForm.email.trim();
     const password = loginForm.password;
-
-    
 
     if (!email) {
       toast.error("Please enter your email address.");
@@ -124,14 +101,10 @@ const Home = () => {
       return;
     }
 
-    
-
     try {
       setSubmitting(true);
 
       const loggedInUser = await login(email, password);
-
-      
 
       if (loggedInUser?.role !== "admin" && loggedInUser?.role !== "staff") {
         toast.error("Customer accounts must use the customer portal.");
@@ -156,8 +129,6 @@ const Home = () => {
     }
   };
 
-  
-
   const handleRegister = async (event) => {
     event.preventDefault();
 
@@ -166,8 +137,6 @@ const Home = () => {
     const phone = registerForm.phone.trim();
     const password = registerForm.password;
     const confirmPassword = registerForm.confirmPassword;
-
-    
 
     if (!name) {
       toast.error("Please enter your name.");
@@ -194,12 +163,15 @@ const Home = () => {
       return;
     }
 
+    if (!confirmPassword) {
+      toast.error("Please confirm your password.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       toast.error("Passwords do not match.");
       return;
     }
-
-    
 
     try {
       setSubmitting(true);
@@ -209,8 +181,6 @@ const Home = () => {
         email,
         phone,
         password,
-
-        
         role: "staff",
       });
 
@@ -231,8 +201,6 @@ const Home = () => {
     }
   };
 
-  
-
   const switchAuthMode = (mode) => {
     if (submitting) return;
 
@@ -251,8 +219,6 @@ const Home = () => {
       confirmPassword: "",
     });
   };
-
-  
 
   if (!loading && user) {
     return (
@@ -295,7 +261,6 @@ const Home = () => {
 
           <div className="home-logo-text">
             <strong>IceCream</strong>
-
             <span>BILLING SYSTEM</span>
           </div>
         </div>
@@ -315,7 +280,11 @@ const Home = () => {
 
           <button
             type="button"
-            className="home-nav-button primary"
+            className={
+              authMode === "register"
+                ? "home-nav-button primary"
+                : "home-nav-button primary"
+            }
             onClick={() => switchAuthMode("register")}
           >
             Register
@@ -408,7 +377,7 @@ const Home = () => {
                 <div>
                   <strong>IceCream Parlour</strong>
 
-                  <span>Billing & Ordering System</span>
+                  <span>Billing &amp; Ordering System</span>
                 </div>
               </div>
 
@@ -432,6 +401,7 @@ const Home = () => {
                 type="button"
                 className={authMode === "login" ? "active" : ""}
                 onClick={() => switchAuthMode("login")}
+                disabled={submitting}
               >
                 Login
               </button>
@@ -440,6 +410,7 @@ const Home = () => {
                 type="button"
                 className={authMode === "register" ? "active" : ""}
                 onClick={() => switchAuthMode("register")}
+                disabled={submitting}
               >
                 Register
               </button>
@@ -516,15 +487,16 @@ const Home = () => {
               >
                 <div className="home-role-section">
                   <div className="home-role-heading">
-                    <div>
-                      <span>ACCOUNT TYPE</span>
+                    <span>ACCOUNT TYPE</span>
 
-                      <strong>Staff account</strong>
-                    </div>
+                    <strong>Staff account</strong>
                   </div>
 
                   <div className="home-role-options">
-                    <div className="home-role-card active">
+                    <div
+                      className="home-role-card active"
+                      aria-label="Staff account"
+                    >
                       <div className="home-role-icon">
                         <FaUserTie />
                       </div>
@@ -532,7 +504,7 @@ const Home = () => {
                       <div className="home-role-copy">
                         <strong>Staff</strong>
 
-                        <span>Billing & daily operations</span>
+                        <span>Billing &amp; daily operations</span>
                       </div>
 
                       <div className="home-role-check">
