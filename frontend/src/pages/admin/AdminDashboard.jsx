@@ -60,7 +60,7 @@ const getOrderTotal = (order) => {
       order?.totalAmount ??
       order?.total ??
       order?.amount ??
-      0
+      0,
   );
 };
 
@@ -77,18 +77,20 @@ const getStockValue = (item) => {
       item?.currentStock ??
       item?.availableQuantity ??
       item?.stockQuantity ??
-      0
+      0,
   );
 };
 
 const getInitials = (name = "") => {
-  return String(name)
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part.charAt(0))
-    .join("")
-    .toUpperCase() || "AD";
+  return (
+    String(name)
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part.charAt(0))
+      .join("")
+      .toUpperCase() || "AD"
+  );
 };
 
 const AdminDashboard = () => {
@@ -151,7 +153,7 @@ const AdminDashboard = () => {
           item?.lowStockThreshold ??
             item?.reorderLevel ??
             item?.minimumStock ??
-            5
+            5,
         );
 
         return stock <= threshold;
@@ -173,7 +175,7 @@ const AdminDashboard = () => {
         .sort(
           (a, b) =>
             new Date(b?.createdAt || b?.date || 0) -
-            new Date(a?.createdAt || a?.date || 0)
+            new Date(a?.createdAt || a?.date || 0),
         )
         .slice(0, 4);
 
@@ -201,9 +203,7 @@ const AdminDashboard = () => {
 
   const firstName = useMemo(() => {
     return (
-      user?.name?.trim()?.split(" ")[0] ||
-      user?.email?.split("@")[0] ||
-      "Admin"
+      user?.name?.trim()?.split(" ")[0] || user?.email?.split("@")[0] || "Admin"
     );
   }, [user]);
 
@@ -302,10 +302,6 @@ const AdminDashboard = () => {
 
   return (
     <main className="admin-dashboard-page">
-      {/* =====================================================
-          TOP INTRO
-          ===================================================== */}
-
       <motion.section
         className="admin-dashboard-intro"
         initial={{ opacity: 0, y: 16 }}
@@ -313,9 +309,7 @@ const AdminDashboard = () => {
         transition={{ duration: 0.45 }}
       >
         <div className="admin-dashboard-intro-copy">
-          <span className="admin-dashboard-eyebrow">
-            OVERVIEW
-          </span>
+          <span className="admin-dashboard-eyebrow">OVERVIEW</span>
 
           <h1>
             Welcome back, {firstName}
@@ -323,8 +317,7 @@ const AdminDashboard = () => {
           </h1>
 
           <p>
-            Here&apos;s what&apos;s happening with your ice cream
-            parlour today.
+            Here&apos;s what&apos;s happening with your ice cream parlour today.
           </p>
         </div>
 
@@ -350,10 +343,6 @@ const AdminDashboard = () => {
         </div>
       </motion.section>
 
-      {/* =====================================================
-          KPI CARDS
-          ===================================================== */}
-
       <section className="admin-dashboard-stats">
         <motion.article
           className="admin-stat-card purple"
@@ -366,13 +355,9 @@ const AdminDashboard = () => {
           </div>
 
           <div className="admin-stat-content">
-            <span className="admin-stat-label">
-              TOTAL PRODUCTS
-            </span>
+            <span className="admin-stat-label">TOTAL PRODUCTS</span>
 
-            <strong>
-              {loading ? "—" : stats.products}
-            </strong>
+            <strong>{loading ? "—" : stats.products}</strong>
 
             <small>
               <FaCheckCircle />
@@ -392,13 +377,9 @@ const AdminDashboard = () => {
           </div>
 
           <div className="admin-stat-content">
-            <span className="admin-stat-label">
-              REGISTERED CUSTOMERS
-            </span>
+            <span className="admin-stat-label">REGISTERED CUSTOMERS</span>
 
-            <strong>
-              {loading ? "—" : stats.customers}
-            </strong>
+            <strong>{loading ? "—" : stats.customers}</strong>
 
             <small>
               <FaCheckCircle />
@@ -418,13 +399,9 @@ const AdminDashboard = () => {
           </div>
 
           <div className="admin-stat-content">
-            <span className="admin-stat-label">
-              INVENTORY ITEMS
-            </span>
+            <span className="admin-stat-label">INVENTORY ITEMS</span>
 
-            <strong>
-              {loading ? "—" : stats.inventory}
-            </strong>
+            <strong>{loading ? "—" : stats.inventory}</strong>
 
             <small>
               <FaCheckCircle />
@@ -444,13 +421,9 @@ const AdminDashboard = () => {
           </div>
 
           <div className="admin-stat-content">
-            <span className="admin-stat-label">
-              COLLECTED REVENUE
-            </span>
+            <span className="admin-stat-label">COLLECTED REVENUE</span>
 
-            <strong>
-              {loading ? "—" : formatCurrency(stats.revenue)}
-            </strong>
+            <strong>{loading ? "—" : formatCurrency(stats.revenue)}</strong>
 
             <small>
               <FaChartLine />
@@ -460,13 +433,7 @@ const AdminDashboard = () => {
         </motion.article>
       </section>
 
-      {/* =====================================================
-          MAIN WORKSPACE
-          ===================================================== */}
-
       <section className="admin-dashboard-workspace">
-        {/* QUICK ACTIONS */}
-
         <motion.article
           className="admin-dashboard-panel quick-actions-panel"
           initial={{ opacity: 0, y: 20 }}
@@ -515,8 +482,6 @@ const AdminDashboard = () => {
           </div>
         </motion.article>
 
-        {/* SYSTEM STATUS */}
-
         <motion.article
           className="admin-dashboard-panel system-status-panel"
           initial={{ opacity: 0, y: 20 }}
@@ -540,10 +505,7 @@ const AdminDashboard = () => {
               const Icon = item.icon;
 
               return (
-                <div
-                  className="admin-system-row"
-                  key={item.title}
-                >
+                <div className="admin-system-row" key={item.title}>
                   <span className="admin-system-check">
                     <FaCheckCircle />
                   </span>
@@ -553,19 +515,13 @@ const AdminDashboard = () => {
                     <small>{item.description}</small>
                   </span>
 
-                  <span className="admin-system-value">
-                    {item.value}
-                  </span>
+                  <span className="admin-system-value">{item.value}</span>
                 </div>
               );
             })}
           </div>
         </motion.article>
       </section>
-
-      {/* =====================================================
-          INVENTORY ALERTS
-          ===================================================== */}
 
       <motion.section
         className="admin-dashboard-panel admin-stock-panel"
@@ -602,9 +558,7 @@ const AdminDashboard = () => {
 
             <div>
               <strong>Inventory looks healthy</strong>
-              <p>
-                No low-stock items require immediate attention.
-              </p>
+              <p>No low-stock items require immediate attention.</p>
             </div>
           </div>
         ) : (
@@ -615,12 +569,7 @@ const AdminDashboard = () => {
               return (
                 <div
                   className="admin-stock-row"
-                  key={
-                    item?._id ||
-                    item?.id ||
-                    item?.product?._id ||
-                    index
-                  }
+                  key={item?._id || item?.id || item?.product?._id || index}
                 >
                   <span className="admin-stock-warning-icon">
                     <FaExclamationTriangle />
@@ -640,19 +589,13 @@ const AdminDashboard = () => {
                     </span>
                   </div>
 
-                  <span className="admin-stock-badge">
-                    LOW STOCK
-                  </span>
+                  <span className="admin-stock-badge">LOW STOCK</span>
                 </div>
               );
             })}
           </div>
         )}
       </motion.section>
-
-      {/* =====================================================
-          RECENT ORDERS
-          ===================================================== */}
 
       <motion.section
         className="admin-dashboard-panel admin-recent-orders-panel"
@@ -689,10 +632,7 @@ const AdminDashboard = () => {
 
             <strong>No recent orders</strong>
 
-            <p>
-              New orders will appear here once customers make
-              purchases.
-            </p>
+            <p>New orders will appear here once customers make purchases.</p>
           </div>
         ) : (
           <div className="admin-orders-table-wrapper">
@@ -712,58 +652,35 @@ const AdminDashboard = () => {
                   const status = getOrderStatus(order);
 
                   return (
-                    <tr
-                      key={
-                        order?._id ||
-                        order?.id ||
-                        index
-                      }
-                    >
+                    <tr key={order?._id || order?.id || index}>
                       <td>
                         <div className="admin-order-number">
                           <span>
                             <FaClipboardList />
                           </span>
 
-                          <strong>
-                            {getOrderNumber(order)}
-                          </strong>
+                          <strong>{getOrderNumber(order)}</strong>
                         </div>
                       </td>
 
                       <td>
                         <div className="admin-order-customer">
-                          <span>
-                            {getInitials(
-                              getOrderCustomer(order)
-                            )}
-                          </span>
+                          <span>{getInitials(getOrderCustomer(order))}</span>
 
-                          <strong>
-                            {getOrderCustomer(order)}
-                          </strong>
+                          <strong>{getOrderCustomer(order)}</strong>
                         </div>
                       </td>
 
-                      <td>
-                        {formatDate(
-                          order?.createdAt ||
-                            order?.date
-                        )}
-                      </td>
+                      <td>{formatDate(order?.createdAt || order?.date)}</td>
 
                       <td>
                         <strong className="admin-order-amount">
-                          {formatCurrency(
-                            getOrderTotal(order)
-                          )}
+                          {formatCurrency(getOrderTotal(order))}
                         </strong>
                       </td>
 
                       <td>
-                        <span
-                          className={`admin-order-status ${status}`}
-                        >
+                        <span className={`admin-order-status ${status}`}>
                           {status}
                         </span>
                       </td>
@@ -776,10 +693,6 @@ const AdminDashboard = () => {
         )}
       </motion.section>
 
-      {/* =====================================================
-          FOOTER
-          ===================================================== */}
-
       <footer className="admin-dashboard-footer">
         <div>
           <span className="admin-footer-logo">
@@ -790,9 +703,7 @@ const AdminDashboard = () => {
           <span>Admin Control Center</span>
         </div>
 
-        <span>
-          © {new Date().getFullYear()} All rights reserved.
-        </span>
+        <span>© {new Date().getFullYear()} All rights reserved.</span>
       </footer>
     </main>
   );

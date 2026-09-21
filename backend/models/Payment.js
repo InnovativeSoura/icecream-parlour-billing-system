@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema(
   {
-    // Related order
     order: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Order",
@@ -10,7 +9,6 @@ const paymentSchema = new mongoose.Schema(
       index: true,
     },
 
-    // User who initiated the payment
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -18,7 +16,6 @@ const paymentSchema = new mongoose.Schema(
       index: true,
     },
 
-    // Customer associated with the order
     customer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Customer",
@@ -26,21 +23,13 @@ const paymentSchema = new mongoose.Schema(
       index: true,
     },
 
-    // Payment gateway / method
     gateway: {
       type: String,
-      enum: [
-        "razorpay",
-        "cash",
-        "upi",
-        "card",
-        "other",
-      ],
+      enum: ["razorpay", "cash", "upi", "card", "other"],
       required: [true, "Payment gateway is required"],
       index: true,
     },
 
-    // Amount in INR
     amount: {
       type: Number,
       required: [true, "Payment amount is required"],
@@ -55,7 +44,6 @@ const paymentSchema = new mongoose.Schema(
       maxlength: 3,
     },
 
-    // Internal payment lifecycle
     status: {
       type: String,
       enum: [
@@ -71,30 +59,22 @@ const paymentSchema = new mongoose.Schema(
       index: true,
     },
 
-    // Razorpay Order ID
     razorpayOrderId: {
       type: String,
       trim: true,
     },
 
-    // Razorpay Payment ID
-    //
-    // IMPORTANT:
-    // This does not exist when a Razorpay order is first created.
-    // The partial unique index below only indexes actual string IDs.
     razorpayPaymentId: {
       type: String,
       trim: true,
     },
 
-    // Signature returned by Razorpay Checkout
     razorpaySignature: {
       type: String,
       trim: true,
       default: null,
     },
 
-    // Razorpay receipt
     receipt: {
       type: String,
       trim: true,
@@ -102,7 +82,6 @@ const paymentSchema = new mongoose.Schema(
       index: true,
     },
 
-    // Amount actually captured by gateway, in paise
     gatewayAmount: {
       type: Number,
       default: null,
@@ -117,7 +96,6 @@ const paymentSchema = new mongoose.Schema(
       maxlength: 3,
     },
 
-    // Payment failure information
     failureReason: {
       type: String,
       trim: true,
@@ -132,19 +110,16 @@ const paymentSchema = new mongoose.Schema(
       maxlength: 100,
     },
 
-    // Additional gateway information
     gatewayResponse: {
       type: mongoose.Schema.Types.Mixed,
       default: null,
     },
 
-    // Application-specific metadata
     metadata: {
       type: mongoose.Schema.Types.Mixed,
       default: {},
     },
 
-    // Important timestamps
     paidAt: {
       type: Date,
       default: null,
@@ -160,7 +135,6 @@ const paymentSchema = new mongoose.Schema(
       default: null,
     },
 
-    // Refund tracking
     refundedAmount: {
       type: Number,
       default: 0,
@@ -174,49 +148,24 @@ const paymentSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-/*
-|--------------------------------------------------------------------------
-| Indexes
-|--------------------------------------------------------------------------
-*/
-
-// Quickly find payment attempts for an order.
 paymentSchema.index({
   order: 1,
   createdAt: -1,
 });
 
-// Useful for payment dashboards/reconciliation.
 paymentSchema.index({
   status: 1,
   createdAt: -1,
 });
 
-// Gateway reconciliation.
 paymentSchema.index({
   gateway: 1,
   status: 1,
   createdAt: -1,
 });
-
-/*
-|--------------------------------------------------------------------------
-| Razorpay Unique Indexes
-|--------------------------------------------------------------------------
-|
-| IMPORTANT:
-| Only actual string Razorpay IDs are indexed.
-|
-| This allows multiple payment records to temporarily have:
-| - no razorpayOrderId
-| - no razorpayPaymentId
-|
-| But once an actual Razorpay ID exists, it must be unique.
-|--------------------------------------------------------------------------
-*/
 
 paymentSchema.index(
   { razorpayOrderId: 1 },
@@ -228,7 +177,7 @@ paymentSchema.index(
         $type: "string",
       },
     },
-  }
+  },
 );
 
 paymentSchema.index(
@@ -241,52 +190,29 @@ paymentSchema.index(
         $type: "string",
       },
     },
-  }
+  },
 );
-
-/*
-|--------------------------------------------------------------------------
-| Validation
-|--------------------------------------------------------------------------
-*/
 
 paymentSchema.pre("validate", function (next) {
   if (this.amount !== undefined && this.amount !== null) {
-    this.amount =
-      Math.round(Number(this.amount) * 100) / 100;
+    this.amount = Math.round(Number(this.amount) * 100) / 100;
   }
 
-  if (
-    this.refundedAmount !== undefined &&
-    this.refundedAmount !== null
-  ) {
-    this.refundedAmount =
-      Math.round(Number(this.refundedAmount) * 100) / 100;
+  if (this.refundedAmount !== undefined && this.refundedAmount !== null) {
+    this.refundedAmount = Math.round(Number(this.refundedAmount) * 100) / 100;
   }
 
   next();
 });
-
-/*
-|--------------------------------------------------------------------------
-| Instance Helpers
-|--------------------------------------------------------------------------
-*/
 
 paymentSchema.methods.isSuccessful = function () {
   return this.status === "paid";
 };
 
 paymentSchema.methods.isRefunded = function () {
-  return (
-    this.status === "refunded" ||
-    this.status === "partially_refunded"
-  );
+  return this.status === "refunded" || this.status === "partially_refunded";
 };
 
-const Payment = mongoose.model(
-  "Payment",
-  paymentSchema
-);
+const Payment = mongoose.model("Payment", paymentSchema);
 
 export default Payment;

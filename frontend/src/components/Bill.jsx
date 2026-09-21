@@ -1,5 +1,3 @@
-// src/pages/Billing.jsx
-
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   FaArrowLeft,
@@ -69,34 +67,21 @@ const getProductId = (product) => {
 const getProductName = (product) => {
   if (!product) return "Product";
 
-  return (
-    product.name ||
-    product.productName ||
-    product.title ||
-    "Product"
-  );
+  return product.name || product.productName || product.title || "Product";
 };
 
 const getProductPrice = (product) => {
   if (!product) return 0;
 
   return Number(
-    product.price ??
-      product.sellingPrice ??
-      product.unitPrice ??
-      0
+    product.price ?? product.sellingPrice ?? product.unitPrice ?? 0,
   );
 };
 
 const getTaxRate = (product) => {
   if (!product) return 0;
 
-  return Number(
-    product.taxRate ??
-      product.gstRate ??
-      product.tax ??
-      0
-  );
+  return Number(product.taxRate ?? product.gstRate ?? product.tax ?? 0);
 };
 
 function Billing() {
@@ -128,10 +113,6 @@ function Billing() {
 
   const [lastCompletedOrder, setLastCompletedOrder] = useState(null);
 
-  /* =========================================================
-     FETCH PRODUCTS
-  ========================================================= */
-
   const fetchProducts = useCallback(async () => {
     try {
       setLoadingProducts(true);
@@ -139,10 +120,7 @@ function Billing() {
       const response = await api.get("/products", {
         params: {
           search: search.trim() || undefined,
-          category:
-            selectedCategory !== "all"
-              ? selectedCategory
-              : undefined,
+          category: selectedCategory !== "all" ? selectedCategory : undefined,
           isActive: true,
           isAvailable: true,
         },
@@ -158,10 +136,7 @@ function Billing() {
     } catch (error) {
       console.error("Failed to fetch products:", error);
 
-      toast.error(
-        error?.response?.data?.message ||
-          "Unable to load products."
-      );
+      toast.error(error?.response?.data?.message || "Unable to load products.");
 
       setProducts([]);
     } finally {
@@ -176,10 +151,6 @@ function Billing() {
 
     return () => clearTimeout(timer);
   }, [fetchProducts]);
-
-  /* =========================================================
-     FETCH CATEGORIES
-  ========================================================= */
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -201,10 +172,6 @@ function Billing() {
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
-
-  /* =========================================================
-     FETCH CUSTOMERS
-  ========================================================= */
 
   const fetchCustomers = useCallback(async (value = "") => {
     try {
@@ -242,15 +209,7 @@ function Billing() {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [
-    customerSearch,
-    showCustomerDropdown,
-    fetchCustomers,
-  ]);
-
-  /* =========================================================
-     CART HELPERS
-  ========================================================= */
+  }, [customerSearch, showCustomerDropdown, fetchCustomers]);
 
   const addToCart = (product) => {
     const productId = getProductId(product);
@@ -262,7 +221,7 @@ function Billing() {
 
     setCartItems((current) => {
       const existing = current.find(
-        (item) => getProductId(item.product) === productId
+        (item) => getProductId(item.product) === productId,
       );
 
       if (existing) {
@@ -272,7 +231,7 @@ function Billing() {
                 ...item,
                 quantity: item.quantity + 1,
               }
-            : item
+            : item,
         );
       }
 
@@ -296,8 +255,8 @@ function Billing() {
               ...item,
               quantity: item.quantity + 1,
             }
-          : item
-      )
+          : item,
+      ),
     );
   };
 
@@ -310,23 +269,17 @@ function Billing() {
                 ...item,
                 quantity: Math.max(0, item.quantity - 1),
               }
-            : item
+            : item,
         )
-        .filter((item) => item.quantity > 0)
+        .filter((item) => item.quantity > 0),
     );
   };
 
   const removeFromCart = (productId) => {
     setCartItems((current) =>
-      current.filter(
-        (item) => getProductId(item.product) !== productId
-      )
+      current.filter((item) => getProductId(item.product) !== productId),
     );
   };
-
-  /* =========================================================
-     TOTALS
-  ========================================================= */
 
   const totals = useMemo(() => {
     const subtotal = cartItems.reduce((sum, item) => {
@@ -342,22 +295,17 @@ function Billing() {
         Number(item.price || getProductPrice(item.product)) *
         Number(item.quantity || 0);
 
-      const taxRate = Number(
-        item.taxRate ?? getTaxRate(item.product)
-      );
+      const taxRate = Number(item.taxRate ?? getTaxRate(item.product));
 
       return sum + (price * taxRate) / 100;
     }, 0);
 
     const safeDiscount = Math.min(
       Math.max(Number(discount) || 0, 0),
-      subtotal + tax
+      subtotal + tax,
     );
 
-    const total = Math.max(
-      subtotal + tax - safeDiscount,
-      0
-    );
+    const total = Math.max(subtotal + tax - safeDiscount, 0);
 
     return {
       subtotal,
@@ -366,10 +314,6 @@ function Billing() {
       total,
     };
   }, [cartItems, discount]);
-
-  /* =========================================================
-     CUSTOMER
-  ========================================================= */
 
   const handleCustomerSelect = (customer) => {
     setSelectedCustomer(customer);
@@ -382,10 +326,6 @@ function Billing() {
     setCustomerSearch("");
   };
 
-  /* =========================================================
-     BUILD ORDER PAYLOAD
-  ========================================================= */
-
   const buildOrderPayload = () => {
     const customerId = getCustomerId(selectedCustomer);
 
@@ -395,13 +335,9 @@ function Billing() {
       const productId = getProductId(product);
 
       const quantity = Number(item.quantity || 0);
-      const unitPrice = Number(
-        item.price || getProductPrice(product)
-      );
+      const unitPrice = Number(item.price || getProductPrice(product));
 
-      const taxRate = Number(
-        item.taxRate ?? getTaxRate(product)
-      );
+      const taxRate = Number(item.taxRate ?? getTaxRate(product));
 
       return {
         product: productId,
@@ -426,16 +362,8 @@ function Billing() {
     };
   };
 
-  /* =========================================================
-     EXTRACT ORDER FROM RESPONSE
-  ========================================================= */
-
   const extractOrder = (response) => {
-    return (
-      response?.data?.data ||
-      response?.data?.order ||
-      response?.data
-    );
+    return response?.data?.data || response?.data?.order || response?.data;
   };
 
   const extractOrderId = (order) => {
@@ -451,10 +379,6 @@ function Billing() {
       "N/A"
     );
   };
-
-  /* =========================================================
-     COMPLETE BILL
-  ========================================================= */
 
   const handleCompleteBill = async () => {
     if (!cartItems.length) {
@@ -472,21 +396,13 @@ function Billing() {
     try {
       setProcessing(true);
 
-      /* -----------------------------------------------
-         STEP 1: CREATE ORDER
-      ------------------------------------------------ */
-
       const orderPayload = buildOrderPayload();
 
-      const orderResponse = await api.post(
-        "/orders",
-        orderPayload
-      );
+      const orderResponse = await api.post("/orders", orderPayload);
 
       if (!orderResponse?.data?.success) {
         throw new Error(
-          orderResponse?.data?.message ||
-            "Failed to create order."
+          orderResponse?.data?.message || "Failed to create order.",
         );
       }
 
@@ -495,34 +411,20 @@ function Billing() {
       const orderId = extractOrderId(order);
 
       if (!orderId) {
-        throw new Error(
-          "Order was created but no order ID was returned."
-        );
+        throw new Error("Order was created but no order ID was returned.");
       }
 
-      /* -----------------------------------------------
-         STEP 2: RECORD MANUAL PAYMENT
-      ------------------------------------------------ */
-
-      const paymentResponse = await api.post(
-        "/payments/manual",
-        {
-          orderId,
-          paymentMethod,
-          amount: Number(totals.total.toFixed(2)),
-        }
-      );
+      const paymentResponse = await api.post("/payments/manual", {
+        orderId,
+        paymentMethod,
+        amount: Number(totals.total.toFixed(2)),
+      });
 
       if (!paymentResponse?.data?.success) {
         throw new Error(
-          paymentResponse?.data?.message ||
-            "Payment could not be recorded."
+          paymentResponse?.data?.message || "Payment could not be recorded.",
         );
       }
-
-      /* -----------------------------------------------
-         SAVE SUCCESS INFORMATION BEFORE CLEARING CART
-      ------------------------------------------------ */
 
       const billNumber = extractOrderNumber(order);
 
@@ -531,10 +433,6 @@ function Billing() {
       setLastBillNumber(billNumber);
       setLastBillTotal(completedTotal);
       setLastCompletedOrder(order);
-
-      /* -----------------------------------------------
-         CLEAR CURRENT BILL
-      ------------------------------------------------ */
 
       setCartItems([]);
       setSelectedCustomer(null);
@@ -559,10 +457,6 @@ function Billing() {
     }
   };
 
-  /* =========================================================
-     PRINT
-  ========================================================= */
-
   const handlePrint = () => {
     if (!lastCompletedOrder && !cartItems.length) {
       toast.warning("No bill available to print.");
@@ -571,10 +465,6 @@ function Billing() {
 
     window.print();
   };
-
-  /* =========================================================
-     START NEW BILL
-  ========================================================= */
 
   const startNewBill = () => {
     setShowSuccess(false);
@@ -590,29 +480,14 @@ function Billing() {
     setLastCompletedOrder(null);
   };
 
-  /* =========================================================
-     BACK
-  ========================================================= */
-
   const handleBack = () => {
     window.history.back();
   };
 
-  /* =========================================================
-     RENDER
-  ========================================================= */
-
   return (
     <div className="billing-page">
-
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
-
       <header className="billing-header">
-
         <div className="billing-header-left">
-
           <button
             type="button"
             className="billing-back-btn"
@@ -622,70 +497,41 @@ function Billing() {
           </button>
 
           <div>
-            <div className="billing-eyebrow">
-              POINT OF SALE
-            </div>
+            <div className="billing-eyebrow">POINT OF SALE</div>
 
-            <h1>
-              Create New Bill
-            </h1>
+            <h1>Create New Bill</h1>
 
             <p>
-              Select products, add customer details,
-              and complete the transaction.
+              Select products, add customer details, and complete the
+              transaction.
             </p>
           </div>
-
         </div>
 
         <div className="billing-header-icon">
           <FaShoppingCart />
         </div>
-
       </header>
 
-      {/* =====================================================
-          MAIN LAYOUT
-      ===================================================== */}
-
       <main className="billing-layout">
-
-        {/* ===================================================
-            LEFT — PRODUCTS
-        =================================================== */}
-
         <section className="billing-products-section">
-
           <div className="billing-section-heading">
-
             <div>
-              <span className="section-kicker">
-                PRODUCTS
-              </span>
+              <span className="section-kicker">PRODUCTS</span>
 
-              <h2>
-                Choose Ice Cream
-              </h2>
+              <h2>Choose Ice Cream</h2>
             </div>
 
-            <div className="product-count">
-              {products.length} products
-            </div>
-
+            <div className="product-count">{products.length} products</div>
           </div>
 
-          {/* SEARCH */}
-
           <div className="billing-search-wrapper">
-
             <FaSearch />
 
             <input
               type="text"
               value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
+              onChange={(event) => setSearch(event.target.value)}
               placeholder="Search products..."
             />
 
@@ -698,58 +544,39 @@ function Billing() {
                 ×
               </button>
             )}
-
           </div>
 
-          {/* CATEGORIES */}
-
           <div className="billing-category-scroll">
-
             <button
               type="button"
               className={`category-pill ${
-                selectedCategory === "all"
-                  ? "active"
-                  : ""
+                selectedCategory === "all" ? "active" : ""
               }`}
-              onClick={() =>
-                setSelectedCategory("all")
-              }
+              onClick={() => setSelectedCategory("all")}
             >
               All
             </button>
 
             {categories.map((category) => {
-
-              const categoryId =
-                category?._id || category?.id;
+              const categoryId = category?._id || category?.id;
 
               const categoryName =
-                category?.name ||
-                category?.categoryName ||
-                "Category";
+                category?.name || category?.categoryName || "Category";
 
               return (
                 <button
                   type="button"
                   key={categoryId}
                   className={`category-pill ${
-                    selectedCategory === categoryId
-                      ? "active"
-                      : ""
+                    selectedCategory === categoryId ? "active" : ""
                   }`}
-                  onClick={() =>
-                    setSelectedCategory(categoryId)
-                  }
+                  onClick={() => setSelectedCategory(categoryId)}
                 >
                   {categoryName}
                 </button>
               );
             })}
-
           </div>
-
-          {/* PRODUCTS GRID */}
 
           {loadingProducts ? (
             <div className="billing-loading">
@@ -758,18 +585,13 @@ function Billing() {
             </div>
           ) : products.length === 0 ? (
             <div className="billing-empty">
-
               <div className="billing-empty-icon">
                 <FaSearch />
               </div>
 
-              <h3>
-                No products found
-              </h3>
+              <h3>No products found</h3>
 
-              <p>
-                Try another search or category.
-              </p>
+              <p>Try another search or category.</p>
 
               <button
                 type="button"
@@ -780,11 +602,9 @@ function Billing() {
               >
                 Clear Filters
               </button>
-
             </div>
           ) : (
             <div className="billing-products-grid">
-
               {products.map((product) => (
                 <ProductCard
                   key={getProductId(product)}
@@ -792,53 +612,31 @@ function Billing() {
                   onAdd={() => addToCart(product)}
                 />
               ))}
-
             </div>
           )}
-
         </section>
 
-        {/* ===================================================
-            RIGHT — CHECKOUT
-        =================================================== */}
-
         <aside className="billing-checkout-section">
-
-          {/* CUSTOMER */}
-
           <div className="billing-panel">
-
             <div className="billing-panel-header">
-
               <div>
-                <span className="section-kicker">
-                  CUSTOMER
-                </span>
+                <span className="section-kicker">CUSTOMER</span>
 
-                <h3>
-                  Customer Details
-                </h3>
+                <h3>Customer Details</h3>
               </div>
 
               <FaUser />
             </div>
 
             {selectedCustomer ? (
-
               <div className="selected-customer">
-
                 <div className="customer-avatar">
-                  {(
-                    selectedCustomer.name ||
-                    selectedCustomer.user?.name ||
-                    "C"
-                  )
+                  {(selectedCustomer.name || selectedCustomer.user?.name || "C")
                     .charAt(0)
                     .toUpperCase()}
                 </div>
 
                 <div className="customer-info">
-
                   <strong>
                     {selectedCustomer.name ||
                       selectedCustomer.user?.name ||
@@ -850,7 +648,6 @@ function Billing() {
                       selectedCustomer.user?.phone ||
                       "No phone"}
                   </span>
-
                 </div>
 
                 <button
@@ -860,143 +657,89 @@ function Billing() {
                 >
                   ×
                 </button>
-
               </div>
-
             ) : (
-
               <div className="customer-selector">
-
                 <div className="customer-search">
-
                   <FaUser />
 
                   <input
                     type="text"
                     value={customerSearch}
                     onChange={(event) => {
-                      setCustomerSearch(
-                        event.target.value
-                      );
+                      setCustomerSearch(event.target.value);
 
                       setShowCustomerDropdown(true);
                     }}
-                    onFocus={() =>
-                      setShowCustomerDropdown(true)
-                    }
+                    onFocus={() => setShowCustomerDropdown(true)}
                     placeholder="Search customer..."
                   />
 
                   <FaChevronDown />
-
                 </div>
 
                 {showCustomerDropdown && (
-
                   <div className="customer-dropdown">
-
                     {loadingCustomers ? (
-
                       <div className="dropdown-loading">
                         Loading customers...
                       </div>
-
                     ) : customers.length > 0 ? (
-
                       customers.map((customer) => {
-
-                        const customerId =
-                          getCustomerId(customer);
+                        const customerId = getCustomerId(customer);
 
                         const name =
-                          customer?.name ||
-                          customer?.user?.name ||
-                          "Customer";
+                          customer?.name || customer?.user?.name || "Customer";
 
                         const phone =
-                          customer?.phone ||
-                          customer?.user?.phone ||
-                          "";
+                          customer?.phone || customer?.user?.phone || "";
 
                         return (
                           <button
                             type="button"
                             key={customerId}
                             className="customer-option"
-                            onClick={() =>
-                              handleCustomerSelect(
-                                customer
-                              )
-                            }
+                            onClick={() => handleCustomerSelect(customer)}
                           >
-
                             <div className="customer-option-avatar">
-                              {name
-                                .charAt(0)
-                                .toUpperCase()}
+                              {name.charAt(0).toUpperCase()}
                             </div>
 
                             <div>
-                              <strong>
-                                {name}
-                              </strong>
+                              <strong>{name}</strong>
 
-                              {phone && (
-                                <span>
-                                  {phone}
-                                </span>
-                              )}
+                              {phone && <span>{phone}</span>}
                             </div>
-
                           </button>
                         );
                       })
-
                     ) : (
-
                       <div className="no-customers">
-
                         <FaUserPlus />
 
-                        <span>
-                          No customers found
-                        </span>
-
+                        <span>No customers found</span>
                       </div>
                     )}
-
                   </div>
                 )}
-
               </div>
             )}
-
           </div>
 
-          {/* CART */}
-
           <div className="billing-panel cart-panel">
-
             <div className="billing-panel-header">
-
               <div>
-                <span className="section-kicker">
-                  ORDER
-                </span>
+                <span className="section-kicker">ORDER</span>
 
-                <h3>
-                  Your Cart
-                </h3>
+                <h3>Your Cart</h3>
               </div>
 
               <span className="cart-count">
                 {cartItems.reduce(
-                  (sum, item) =>
-                    sum + Number(item.quantity || 0),
-                  0
+                  (sum, item) => sum + Number(item.quantity || 0),
+                  0,
                 )}
               </span>
-
             </div>
 
             <Cart
@@ -1005,89 +748,52 @@ function Billing() {
               onDecrease={decreaseQuantity}
               onRemove={removeFromCart}
             />
-
           </div>
 
-          {/* BILL */}
-
           <div className="billing-panel">
-
             <Bill
               cartItems={cartItems}
               discount={discount}
               onDiscountChange={setDiscount}
               onPrint={handlePrint}
             />
-
           </div>
 
-          {/* PAYMENT */}
-
           <div className="billing-panel payment-panel">
-
             <div className="billing-panel-header">
-
               <div>
-                <span className="section-kicker">
-                  PAYMENT
-                </span>
+                <span className="section-kicker">PAYMENT</span>
 
-                <h3>
-                  Payment Method
-                </h3>
+                <h3>Payment Method</h3>
               </div>
 
               <FaWallet />
-
             </div>
 
             <div className="payment-method-grid">
-
               {PAYMENT_METHODS.map((method) => (
-
                 <button
                   type="button"
                   key={method.value}
                   className={`payment-method ${
-                    paymentMethod === method.value
-                      ? "active"
-                      : ""
+                    paymentMethod === method.value ? "active" : ""
                   }`}
-                  onClick={() =>
-                    setPaymentMethod(
-                      method.value
-                    )
-                  }
+                  onClick={() => setPaymentMethod(method.value)}
                 >
+                  <span className="payment-method-icon">{method.icon}</span>
 
-                  <span className="payment-method-icon">
-                    {method.icon}
-                  </span>
-
-                  <span>
-                    {method.label}
-                  </span>
-
+                  <span>{method.label}</span>
                 </button>
-
               ))}
-
             </div>
-
           </div>
-
-          {/* COMPLETE BILL */}
 
           <button
             type="button"
             className="complete-bill-btn"
-            disabled={
-              !cartItems.length ||
-              processing
-            }
+            disabled={!cartItems.length || processing}
             onClick={handleCompleteBill}
           >
-
             {processing ? (
               <>
                 <span className="button-spinner" />
@@ -1097,93 +803,53 @@ function Billing() {
               <>
                 <FaCheckCircle />
 
-                <span>
-                  Complete Bill
-                </span>
+                <span>Complete Bill</span>
 
-                <strong>
-                  {formatCurrency(totals.total)}
-                </strong>
+                <strong>{formatCurrency(totals.total)}</strong>
               </>
             )}
-
           </button>
-
         </aside>
-
       </main>
 
-      {/* =====================================================
-          SUCCESS MODAL
-      ===================================================== */}
-
       {showSuccess && (
-
         <div className="success-overlay">
-
           <div className="success-modal">
-
             <div className="success-icon">
               <FaCheckCircle />
             </div>
 
-            <span className="success-kicker">
-              TRANSACTION COMPLETE
-            </span>
+            <span className="success-kicker">TRANSACTION COMPLETE</span>
 
-            <h2>
-              Bill Created Successfully
-            </h2>
+            <h2>Bill Created Successfully</h2>
 
-            <p>
-              The payment has been recorded and
-              inventory has been updated.
-            </p>
+            <p>The payment has been recorded and inventory has been updated.</p>
 
             <div className="success-details">
-
               <div className="success-detail-row">
+                <span>Bill Number</span>
 
-                <span>
-                  Bill Number
-                </span>
-
-                <strong>
-                  {lastBillNumber || "N/A"}
-                </strong>
-
+                <strong>{lastBillNumber || "N/A"}</strong>
               </div>
 
               <div className="success-detail-row">
-
-                <span>
-                  Payment
-                </span>
+                <span>Payment</span>
 
                 <strong>
-                  {
-                    PAYMENT_METHODS.find(
-                      (method) =>
-                        method.value ===
-                        paymentMethod
-                    )?.label || "Cash"
-                  }
+                  {PAYMENT_METHODS.find(
+                    (method) => method.value === paymentMethod,
+                  )?.label || "Cash"}
                 </strong>
-
               </div>
 
-              <div className="success-total-label">
-                Total Paid
-              </div>
+              <div className="success-total-label">Total Paid</div>
 
               <div className="success-total">
                 {formatCurrency(lastBillTotal)}
               </div>
-
             </div>
 
             <div className="success-actions">
-
               <button
                 type="button"
                 className="success-print-btn"
@@ -1199,14 +865,10 @@ function Billing() {
               >
                 Start New Bill
               </button>
-
             </div>
-
           </div>
-
         </div>
       )}
-
     </div>
   );
 }

@@ -3,22 +3,10 @@ import mongoose from "mongoose";
 import Customer from "../models/Customer.js";
 import User from "../models/User.js";
 
-/*
- * ============================================================
- * HELPERS
- * ============================================================
- */
-
-/*
- * Validate MongoDB ObjectId
- */
 const isValidObjectId = (id) => {
   return mongoose.Types.ObjectId.isValid(id);
 };
 
-/*
- * Sanitize customer response
- */
 const formatCustomer = (customer) => {
   if (!customer) {
     return null;
@@ -48,15 +36,6 @@ const formatCustomer = (customer) => {
   };
 };
 
-/*
- * ============================================================
- * GET ALL CUSTOMERS
- * ============================================================
- *
- * GET /api/customers
- *
- * Admin + Staff
- */
 export const getCustomers = async (req, res) => {
   try {
     const {
@@ -69,33 +48,20 @@ export const getCustomers = async (req, res) => {
       sortOrder = "desc",
     } = req.query;
 
-    const currentPage = Math.max(
-      parseInt(page, 10) || 1,
-      1
-    );
+    const currentPage = Math.max(parseInt(page, 10) || 1, 1);
 
-    const requestedLimit =
-      parseInt(limit, 10) || 20;
+    const requestedLimit = parseInt(limit, 10) || 20;
 
-    const perPage = Math.min(
-      Math.max(requestedLimit, 1),
-      100
-    );
+    const perPage = Math.min(Math.max(requestedLimit, 1), 100);
 
     const filter = {};
 
-    /*
-     * Search by name, phone, or email
-     */
     if (search.trim()) {
       const escapedSearch = search
         .trim()
         .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-      const searchRegex = new RegExp(
-        escapedSearch,
-        "i"
-      );
+      const searchRegex = new RegExp(escapedSearch, "i");
 
       filter.$or = [
         {
@@ -110,21 +76,10 @@ export const getCustomers = async (req, res) => {
       ];
     }
 
-    /*
-     * Customer type filter
-     */
-    if (
-      customerType &&
-      ["registered", "walk-in"].includes(
-        customerType
-      )
-    ) {
+    if (customerType && ["registered", "walk-in"].includes(customerType)) {
       filter.customerType = customerType;
     }
 
-    /*
-     * Active/inactive filter
-     */
     if (isActive !== "") {
       if (isActive === "true") {
         filter.isActive = true;
@@ -135,9 +90,6 @@ export const getCustomers = async (req, res) => {
       }
     }
 
-    /*
-     * Allowed sorting fields
-     */
     const allowedSortFields = [
       "name",
       "createdAt",
@@ -147,26 +99,17 @@ export const getCustomers = async (req, res) => {
       "lastOrderAt",
     ];
 
-    const safeSortBy =
-      allowedSortFields.includes(sortBy)
-        ? sortBy
-        : "createdAt";
+    const safeSortBy = allowedSortFields.includes(sortBy)
+      ? sortBy
+      : "createdAt";
 
-    const safeSortOrder =
-      sortOrder === "asc" ? 1 : -1;
+    const safeSortOrder = sortOrder === "asc" ? 1 : -1;
 
-    const skip =
-      (currentPage - 1) * perPage;
+    const skip = (currentPage - 1) * perPage;
 
-    const [
-      customers,
-      totalCustomers,
-    ] = await Promise.all([
+    const [customers, totalCustomers] = await Promise.all([
       Customer.find(filter)
-        .populate(
-          "user",
-          "name email phone role isActive lastLogin"
-        )
+        .populate("user", "name email phone role isActive lastLogin")
         .sort({
           [safeSortBy]: safeSortOrder,
         })
@@ -177,16 +120,12 @@ export const getCustomers = async (req, res) => {
       Customer.countDocuments(filter),
     ]);
 
-    const totalPages = Math.ceil(
-      totalCustomers / perPage
-    );
+    const totalPages = Math.ceil(totalCustomers / perPage);
 
     res.status(200).json({
       success: true,
 
-      customers: customers.map(
-        formatCustomer
-      ),
+      customers: customers.map(formatCustomer),
 
       pagination: {
         currentPage,
@@ -194,40 +133,22 @@ export const getCustomers = async (req, res) => {
         totalCustomers,
         totalPages,
 
-        hasNextPage:
-          currentPage < totalPages,
+        hasNextPage: currentPage < totalPages,
 
-        hasPreviousPage:
-          currentPage > 1,
+        hasPreviousPage: currentPage > 1,
       },
     });
   } catch (error) {
-    console.error(
-      "Get customers error:",
-      error
-    );
+    console.error("Get customers error:", error);
 
     res.status(500).json({
       success: false,
-      message:
-        "Unable to retrieve customers",
+      message: "Unable to retrieve customers",
     });
   }
 };
 
-/*
- * ============================================================
- * GET CUSTOMER BY ID
- * ============================================================
- *
- * GET /api/customers/:id
- *
- * Admin + Staff
- */
-export const getCustomerById = async (
-  req,
-  res
-) => {
+export const getCustomerById = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -238,11 +159,10 @@ export const getCustomerById = async (
       });
     }
 
-    const customer =
-      await Customer.findById(id).populate(
-        "user",
-        "name email phone role isActive lastLogin createdAt"
-      );
+    const customer = await Customer.findById(id).populate(
+      "user",
+      "name email phone role isActive lastLogin createdAt",
+    );
 
     if (!customer) {
       return res.status(404).json({
@@ -253,66 +173,30 @@ export const getCustomerById = async (
 
     res.status(200).json({
       success: true,
-      customer:
-        formatCustomer(customer),
+      customer: formatCustomer(customer),
     });
   } catch (error) {
-    console.error(
-      "Get customer error:",
-      error
-    );
+    console.error("Get customer error:", error);
 
     res.status(500).json({
       success: false,
-      message:
-        "Unable to retrieve customer",
+      message: "Unable to retrieve customer",
     });
   }
 };
 
-/*
- * ============================================================
- * CREATE CUSTOMER
- * ============================================================
- *
- * POST /api/customers
- *
- * Admin + Staff
- *
- * Supports:
- * - Walk-in customers
- * - Registered customer profiles
- */
-export const createCustomer = async (
-  req,
-  res
-) => {
+export const createCustomer = async (req, res) => {
   try {
-    const {
-      user,
-      name,
-      phone,
-      email,
-      address,
-      customerType,
-      notes,
-      isActive,
-    } = req.body;
+    const { user, name, phone, email, address, customerType, notes, isActive } =
+      req.body;
 
-    /*
-     * Name is required.
-     */
     if (!name || !name.trim()) {
       return res.status(400).json({
         success: false,
-        message:
-          "Customer name is required",
+        message: "Customer name is required",
       });
     }
 
-    /*
-     * Resolve linked User when provided.
-     */
     let linkedUser = null;
 
     if (user) {
@@ -323,23 +207,16 @@ export const createCustomer = async (
         });
       }
 
-      linkedUser =
-        await User.findById(user);
+      linkedUser = await User.findById(user);
 
       if (!linkedUser) {
         return res.status(404).json({
           success: false,
-          message:
-            "Linked user account not found",
+          message: "Linked user account not found",
         });
       }
 
-      /*
-       * Only customer-role users can be linked.
-       */
-      if (
-        linkedUser.role !== "customer"
-      ) {
+      if (linkedUser.role !== "customer") {
         return res.status(400).json({
           success: false,
           message:
@@ -347,191 +224,114 @@ export const createCustomer = async (
         });
       }
 
-      /*
-       * A User may only have one Customer profile.
-       */
-      const existingLinkedCustomer =
-        await Customer.findOne({
-          user: linkedUser._id,
-        });
+      const existingLinkedCustomer = await Customer.findOne({
+        user: linkedUser._id,
+      });
 
       if (existingLinkedCustomer) {
         return res.status(409).json({
           success: false,
-          message:
-            "This user already has a customer profile",
+          message: "This user already has a customer profile",
         });
       }
     }
 
-    /*
-     * Registered vs walk-in.
-     */
     const normalizedCustomerType =
       linkedUser || user
         ? "registered"
         : customerType === "registered"
-        ? "registered"
-        : "walk-in";
+          ? "registered"
+          : "walk-in";
 
-    /*
-     * Normalize email.
-     */
     const normalizedEmail =
-      email?.trim().toLowerCase() ||
-      linkedUser?.email?.toLowerCase() ||
-      "";
+      email?.trim().toLowerCase() || linkedUser?.email?.toLowerCase() || "";
 
-    /*
-     * Normalize phone.
-     */
-    const normalizedPhone =
-      phone?.trim() ||
-      linkedUser?.phone ||
-      "";
+    const normalizedPhone = phone?.trim() || linkedUser?.phone || "";
 
-    /*
-     * Registered customers should have an email
-     * when linked to a User.
-     */
     if (
-      normalizedCustomerType ===
-        "registered" &&
+      normalizedCustomerType === "registered" &&
       linkedUser &&
       !normalizedEmail
     ) {
       return res.status(400).json({
         success: false,
-        message:
-          "Registered customer email is required",
+        message: "Registered customer email is required",
       });
     }
 
-    /*
-     * Prevent duplicate email.
-     */
     if (normalizedEmail) {
-      const existingEmailCustomer =
-        await Customer.findOne({
-          email: normalizedEmail,
-        });
+      const existingEmailCustomer = await Customer.findOne({
+        email: normalizedEmail,
+      });
 
       if (existingEmailCustomer) {
         return res.status(409).json({
           success: false,
-          message:
-            "A customer with this email already exists",
+          message: "A customer with this email already exists",
         });
       }
     }
 
-    /*
-     * Prevent duplicate phone.
-     *
-     * Empty phone is allowed for walk-ins.
-     */
     if (normalizedPhone) {
-      const existingPhoneCustomer =
-        await Customer.findOne({
-          phone: normalizedPhone,
-        });
+      const existingPhoneCustomer = await Customer.findOne({
+        phone: normalizedPhone,
+      });
 
       if (existingPhoneCustomer) {
         return res.status(409).json({
           success: false,
-          message:
-            "A customer with this phone number already exists",
+          message: "A customer with this phone number already exists",
         });
       }
     }
 
-    /*
-     * Create actual Customer profile.
-     */
-    const customer =
-      await Customer.create({
-        user:
-          linkedUser?._id || null,
+    const customer = await Customer.create({
+      user: linkedUser?._id || null,
 
-        name:
-          name.trim() ||
-          linkedUser?.name ||
-          "Customer",
+      name: name.trim() || linkedUser?.name || "Customer",
 
-        phone: normalizedPhone,
+      phone: normalizedPhone,
 
-        email: normalizedEmail,
+      email: normalizedEmail,
 
-        address:
-          address?.trim() || "",
+      address: address?.trim() || "",
 
-        customerType:
-          normalizedCustomerType,
+      customerType: normalizedCustomerType,
 
-        notes:
-          notes?.trim() || "",
+      notes: notes?.trim() || "",
 
-        isActive:
-          typeof isActive === "boolean"
-            ? isActive
-            : true,
-      });
+      isActive: typeof isActive === "boolean" ? isActive : true,
+    });
 
-    /*
-     * Return populated customer.
-     */
-    const populatedCustomer =
-      await Customer.findById(
-        customer._id
-      ).populate(
-        "user",
-        "name email phone role isActive lastLogin"
-      );
+    const populatedCustomer = await Customer.findById(customer._id).populate(
+      "user",
+      "name email phone role isActive lastLogin",
+    );
 
     res.status(201).json({
       success: true,
-      message:
-        "Customer created successfully",
+      message: "Customer created successfully",
 
-      customer:
-        formatCustomer(
-          populatedCustomer
-        ),
+      customer: formatCustomer(populatedCustomer),
     });
   } catch (error) {
-    console.error(
-      "Create customer error:",
-      error
-    );
+    console.error("Create customer error:", error);
 
     if (error.code === 11000) {
-      const duplicateField =
-        Object.keys(
-          error.keyPattern || {}
-        )[0];
+      const duplicateField = Object.keys(error.keyPattern || {})[0];
 
-      let message =
-        "A customer with this information already exists";
+      let message = "A customer with this information already exists";
 
-      if (
-        duplicateField === "user"
-      ) {
-        message =
-          "This user already has a customer profile";
+      if (duplicateField === "user") {
+        message = "This user already has a customer profile";
       }
 
-      if (
-        duplicateField === "email"
-      ) {
-        message =
-          "A customer with this email already exists";
+      if (duplicateField === "email") {
+        message = "A customer with this email already exists";
       }
 
-      if (
-        duplicateField === "phone"
-      ) {
-        message =
-          "A customer with this phone number already exists";
+      if (duplicateField === "phone") {
+        message = "A customer with this phone number already exists";
       }
 
       return res.status(409).json({
@@ -540,45 +340,23 @@ export const createCustomer = async (
       });
     }
 
-    if (
-      error.name ===
-      "ValidationError"
-    ) {
-      const messages =
-        Object.values(
-          error.errors
-        ).map(
-          (item) => item.message
-        );
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((item) => item.message);
 
       return res.status(400).json({
         success: false,
-        message:
-          messages.join(", "),
+        message: messages.join(", "),
       });
     }
 
     res.status(500).json({
       success: false,
-      message:
-        "Unable to create customer",
+      message: "Unable to create customer",
     });
   }
 };
 
-/*
- * ============================================================
- * UPDATE CUSTOMER
- * ============================================================
- *
- * PUT /api/customers/:id
- *
- * Admin + Staff
- */
-export const updateCustomer = async (
-  req,
-  res
-) => {
+export const updateCustomer = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -589,214 +367,125 @@ export const updateCustomer = async (
       });
     }
 
-    const customer =
-      await Customer.findById(id);
+    const customer = await Customer.findById(id);
 
     if (!customer) {
       return res.status(404).json({
         success: false,
-        message:
-          "Customer not found",
+        message: "Customer not found",
       });
     }
 
-    const {
-      name,
-      phone,
-      email,
-      address,
-      notes,
-      isActive,
-    } = req.body;
+    const { name, phone, email, address, notes, isActive } = req.body;
 
-    /*
-     * Validate name.
-     */
-    if (
-      name !== undefined &&
-      (!name || !name.trim())
-    ) {
+    if (name !== undefined && (!name || !name.trim())) {
       return res.status(400).json({
         success: false,
-        message:
-          "Customer name cannot be empty",
+        message: "Customer name cannot be empty",
       });
     }
 
-    /*
-     * Normalize values.
-     */
     const normalizedEmail =
-      email !== undefined
-        ? email.trim().toLowerCase()
-        : customer.email;
+      email !== undefined ? email.trim().toLowerCase() : customer.email;
 
-    const normalizedPhone =
-      phone !== undefined
-        ? phone.trim()
-        : customer.phone;
+    const normalizedPhone = phone !== undefined ? phone.trim() : customer.phone;
 
-    /*
-     * Duplicate email check.
-     */
-    if (
-      normalizedEmail &&
-      normalizedEmail !==
-        customer.email
-    ) {
-      const existingEmailCustomer =
-        await Customer.findOne({
-          email: normalizedEmail,
-          _id: {
-            $ne: customer._id,
-          },
-        });
+    if (normalizedEmail && normalizedEmail !== customer.email) {
+      const existingEmailCustomer = await Customer.findOne({
+        email: normalizedEmail,
+        _id: {
+          $ne: customer._id,
+        },
+      });
 
       if (existingEmailCustomer) {
         return res.status(409).json({
           success: false,
-          message:
-            "A customer with this email already exists",
+          message: "A customer with this email already exists",
         });
       }
     }
 
-    /*
-     * Duplicate phone check.
-     */
-    if (
-      normalizedPhone &&
-      normalizedPhone !==
-        customer.phone
-    ) {
-      const existingPhoneCustomer =
-        await Customer.findOne({
-          phone: normalizedPhone,
-          _id: {
-            $ne: customer._id,
-          },
-        });
+    if (normalizedPhone && normalizedPhone !== customer.phone) {
+      const existingPhoneCustomer = await Customer.findOne({
+        phone: normalizedPhone,
+        _id: {
+          $ne: customer._id,
+        },
+      });
 
       if (existingPhoneCustomer) {
         return res.status(409).json({
           success: false,
-          message:
-            "A customer with this phone number already exists",
+          message: "A customer with this phone number already exists",
         });
       }
     }
 
-    /*
-     * Update editable fields.
-     */
     if (name !== undefined) {
-      customer.name =
-        name.trim();
+      customer.name = name.trim();
     }
 
     if (phone !== undefined) {
-      customer.phone =
-        normalizedPhone;
+      customer.phone = normalizedPhone;
     }
 
     if (email !== undefined) {
-      customer.email =
-        normalizedEmail;
+      customer.email = normalizedEmail;
     }
 
     if (address !== undefined) {
-      customer.address =
-        address.trim();
+      customer.address = address.trim();
     }
 
     if (notes !== undefined) {
-      customer.notes =
-        notes.trim();
+      customer.notes = notes.trim();
     }
 
-    if (
-      typeof isActive ===
-      "boolean"
-    ) {
-      customer.isActive =
-        isActive;
+    if (typeof isActive === "boolean") {
+      customer.isActive = isActive;
     }
 
     await customer.save();
 
-    const populatedCustomer =
-      await Customer.findById(
-        customer._id
-      ).populate(
-        "user",
-        "name email phone role isActive lastLogin"
-      );
+    const populatedCustomer = await Customer.findById(customer._id).populate(
+      "user",
+      "name email phone role isActive lastLogin",
+    );
 
     res.status(200).json({
       success: true,
-      message:
-        "Customer updated successfully",
+      message: "Customer updated successfully",
 
-      customer:
-        formatCustomer(
-          populatedCustomer
-        ),
+      customer: formatCustomer(populatedCustomer),
     });
   } catch (error) {
-    console.error(
-      "Update customer error:",
-      error
-    );
+    console.error("Update customer error:", error);
 
     if (error.code === 11000) {
       return res.status(409).json({
         success: false,
-        message:
-          "A customer with this information already exists",
+        message: "A customer with this information already exists",
       });
     }
 
-    if (
-      error.name ===
-      "ValidationError"
-    ) {
-      const messages =
-        Object.values(
-          error.errors
-        ).map(
-          (item) => item.message
-        );
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((item) => item.message);
 
       return res.status(400).json({
         success: false,
-        message:
-          messages.join(", "),
+        message: messages.join(", "),
       });
     }
 
     res.status(500).json({
       success: false,
-      message:
-        "Unable to update customer",
+      message: "Unable to update customer",
     });
   }
 };
 
-/*
- * ============================================================
- * DEACTIVATE CUSTOMER
- * ============================================================
- *
- * DELETE /api/customers/:id
- *
- * Admin only
- *
- * Soft delete.
- */
-export const deleteCustomer = async (
-  req,
-  res
-) => {
+export const deleteCustomer = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -807,14 +496,12 @@ export const deleteCustomer = async (
       });
     }
 
-    const customer =
-      await Customer.findById(id);
+    const customer = await Customer.findById(id);
 
     if (!customer) {
       return res.status(404).json({
         success: false,
-        message:
-          "Customer not found",
+        message: "Customer not found",
       });
     }
 
@@ -824,41 +511,19 @@ export const deleteCustomer = async (
 
     res.status(200).json({
       success: true,
-      message:
-        "Customer deactivated successfully",
+      message: "Customer deactivated successfully",
     });
   } catch (error) {
-    console.error(
-      "Delete customer error:",
-      error
-    );
+    console.error("Delete customer error:", error);
 
     res.status(500).json({
       success: false,
-      message:
-        "Unable to deactivate customer",
+      message: "Unable to deactivate customer",
     });
   }
 };
 
-/*
- * ============================================================
- * ACTIVATE CUSTOMER
- * ============================================================
- *
- * PATCH /api/customers/:id/activate
- *
- * Admin only
- *
- * THIS EXPORT IS IMPORTANT.
- *
- * customerRoutes.js imports activateCustomer,
- * so this function must exist in this controller.
- */
-export const activateCustomer = async (
-  req,
-  res
-) => {
+export const activateCustomer = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -869,14 +534,12 @@ export const activateCustomer = async (
       });
     }
 
-    const customer =
-      await Customer.findById(id);
+    const customer = await Customer.findById(id);
 
     if (!customer) {
       return res.status(404).json({
         success: false,
-        message:
-          "Customer not found",
+        message: "Customer not found",
       });
     }
 
@@ -884,52 +547,29 @@ export const activateCustomer = async (
 
     await customer.save();
 
-    const populatedCustomer =
-      await Customer.findById(
-        customer._id
-      ).populate(
-        "user",
-        "name email phone role isActive lastLogin"
-      );
+    const populatedCustomer = await Customer.findById(customer._id).populate(
+      "user",
+      "name email phone role isActive lastLogin",
+    );
 
     res.status(200).json({
       success: true,
 
-      message:
-        "Customer activated successfully",
+      message: "Customer activated successfully",
 
-      customer:
-        formatCustomer(
-          populatedCustomer
-        ),
+      customer: formatCustomer(populatedCustomer),
     });
   } catch (error) {
-    console.error(
-      "Activate customer error:",
-      error
-    );
+    console.error("Activate customer error:", error);
 
     res.status(500).json({
       success: false,
-      message:
-        "Unable to activate customer",
+      message: "Unable to activate customer",
     });
   }
 };
 
-/*
- * ============================================================
- * GET CUSTOMER STATISTICS
- * ============================================================
- *
- * GET /api/customers/stats/summary
- *
- * Admin + Staff
- */
-export const getCustomerStats = async (
-  req,
-  res
-) => {
+export const getCustomerStats = async (req, res) => {
   try {
     const [
       totalCustomers,
@@ -944,38 +584,34 @@ export const getCustomerStats = async (
       }),
 
       Customer.countDocuments({
-        customerType:
-          "registered",
+        customerType: "registered",
       }),
 
       Customer.countDocuments({
-        customerType:
-          "walk-in",
+        customerType: "walk-in",
       }),
     ]);
 
-    const spendingResult =
-      await Customer.aggregate([
-        {
-          $group: {
-            _id: null,
+    const spendingResult = await Customer.aggregate([
+      {
+        $group: {
+          _id: null,
 
-            totalSpent: {
-              $sum: "$totalSpent",
-            },
+          totalSpent: {
+            $sum: "$totalSpent",
+          },
 
-            totalOrders: {
-              $sum: "$totalOrders",
-            },
+          totalOrders: {
+            $sum: "$totalOrders",
           },
         },
-      ]);
+      },
+    ]);
 
-    const totals =
-      spendingResult[0] || {
-        totalSpent: 0,
-        totalOrders: 0,
-      };
+    const totals = spendingResult[0] || {
+      totalSpent: 0,
+      totalOrders: 0,
+    };
 
     res.status(200).json({
       success: true,
@@ -989,88 +625,55 @@ export const getCustomerStats = async (
 
         walkInCustomers,
 
-        totalOrders:
-          totals.totalOrders || 0,
+        totalOrders: totals.totalOrders || 0,
 
-        totalSpent:
-          totals.totalSpent || 0,
+        totalSpent: totals.totalSpent || 0,
       },
     });
   } catch (error) {
-    console.error(
-      "Get customer stats error:",
-      error
-    );
+    console.error("Get customer stats error:", error);
 
     res.status(500).json({
       success: false,
-      message:
-        "Unable to retrieve customer statistics",
+      message: "Unable to retrieve customer statistics",
     });
   }
 };
 
-/*
- * ============================================================
- * SEARCH CUSTOMER BY PHONE
- * ============================================================
- *
- * GET /api/customers/phone/:phone
- *
- * Admin + Staff
- */
-export const getCustomerByPhone = async (
-  req,
-  res
-) => {
+export const getCustomerByPhone = async (req, res) => {
   try {
-    const { phone } =
-      req.params;
+    const { phone } = req.params;
 
-    if (
-      !phone ||
-      !phone.trim()
-    ) {
+    if (!phone || !phone.trim()) {
       return res.status(400).json({
         success: false,
-        message:
-          "Phone number is required",
+        message: "Phone number is required",
       });
     }
 
-    const customer =
-      await Customer.findOne({
-        phone: phone.trim(),
-        isActive: true,
-      }).populate(
-        "user",
-        "name email phone role isActive"
-      );
+    const customer = await Customer.findOne({
+      phone: phone.trim(),
+      isActive: true,
+    }).populate("user", "name email phone role isActive");
 
     if (!customer) {
       return res.status(404).json({
         success: false,
-        message:
-          "No active customer found with this phone number",
+        message: "No active customer found with this phone number",
       });
     }
 
     res.status(200).json({
       success: true,
 
-      customer:
-        formatCustomer(customer),
+      customer: formatCustomer(customer),
     });
   } catch (error) {
-    console.error(
-      "Get customer by phone error:",
-      error
-    );
+    console.error("Get customer by phone error:", error);
 
     res.status(500).json({
       success: false,
-      message:
-        "Unable to search customer by phone",
+      message: "Unable to search customer by phone",
     });
   }
 };

@@ -1,10 +1,5 @@
 import { useMemo, useState } from "react";
-import {
-  NavLink,
-  Outlet,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import {
   FaBoxes,
@@ -55,7 +50,7 @@ const navigationGroups = [
       {
         label: "Orders",
         path: "/admin/orders",
-        icon: FaClipboardList, 
+        icon: FaClipboardList,
       },
       {
         label: "Reports",
@@ -67,10 +62,7 @@ const navigationGroups = [
 ];
 
 const getInitials = (name = "Admin") => {
-  const words = String(name)
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
+  const words = String(name).trim().split(/\s+/).filter(Boolean);
 
   if (!words.length) return "AD";
 
@@ -101,10 +93,7 @@ const AdminLayout = () => {
   const userName = user?.name || "Admin";
   const userRole = user?.role || "admin";
 
-  const initials = useMemo(
-    () => getInitials(userName),
-    [userName]
-  );
+  const initials = useMemo(() => getInitials(userName), [userName]);
 
   const pageInfo = useMemo(() => {
     const pathname = location.pathname;
@@ -168,7 +157,6 @@ const AdminLayout = () => {
         sidebarCollapsed ? "sidebar-is-collapsed" : ""
       }`}
     >
-      {/* Mobile Overlay */}
       {mobileSidebarOpen && (
         <button
           type="button"
@@ -178,13 +166,11 @@ const AdminLayout = () => {
         />
       )}
 
-      {/* ================= SIDEBAR ================= */}
       <aside
         className={`admin-sidebar ${
           mobileSidebarOpen ? "mobile-sidebar-open" : ""
         }`}
       >
-        {/* Brand */}
         <div className="admin-brand">
           <div
             className="admin-brand-logo"
@@ -217,14 +203,11 @@ const AdminLayout = () => {
           </button>
         </div>
 
-        {/* Sidebar Navigation */}
         <div className="admin-sidebar-navigation">
           {navigationGroups.map((group) => (
             <div className="admin-nav-group" key={group.title}>
               {!sidebarCollapsed && (
-                <div className="admin-nav-group-title">
-                  {group.title}
-                </div>
+                <div className="admin-nav-group-title">{group.title}</div>
               )}
 
               <div className="admin-nav-list">
@@ -258,9 +241,7 @@ const AdminLayout = () => {
                               {item.label}
                             </span>
 
-                            <span className="admin-nav-coming-soon">
-                              Soon
-                            </span>
+                            <span className="admin-nav-coming-soon">Soon</span>
                           </>
                         )}
                       </button>
@@ -271,26 +252,16 @@ const AdminLayout = () => {
                     <NavLink
                       to={item.path}
                       key={item.label}
-                      className={`admin-nav-item ${
-                        isActive ? "active" : ""
-                      }`}
-                      title={
-                        sidebarCollapsed
-                          ? item.label
-                          : undefined
-                      }
-                      onClick={() =>
-                        setMobileSidebarOpen(false)
-                      }
+                      className={`admin-nav-item ${isActive ? "active" : ""}`}
+                      title={sidebarCollapsed ? item.label : undefined}
+                      onClick={() => setMobileSidebarOpen(false)}
                     >
                       <span className="admin-nav-icon">
                         <Icon />
                       </span>
 
                       {!sidebarCollapsed && (
-                        <span className="admin-nav-label">
-                          {item.label}
-                        </span>
+                        <span className="admin-nav-label">{item.label}</span>
                       )}
 
                       {!sidebarCollapsed && isActive && (
@@ -306,21 +277,14 @@ const AdminLayout = () => {
           ))}
         </div>
 
-        {/* Sidebar Bottom */}
         <div className="admin-sidebar-bottom">
           <div className="admin-sidebar-profile">
-            <div className="admin-avatar admin-avatar-sidebar">
-              {initials}
-            </div>
+            <div className="admin-avatar admin-avatar-sidebar">{initials}</div>
 
             {!sidebarCollapsed && (
               <div className="admin-sidebar-profile-info">
                 <strong>{userName}</strong>
-                <span>
-                  {userRole === "admin"
-                    ? "Administrator"
-                    : userRole}
-                </span>
+                <span>{userRole === "admin" ? "Administrator" : userRole}</span>
               </div>
             )}
           </div>
@@ -329,56 +293,34 @@ const AdminLayout = () => {
             type="button"
             className="admin-logout-button"
             onClick={handleLogout}
-            title={
-              sidebarCollapsed
-                ? "Logout"
-                : undefined
-            }
+            title={sidebarCollapsed ? "Logout" : undefined}
           >
             <FaSignOutAlt />
 
-            {!sidebarCollapsed && (
-              <span>Logout</span>
-            )}
+            {!sidebarCollapsed && <span>Logout</span>}
           </button>
 
           <button
             type="button"
             className="admin-sidebar-collapse"
-            onClick={() =>
-              setSidebarCollapsed((value) => !value)
-            }
+            onClick={() => setSidebarCollapsed((value) => !value)}
             aria-label={
-              sidebarCollapsed
-                ? "Expand sidebar"
-                : "Collapse sidebar"
+              sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
             }
-            title={
-              sidebarCollapsed
-                ? "Expand sidebar"
-                : "Collapse sidebar"
-            }
+            title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {sidebarCollapsed ? (
-              <FaChevronRight />
-            ) : (
-              <FaChevronLeft />
-            )}
+            {sidebarCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
           </button>
         </div>
       </aside>
 
-      {/* ================= MAIN ================= */}
       <div className="admin-main">
-        {/* ================= TOP NAVBAR ================= */}
         <header className="admin-topbar">
           <div className="admin-topbar-left">
             <button
               type="button"
               className="admin-mobile-menu-button"
-              onClick={() =>
-                setMobileSidebarOpen(true)
-              }
+              onClick={() => setMobileSidebarOpen(true)}
               aria-label="Open sidebar"
             >
               <span />
@@ -387,16 +329,13 @@ const AdminLayout = () => {
             </button>
 
             <div className="admin-page-heading">
-              <span className="admin-page-eyebrow">
-                {pageInfo.eyebrow}
-              </span>
+              <span className="admin-page-eyebrow">{pageInfo.eyebrow}</span>
 
               <h1>{pageInfo.title}</h1>
             </div>
           </div>
 
           <div className="admin-topbar-right">
-            {/* Date */}
             <div className="admin-date">
               <div className="admin-date-icon">
                 <FaCalendarAlt />
@@ -408,28 +347,18 @@ const AdminLayout = () => {
               </div>
             </div>
 
-            {/* Divider */}
             <div className="admin-topbar-divider" />
 
-            {/* Profile */}
             <button
               type="button"
               className="admin-topbar-profile"
-              onClick={() =>
-                navigate("/admin/dashboard")
-              }
+              onClick={() => navigate("/admin/dashboard")}
             >
-              <div className="admin-avatar admin-avatar-topbar">
-                {initials}
-              </div>
+              <div className="admin-avatar admin-avatar-topbar">{initials}</div>
 
               <div className="admin-topbar-profile-copy">
                 <strong>{userName}</strong>
-                <span>
-                  {userRole === "admin"
-                    ? "Administrator"
-                    : userRole}
-                </span>
+                <span>{userRole === "admin" ? "Administrator" : userRole}</span>
               </div>
 
               <FaChevronRight className="admin-profile-arrow" />
@@ -437,7 +366,6 @@ const AdminLayout = () => {
           </div>
         </header>
 
-        {/* ================= PAGE CONTENT ================= */}
         <main className="admin-content">
           <Outlet />
         </main>

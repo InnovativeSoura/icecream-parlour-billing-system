@@ -50,21 +50,13 @@ const Register = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (
-      !form.name.trim() ||
-      !form.email.trim() ||
-      !form.password
-    ) {
-      toast.error(
-        "Name, email and password are required."
-      );
+    if (!form.name.trim() || !form.email.trim() || !form.password) {
+      toast.error("Name, email and password are required.");
       return;
     }
 
     if (form.password.length < 6) {
-      toast.error(
-        "Password must contain at least 6 characters."
-      );
+      toast.error("Password must contain at least 6 characters.");
       return;
     }
 
@@ -87,7 +79,7 @@ const Register = () => {
       toast.success(
         role === "staff"
           ? "Staff account created successfully!"
-          : "Customer account created successfully!"
+          : "Customer account created successfully!",
       );
 
       if (role === "staff") {
@@ -103,7 +95,7 @@ const Register = () => {
       toast.error(
         error.response?.data?.message ||
           error.message ||
-          "Unable to create account."
+          "Unable to create account.",
       );
     } finally {
       setSubmitting(false);
@@ -115,10 +107,6 @@ const Register = () => {
   return (
     <main className="auth-page">
       <section className="auth-card auth-card-register">
-        {/* =====================================================
-            BRAND
-        ====================================================== */}
-
         <div className="auth-brand">
           <div className="auth-brand-icon">
             <FaIceCream />
@@ -135,16 +123,8 @@ const Register = () => {
           </div>
         </div>
 
-        {/* =====================================================
-            HEADING
-        ====================================================== */}
-
         <div className="auth-heading">
-          <h2>
-            {isStaff
-              ? "Create staff account"
-              : "Create account"}
-          </h2>
+          <h2>{isStaff ? "Create staff account" : "Create account"}</h2>
 
           <p>
             {isStaff
@@ -154,14 +134,8 @@ const Register = () => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* ===================================================
-              FULL NAME
-          ==================================================== */}
-
           <div className="form-group">
-            <label htmlFor="name">
-              Full name
-            </label>
+            <label htmlFor="name">Full name</label>
 
             <div className="input-wrapper">
               <FaUser />
@@ -179,14 +153,8 @@ const Register = () => {
             </div>
           </div>
 
-          {/* ===================================================
-              EMAIL
-          ==================================================== */}
-
           <div className="form-group">
-            <label htmlFor="email">
-              Email address
-            </label>
+            <label htmlFor="email">Email address</label>
 
             <div className="input-wrapper">
               <FaEnvelope />
@@ -204,14 +172,9 @@ const Register = () => {
             </div>
           </div>
 
-          {/* ===================================================
-              PHONE
-          ==================================================== */}
-
           <div className="form-group">
             <label htmlFor="phone">
-              Phone number{" "}
-              <span>(optional)</span>
+              Phone number <span>(optional)</span>
             </label>
 
             <div className="input-wrapper">
@@ -230,101 +193,65 @@ const Register = () => {
             </div>
           </div>
 
-          {/* ===================================================
-              ACCOUNT TYPE
-          ==================================================== */}
-
           <div className="register-role-section">
             <div className="register-role-heading">
               <div>
-                <label>
-                  Account type
-                </label>
+                <label>Account type</label>
 
-                <span>
-                  Select how you will use the system.
-                </span>
+                <span>Select how you will use the system.</span>
               </div>
             </div>
 
             <div className="register-role-options">
-              {/* CUSTOMER */}
-
               <button
                 type="button"
                 className={`register-role-card ${
-                  role === "customer"
-                    ? "active"
-                    : ""
+                  role === "customer" ? "active" : ""
                 }`}
-                onClick={() =>
-                  handleRoleChange("customer")
-                }
+                onClick={() => handleRoleChange("customer")}
                 disabled={submitting}
-                aria-pressed={
-                  role === "customer"
-                }
+                aria-pressed={role === "customer"}
               >
                 <div className="register-role-icon">
                   <FaUser />
                 </div>
 
                 <div className="register-role-content">
-                  <strong>
-                    Customer
-                  </strong>
+                  <strong>Customer</strong>
 
                   <span>
-                    Browse ice cream, place
-                    orders and manage your
-                    account.
+                    Browse ice cream, place orders and manage your account.
                   </span>
                 </div>
 
                 <div className="register-role-radio">
-                  {role === "customer" && (
-                    <FaCheckCircle />
-                  )}
+                  {role === "customer" && <FaCheckCircle />}
                 </div>
               </button>
-
-              {/* STAFF */}
 
               <button
                 type="button"
                 className={`register-role-card ${
-                  role === "staff"
-                    ? "active"
-                    : ""
+                  role === "staff" ? "active" : ""
                 }`}
-                onClick={() =>
-                  handleRoleChange("staff")
-                }
+                onClick={() => handleRoleChange("staff")}
                 disabled={submitting}
-                aria-pressed={
-                  role === "staff"
-                }
+                aria-pressed={role === "staff"}
               >
                 <div className="register-role-icon staff">
                   <FaUserTie />
                 </div>
 
                 <div className="register-role-content">
-                  <strong>
-                    Staff
-                  </strong>
+                  <strong>Staff</strong>
 
                   <span>
-                    Manage billing, orders,
-                    customers and parlour
-                    operations.
+                    Manage billing, orders, customers and parlour operations.
                   </span>
                 </div>
 
                 <div className="register-role-radio">
-                  {role === "staff" && (
-                    <FaCheckCircle />
-                  )}
+                  {role === "staff" && <FaCheckCircle />}
                 </div>
               </button>
             </div>
@@ -333,29 +260,19 @@ const Register = () => {
               {isStaff ? (
                 <>
                   Staff access includes{" "}
-                  <strong>
-                    billing, orders and reports.
-                  </strong>
+                  <strong>billing, orders and reports.</strong>
                 </>
               ) : (
                 <>
                   Customer access includes{" "}
-                  <strong>
-                    online ordering and invoices.
-                  </strong>
+                  <strong>online ordering and invoices.</strong>
                 </>
               )}
             </p>
           </div>
 
-          {/* ===================================================
-              PASSWORD
-          ==================================================== */}
-
           <div className="form-group">
-            <label htmlFor="password">
-              Password
-            </label>
+            <label htmlFor="password">Password</label>
 
             <div className="input-wrapper">
               <FaLock />
@@ -373,14 +290,8 @@ const Register = () => {
             </div>
           </div>
 
-          {/* ===================================================
-              CONFIRM PASSWORD
-          ==================================================== */}
-
           <div className="form-group">
-            <label htmlFor="confirmPassword">
-              Confirm password
-            </label>
+            <label htmlFor="confirmPassword">Confirm password</label>
 
             <div className="input-wrapper">
               <FaLock />
@@ -398,16 +309,8 @@ const Register = () => {
             </div>
           </div>
 
-          {/* ===================================================
-              SUBMIT
-          ==================================================== */}
-
           <button
-            className={`auth-submit ${
-              isStaff
-                ? "auth-submit-staff"
-                : ""
-            }`}
+            className={`auth-submit ${isStaff ? "auth-submit-staff" : ""}`}
             type="submit"
             disabled={submitting}
           >
@@ -419,15 +322,8 @@ const Register = () => {
           </button>
         </form>
 
-        {/* =====================================================
-            FOOTER
-        ====================================================== */}
-
         <p className="auth-footer">
-          Already have an account?{" "}
-          <Link to="/login">
-            Sign in
-          </Link>
+          Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </section>
     </main>

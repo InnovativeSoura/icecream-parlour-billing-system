@@ -60,12 +60,7 @@ const normalizePaymentStatus = (value) => {
 };
 
 const getOrderTotal = (order) =>
-  Number(
-    order?.totalAmount ??
-      order?.total ??
-      order?.grandTotal ??
-      0
-  ) || 0;
+  Number(order?.totalAmount ?? order?.total ?? order?.grandTotal ?? 0) || 0;
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat("en-IN", {
@@ -103,8 +98,7 @@ const Reports = () => {
   const [customers, setCustomers] = useState([]);
 
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] =
-    useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchReports = async (refresh = false) => {
     try {
@@ -126,39 +120,18 @@ const Reports = () => {
         api.get("/customers"),
       ]);
 
-      setOrders(
-        extractArray(ordersResponse, [
-          "orders",
-        ])
-      );
+      setOrders(extractArray(ordersResponse, ["orders"]));
 
-      setProducts(
-        extractArray(productsResponse, [
-          "products",
-        ])
-      );
+      setProducts(extractArray(productsResponse, ["products"]));
 
-      setInventory(
-        extractArray(inventoryResponse, [
-          "inventory",
-          "items",
-        ])
-      );
+      setInventory(extractArray(inventoryResponse, ["inventory", "items"]));
 
-      setCustomers(
-        extractArray(customersResponse, [
-          "customers",
-        ])
-      );
+      setCustomers(extractArray(customersResponse, ["customers"]));
     } catch (error) {
-      console.error(
-        "Failed to load reports:",
-        error
-      );
+      console.error("Failed to load reports:", error);
 
       toast.error(
-        error?.response?.data?.message ||
-          "Unable to load report data."
+        error?.response?.data?.message || "Unable to load report data.",
       );
     } finally {
       setLoading(false);
@@ -174,51 +147,35 @@ const Reports = () => {
     const totalOrders = orders.length;
 
     const paidOrders = orders.filter(
-      (order) =>
-        normalizePaymentStatus(
-          order?.paymentStatus
-        ) === "paid"
+      (order) => normalizePaymentStatus(order?.paymentStatus) === "paid",
     );
 
     const pendingOrders = orders.filter(
-      (order) =>
-        normalizeStatus(order?.status) ===
-        "pending"
+      (order) => normalizeStatus(order?.status) === "pending",
     );
 
     const completedOrders = orders.filter(
-      (order) =>
-        normalizeStatus(order?.status) ===
-        "completed"
+      (order) => normalizeStatus(order?.status) === "completed",
     );
 
     const cancelledOrders = orders.filter(
-      (order) =>
-        normalizeStatus(order?.status) ===
-        "cancelled"
+      (order) => normalizeStatus(order?.status) === "cancelled",
     );
 
     const revenue = paidOrders.reduce(
-      (sum, order) =>
-        sum + getOrderTotal(order),
-      0
+      (sum, order) => sum + getOrderTotal(order),
+      0,
     );
 
     const averageOrderValue =
-      paidOrders.length > 0
-        ? revenue / paidOrders.length
-        : 0;
+      paidOrders.length > 0 ? revenue / paidOrders.length : 0;
 
     const onlineOrders = orders.filter(
-      (order) =>
-        String(order?.orderType || "")
-          .toLowerCase() === "online"
+      (order) => String(order?.orderType || "").toLowerCase() === "online",
     ).length;
 
     const posOrders = orders.filter(
-      (order) =>
-        String(order?.orderType || "")
-          .toLowerCase() === "pos"
+      (order) => String(order?.orderType || "").toLowerCase() === "pos",
     ).length;
 
     const paymentMethods = {
@@ -230,49 +187,33 @@ const Reports = () => {
     };
 
     paidOrders.forEach((order) => {
-      const method = String(
-        order?.paymentMethod || "other"
-      ).toLowerCase();
+      const method = String(order?.paymentMethod || "other").toLowerCase();
 
-      if (
-        Object.prototype.hasOwnProperty.call(
-          paymentMethods,
-          method
-        )
-      ) {
+      if (Object.prototype.hasOwnProperty.call(paymentMethods, method)) {
         paymentMethods[method] += 1;
       } else {
         paymentMethods.other += 1;
       }
     });
 
-    const lowStockItems = inventory.filter(
-      (item) => {
-        const quantity = Number(
-          item?.quantity ??
-            item?.stock ??
-            item?.currentStock ??
-            0
-        );
+    const lowStockItems = inventory.filter((item) => {
+      const quantity = Number(
+        item?.quantity ?? item?.stock ?? item?.currentStock ?? 0,
+      );
 
-        const threshold = Number(
-          item?.lowStockThreshold ??
-            item?.reorderLevel ??
-            5
-        );
+      const threshold = Number(
+        item?.lowStockThreshold ?? item?.reorderLevel ?? 5,
+      );
 
-        return quantity <= threshold;
-      }
-    ).length;
+      return quantity <= threshold;
+    }).length;
 
     return {
       totalOrders,
       paidOrders: paidOrders.length,
       pendingOrders: pendingOrders.length,
-      completedOrders:
-        completedOrders.length,
-      cancelledOrders:
-        cancelledOrders.length,
+      completedOrders: completedOrders.length,
+      cancelledOrders: cancelledOrders.length,
       revenue,
       averageOrderValue,
       onlineOrders,
@@ -289,43 +230,27 @@ const Reports = () => {
       const date = new Date();
 
       date.setHours(0, 0, 0, 0);
-      date.setDate(
-        date.getDate() - index
-      );
+      date.setDate(date.getDate() - index);
 
-      const dateKey =
-        date.toISOString().split("T")[0];
+      const dateKey = date.toISOString().split("T")[0];
 
-      const dayOrders = orders.filter(
-        (order) => {
-          if (
-            normalizePaymentStatus(
-              order?.paymentStatus
-            ) !== "paid"
-          ) {
-            return false;
-          }
-
-          if (!order?.createdAt) {
-            return false;
-          }
-
-          const orderDate = new Date(
-            order.createdAt
-          );
-
-          return (
-            orderDate
-              .toISOString()
-              .split("T")[0] === dateKey
-          );
+      const dayOrders = orders.filter((order) => {
+        if (normalizePaymentStatus(order?.paymentStatus) !== "paid") {
+          return false;
         }
-      );
+
+        if (!order?.createdAt) {
+          return false;
+        }
+
+        const orderDate = new Date(order.createdAt);
+
+        return orderDate.toISOString().split("T")[0] === dateKey;
+      });
 
       const sales = dayOrders.reduce(
-        (sum, order) =>
-          sum + getOrderTotal(order),
-        0
+        (sum, order) => sum + getOrderTotal(order),
+        0,
       );
 
       days.push({
@@ -339,20 +264,14 @@ const Reports = () => {
     return days;
   }, [orders]);
 
-  const maxDailySales = Math.max(
-    ...dailySales.map((day) => day.sales),
-    1
-  );
+  const maxDailySales = Math.max(...dailySales.map((day) => day.sales), 1);
 
   const topProducts = useMemo(() => {
     const productMap = {};
 
     orders
       .filter(
-        (order) =>
-          normalizePaymentStatus(
-            order?.paymentStatus
-          ) === "paid"
+        (order) => normalizePaymentStatus(order?.paymentStatus) === "paid",
       )
       .forEach((order) => {
         if (!Array.isArray(order?.items)) {
@@ -360,18 +279,15 @@ const Reports = () => {
         }
 
         order.items.forEach((item) => {
-          const name =
-            item?.name || "Unknown Product";
+          const name = item?.name || "Unknown Product";
 
-          const quantity =
-            Number(item?.quantity) || 0;
+          const quantity = Number(item?.quantity) || 0;
 
           const total =
             Number(
               item?.total ??
                 item?.totalAmount ??
-                (Number(item?.unitPrice) || 0) *
-                  quantity
+                (Number(item?.unitPrice) || 0) * quantity,
             ) || 0;
 
           if (!productMap[name]) {
@@ -382,18 +298,14 @@ const Reports = () => {
             };
           }
 
-          productMap[name].quantity +=
-            quantity;
+          productMap[name].quantity += quantity;
 
           productMap[name].revenue += total;
         });
       });
 
     return Object.values(productMap)
-      .sort(
-        (a, b) =>
-          b.quantity - a.quantity
-      )
+      .sort((a, b) => b.quantity - a.quantity)
       .slice(0, 5);
   }, [orders]);
 
@@ -402,123 +314,61 @@ const Reports = () => {
 
     orders
       .filter(
-        (order) =>
-          normalizePaymentStatus(
-            order?.paymentStatus
-          ) === "paid"
+        (order) => normalizePaymentStatus(order?.paymentStatus) === "paid",
       )
       .forEach((order) => {
-        const method =
-          String(
-            order?.paymentMethod || "other"
-          ).toLowerCase();
+        const method = String(order?.paymentMethod || "other").toLowerCase();
 
-        const amount =
-          getOrderTotal(order);
+        const amount = getOrderTotal(order);
 
-        result[method] =
-          (result[method] || 0) +
-          amount;
+        result[method] = (result[method] || 0) + amount;
       });
 
-    return Object.entries(result).sort(
-      (a, b) => b[1] - a[1]
-    );
+    return Object.entries(result).sort((a, b) => b[1] - a[1]);
   }, [orders]);
 
   const exportReport = () => {
     const rows = [
-      [
-        "Metric",
-        "Value",
-      ],
-      [
-        "Total Orders",
-        analytics.totalOrders,
-      ],
-      [
-        "Paid Orders",
-        analytics.paidOrders,
-      ],
-      [
-        "Pending Orders",
-        analytics.pendingOrders,
-      ],
-      [
-        "Completed Orders",
-        analytics.completedOrders,
-      ],
-      [
-        "Cancelled Orders",
-        analytics.cancelledOrders,
-      ],
-      [
-        "Total Revenue",
-        analytics.revenue,
-      ],
-      [
-        "Average Order Value",
-        analytics.averageOrderValue,
-      ],
-      [
-        "Online Orders",
-        analytics.onlineOrders,
-      ],
-      [
-        "POS Orders",
-        analytics.posOrders,
-      ],
-      [
-        "Products",
-        products.length,
-      ],
-      [
-        "Customers",
-        customers.length,
-      ],
-      [
-        "Inventory Items",
-        inventory.length,
-      ],
-      [
-        "Low Stock Items",
-        analytics.lowStockItems,
-      ],
+      ["Metric", "Value"],
+      ["Total Orders", analytics.totalOrders],
+      ["Paid Orders", analytics.paidOrders],
+      ["Pending Orders", analytics.pendingOrders],
+      ["Completed Orders", analytics.completedOrders],
+      ["Cancelled Orders", analytics.cancelledOrders],
+      ["Total Revenue", analytics.revenue],
+      ["Average Order Value", analytics.averageOrderValue],
+      ["Online Orders", analytics.onlineOrders],
+      ["POS Orders", analytics.posOrders],
+      ["Products", products.length],
+      ["Customers", customers.length],
+      ["Inventory Items", inventory.length],
+      ["Low Stock Items", analytics.lowStockItems],
     ];
 
     const csv = rows
       .map((row) =>
         row
           .map((cell) => {
-            const value = String(
-              cell ?? ""
-            ).replace(/"/g, '""');
+            const value = String(cell ?? "").replace(/"/g, '""');
 
             return `"${value}"`;
           })
-          .join(",")
+          .join(","),
       )
       .join("\n");
 
-    const blob = new Blob(
-      [csv],
-      {
-        type:
-          "text/csv;charset=utf-8;",
-      }
-    );
+    const blob = new Blob([csv], {
+      type: "text/csv;charset=utf-8;",
+    });
 
-    const url =
-      URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
 
-    const link =
-      document.createElement("a");
+    const link = document.createElement("a");
 
     link.href = url;
-    link.download =
-      `icecream-sales-report-${new Date()
-        .toISOString()
-        .slice(0, 10)}.csv`;
+    link.download = `icecream-sales-report-${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
 
     document.body.appendChild(link);
 
@@ -528,9 +378,7 @@ const Reports = () => {
 
     URL.revokeObjectURL(url);
 
-    toast.success(
-      "Report exported successfully."
-    );
+    toast.success("Report exported successfully.");
   };
 
   if (loading) {
@@ -540,20 +388,15 @@ const Reports = () => {
           <FaChartLine />
         </div>
 
-        <strong>
-          Preparing reports...
-        </strong>
+        <strong>Preparing reports...</strong>
 
-        <span>
-          Collecting sales and business data.
-        </span>
+        <span>Collecting sales and business data.</span>
       </div>
     );
   }
 
   return (
     <div className="admin-reports-page">
-      {/* ================= HEADER ================= */}
       <motion.section
         className="reports-hero"
         initial={{
@@ -566,15 +409,12 @@ const Reports = () => {
         }}
       >
         <div>
-          <span className="reports-eyebrow">
-            BUSINESS ANALYTICS
-          </span>
+          <span className="reports-eyebrow">BUSINESS ANALYTICS</span>
 
           <h2>Reports</h2>
 
           <p>
-            Understand sales performance,
-            customer activity, and inventory
+            Understand sales performance, customer activity, and inventory
             health.
           </p>
         </div>
@@ -583,22 +423,12 @@ const Reports = () => {
           <button
             type="button"
             className="reports-refresh"
-            onClick={() =>
-              fetchReports(true)
-            }
+            onClick={() => fetchReports(true)}
             disabled={refreshing}
           >
-            <FaSyncAlt
-              className={
-                refreshing
-                  ? "reports-spin"
-                  : ""
-              }
-            />
+            <FaSyncAlt className={refreshing ? "reports-spin" : ""} />
 
-            {refreshing
-              ? "Refreshing..."
-              : "Refresh"}
+            {refreshing ? "Refreshing..." : "Refresh"}
           </button>
 
           <button
@@ -611,7 +441,6 @@ const Reports = () => {
         </div>
       </motion.section>
 
-      {/* ================= KPI ================= */}
       <section className="reports-kpi-grid">
         <div className="report-kpi-card">
           <div className="report-kpi-icon revenue">
@@ -621,15 +450,9 @@ const Reports = () => {
           <div>
             <span>Total Revenue</span>
 
-            <strong>
-              {formatCurrency(
-                analytics.revenue
-              )}
-            </strong>
+            <strong>{formatCurrency(analytics.revenue)}</strong>
 
-            <small>
-              From paid orders
-            </small>
+            <small>From paid orders</small>
           </div>
         </div>
 
@@ -641,13 +464,9 @@ const Reports = () => {
           <div>
             <span>Total Orders</span>
 
-            <strong>
-              {analytics.totalOrders}
-            </strong>
+            <strong>{analytics.totalOrders}</strong>
 
-            <small>
-              {analytics.paidOrders} paid
-            </small>
+            <small>{analytics.paidOrders} paid</small>
           </div>
         </div>
 
@@ -659,15 +478,9 @@ const Reports = () => {
           <div>
             <span>Average Order</span>
 
-            <strong>
-              {formatCurrency(
-                analytics.averageOrderValue
-              )}
-            </strong>
+            <strong>{formatCurrency(analytics.averageOrderValue)}</strong>
 
-            <small>
-              Per paid order
-            </small>
+            <small>Per paid order</small>
           </div>
         </div>
 
@@ -679,18 +492,13 @@ const Reports = () => {
           <div>
             <span>Customers</span>
 
-            <strong>
-              {customers.length}
-            </strong>
+            <strong>{customers.length}</strong>
 
-            <small>
-              Registered records
-            </small>
+            <small>Registered records</small>
           </div>
         </div>
       </section>
 
-      {/* ================= SALES CHART ================= */}
       <section className="reports-main-grid">
         <div className="report-panel sales-panel">
           <div className="report-panel-header">
@@ -701,11 +509,7 @@ const Reports = () => {
 
             <div className="sales-total">
               {formatShortCurrency(
-                dailySales.reduce(
-                  (sum, day) =>
-                    sum + day.sales,
-                  0
-                )
+                dailySales.reduce((sum, day) => sum + day.sales, 0),
               )}
             </div>
           </div>
@@ -714,12 +518,7 @@ const Reports = () => {
             {dailySales.map((day) => {
               const height =
                 day.sales > 0
-                  ? Math.max(
-                      10,
-                      (day.sales /
-                        maxDailySales) *
-                        100
-                    )
+                  ? Math.max(10, (day.sales / maxDailySales) * 100)
                   : 5;
 
               return (
@@ -728,11 +527,7 @@ const Reports = () => {
                   key={day.date.toISOString()}
                 >
                   <div className="sales-chart-value">
-                    {day.sales > 0
-                      ? formatShortCurrency(
-                          day.sales
-                        )
-                      : "—"}
+                    {day.sales > 0 ? formatShortCurrency(day.sales) : "—"}
                   </div>
 
                   <div className="sales-bar-area">
@@ -746,23 +541,15 @@ const Reports = () => {
                       }}
                       transition={{
                         duration: 0.65,
-                        delay:
-                          dailySales.indexOf(
-                            day
-                          ) * 0.05,
+                        delay: dailySales.indexOf(day) * 0.05,
                       }}
                     />
                   </div>
 
-                  <span>
-                    {day.label}
-                  </span>
+                  <span>{day.label}</span>
 
                   <small>
-                    {day.orders}{" "}
-                    {day.orders === 1
-                      ? "order"
-                      : "orders"}
+                    {day.orders} {day.orders === 1 ? "order" : "orders"}
                   </small>
                 </div>
               );
@@ -770,7 +557,6 @@ const Reports = () => {
           </div>
         </div>
 
-        {/* ================= ORDER STATUS ================= */}
         <div className="report-panel">
           <div className="report-panel-header">
             <div>
@@ -787,14 +573,10 @@ const Reports = () => {
 
               <div>
                 <strong>Completed</strong>
-                <span>
-                  Successfully fulfilled
-                </span>
+                <span>Successfully fulfilled</span>
               </div>
 
-              <b>
-                {analytics.completedOrders}
-              </b>
+              <b>{analytics.completedOrders}</b>
             </div>
 
             <div className="status-report-row">
@@ -804,14 +586,10 @@ const Reports = () => {
 
               <div>
                 <strong>Pending</strong>
-                <span>
-                  Awaiting action
-                </span>
+                <span>Awaiting action</span>
               </div>
 
-              <b>
-                {analytics.pendingOrders}
-              </b>
+              <b>{analytics.pendingOrders}</b>
             </div>
 
             <div className="status-report-row">
@@ -821,22 +599,16 @@ const Reports = () => {
 
               <div>
                 <strong>Cancelled</strong>
-                <span>
-                  Cancelled orders
-                </span>
+                <span>Cancelled orders</span>
               </div>
 
-              <b>
-                {analytics.cancelledOrders}
-              </b>
+              <b>{analytics.cancelledOrders}</b>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ================= LOWER GRID ================= */}
       <section className="reports-lower-grid">
-        {/* TOP PRODUCTS */}
         <div className="report-panel">
           <div className="report-panel-header">
             <div>
@@ -846,45 +618,28 @@ const Reports = () => {
           </div>
 
           {topProducts.length === 0 ? (
-            <div className="report-empty">
-              No paid product sales available.
-            </div>
+            <div className="report-empty">No paid product sales available.</div>
           ) : (
             <div className="top-products-list">
-              {topProducts.map(
-                (product, index) => (
-                  <div
-                    className="top-product-row"
-                    key={product.name}
-                  >
-                    <div className="product-rank">
-                      {index + 1}
-                    </div>
+              {topProducts.map((product, index) => (
+                <div className="top-product-row" key={product.name}>
+                  <div className="product-rank">{index + 1}</div>
 
-                    <div className="top-product-info">
-                      <strong>
-                        {product.name}
-                      </strong>
+                  <div className="top-product-info">
+                    <strong>{product.name}</strong>
 
-                      <span>
-                        {product.quantity}{" "}
-                        units sold
-                      </span>
-                    </div>
-
-                    <strong className="top-product-revenue">
-                      {formatShortCurrency(
-                        product.revenue
-                      )}
-                    </strong>
+                    <span>{product.quantity} units sold</span>
                   </div>
-                )
-              )}
+
+                  <strong className="top-product-revenue">
+                    {formatShortCurrency(product.revenue)}
+                  </strong>
+                </div>
+              ))}
             </div>
           )}
         </div>
 
-        {/* PAYMENT METHODS */}
         <div className="report-panel">
           <div className="report-panel-header">
             <div>
@@ -899,60 +654,43 @@ const Reports = () => {
             </div>
           ) : (
             <div className="payment-report-list">
-              {revenueByPayment.map(
-                ([method, amount]) => {
-                  const percentage =
-                    analytics.revenue > 0
-                      ? (amount /
-                          analytics.revenue) *
-                        100
-                      : 0;
+              {revenueByPayment.map(([method, amount]) => {
+                const percentage =
+                  analytics.revenue > 0
+                    ? (amount / analytics.revenue) * 100
+                    : 0;
 
-                  return (
-                    <div
-                      className="payment-report-row"
-                      key={method}
-                    >
-                      <div className="payment-report-top">
-                        <span>
-                          <FaCreditCard />
-                          {method}
-                        </span>
+                return (
+                  <div className="payment-report-row" key={method}>
+                    <div className="payment-report-top">
+                      <span>
+                        <FaCreditCard />
+                        {method}
+                      </span>
 
-                        <strong>
-                          {formatShortCurrency(
-                            amount
-                          )}
-                        </strong>
-                      </div>
-
-                      <div className="payment-progress">
-                        <motion.div
-                          initial={{
-                            width: 0,
-                          }}
-                          animate={{
-                            width: `${percentage}%`,
-                          }}
-                        />
-                      </div>
-
-                      <small>
-                        {percentage.toFixed(
-                          1
-                        )}
-                        % of revenue
-                      </small>
+                      <strong>{formatShortCurrency(amount)}</strong>
                     </div>
-                  );
-                }
-              )}
+
+                    <div className="payment-progress">
+                      <motion.div
+                        initial={{
+                          width: 0,
+                        }}
+                        animate={{
+                          width: `${percentage}%`,
+                        }}
+                      />
+                    </div>
+
+                    <small>{percentage.toFixed(1)}% of revenue</small>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
       </section>
 
-      {/* ================= BUSINESS SNAPSHOT ================= */}
       <section className="report-panel snapshot-panel">
         <div className="report-panel-header">
           <div>
@@ -968,13 +706,9 @@ const Reports = () => {
             </div>
 
             <div>
-              <strong>
-                {products.length}
-              </strong>
+              <strong>{products.length}</strong>
 
-              <span>
-                Active Products
-              </span>
+              <span>Active Products</span>
             </div>
           </div>
 
@@ -984,13 +718,9 @@ const Reports = () => {
             </div>
 
             <div>
-              <strong>
-                {inventory.length}
-              </strong>
+              <strong>{inventory.length}</strong>
 
-              <span>
-                Inventory Records
-              </span>
+              <span>Inventory Records</span>
             </div>
           </div>
 
@@ -1000,13 +730,9 @@ const Reports = () => {
             </div>
 
             <div>
-              <strong>
-                {analytics.onlineOrders}
-              </strong>
+              <strong>{analytics.onlineOrders}</strong>
 
-              <span>
-                Online Orders
-              </span>
+              <span>Online Orders</span>
             </div>
           </div>
 
@@ -1016,13 +742,9 @@ const Reports = () => {
             </div>
 
             <div>
-              <strong>
-                {analytics.lowStockItems}
-              </strong>
+              <strong>{analytics.lowStockItems}</strong>
 
-              <span>
-                Low Stock Items
-              </span>
+              <span>Low Stock Items</span>
             </div>
           </div>
         </div>

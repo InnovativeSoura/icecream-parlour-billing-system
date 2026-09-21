@@ -1,8 +1,3 @@
-/* =========================================================
-   CUSTOMER ORDERS
-   frontend/src/pages/customer/CustomerOrders.css
-========================================================= */
-
 .customer-orders-page {
   min-height: 100%;
   width: 100%;
@@ -26,10 +21,6 @@
   width: min(1180px, 100%);
   margin: 0 auto;
 }
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .customer-orders-header {
   margin-bottom: 28px;
@@ -101,10 +92,6 @@
   box-shadow: 0 12px 28px rgba(124, 77, 224, 0.24);
 }
 
-/* =========================================================
-   STATS
-========================================================= */
-
 .orders-stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -166,10 +153,6 @@
   font-size: 17px;
   font-weight: 900;
 }
-
-/* =========================================================
-   TOOLBAR
-========================================================= */
 
 .orders-toolbar {
   display: flex;
@@ -282,10 +265,6 @@
   cursor: not-allowed;
 }
 
-/* =========================================================
-   ORDERS LIST
-========================================================= */
-
 .orders-list {
   display: flex;
   flex-direction: column;
@@ -309,10 +288,6 @@
   box-shadow: 0 14px 34px rgba(67, 48, 115, 0.085);
 }
 
-/* =========================================================
-   ORDER CARD MAIN
-========================================================= */
-
 .order-card-main {
   min-height: 104px;
   display: grid;
@@ -331,11 +306,7 @@
   justify-content: center;
   border-radius: 13px;
   color: #7b4ce2;
-  background: linear-gradient(
-    135deg,
-    #f0e8ff,
-    #f7efff
-  );
+  background: linear-gradient(135deg, #f0e8ff, #f7efff);
 }
 
 .order-product-icon svg {
@@ -384,10 +355,6 @@
   color: #a28acb;
   font-size: 9px;
 }
-
-/* =========================================================
-   STATUS BADGES
-========================================================= */
 
 .order-status,
 .payment-status {
@@ -438,12 +405,8 @@
 
 .order-status.default {
   color: #777985;
-  background: #eeeeF4;
+  background: #eeeef4;
 }
-
-/* =========================================================
-   ORDER TOTAL
-========================================================= */
 
 .order-total {
   min-width: 0;
@@ -501,11 +464,6 @@
   background: #ffe9eb;
 }
 
-/* =========================================================
-   QUICK ACTIONS
-   IMPORTANT: CANCEL BUTTON IS EXPLICITLY VISIBLE
-========================================================= */
-
 .order-card-actions {
   min-width: 150px;
   display: flex !important;
@@ -513,10 +471,6 @@
   justify-content: flex-end;
   gap: 8px;
 }
-
-/* =========================================================
-   QUICK CANCEL BUTTON
-========================================================= */
 
 .quick-cancel-btn {
   min-width: 76px !important;
@@ -562,11 +516,7 @@
 .quick-cancel-btn:hover:not(:disabled) {
   border-color: #e58b99 !important;
   color: #ffffff !important;
-  background: linear-gradient(
-    135deg,
-    #e05268,
-    #d43f58
-  ) !important;
+  background: linear-gradient(135deg, #e05268, #d43f58) !important;
   box-shadow: 0 7px 16px rgba(213, 64, 88, 0.2);
   transform: translateY(-1px);
 }
@@ -579,10 +529,6 @@
   opacity: 0.55 !important;
   cursor: not-allowed !important;
 }
-
-/* =========================================================
-   EXPAND BUTTON
-========================================================= */
 
 .expand-order {
   width: 32px;
@@ -605,19 +551,10 @@
   background: #8253df;
 }
 
-/* =========================================================
-   ORDER DETAILS
-========================================================= */
-
 .order-details {
   overflow: hidden;
   border-top: 1px solid #eeeef4;
-  background:
-    linear-gradient(
-      180deg,
-      #ffffff 0%,
-      #fcfbff 100%
-    );
+  background: linear-gradient(180deg, #ffffff 0%, #fcfbff 100%);
 }
 
 .order-items {
@@ -693,10 +630,6 @@
   font-size: 9px;
 }
 
-/* =========================================================
-   ORDER SUMMARY
-========================================================= */
-
 .order-summary {
   width: min(280px, calc(100% - 36px));
   margin: 12px 18px 0 auto;
@@ -739,10 +672,6 @@
   font-size: 13px;
   font-weight: 900;
 }
-
-/* =========================================================
-   ORDER FOOTER
-========================================================= */
 
 .order-footer {
   display: flex;
@@ -799,10 +728,6 @@
   background: #faf8ff;
 }
 
-/* =========================================================
-   EXPANDED CANCEL BUTTON
-========================================================= */
-
 .cancel-order-btn {
   min-width: 112px;
   border: 1px solid #efb2bc !important;
@@ -813,11 +738,7 @@
 .cancel-order-btn:hover:not(:disabled) {
   color: #ffffff !important;
   border-color: #dc5266 !important;
-  background: linear-gradient(
-    135deg,
-    #e05268,
-    #d43f58
-  ) !important;
+  background: linear-gradient(135deg, #e05268, #d43f58) !important;
   box-shadow: 0 7px 17px rgba(212, 63, 88, 0.18);
 }
 
@@ -825,10 +746,6 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
-
-/* =========================================================
-   REORDER
-========================================================= */
 
 .reorder-btn {
   border: 1px solid #d9caf5 !important;
@@ -840,10 +757,6 @@
   border-color: #bda5ed !important;
   background: #f1eaff !important;
 }
-
-/* =========================================================
-   EMPTY STATE
-========================================================= */
 
 .customer-orders-empty {
   padding: 70px 20px;
@@ -894,10 +807,6 @@
   box-shadow: 0 8px 20px rgba(128, 79, 222, 0.2);
 }
 
-/* =========================================================
-   LOADING
-========================================================= */
-
 .orders-loading {
   min-height: 240px;
   display: flex;
@@ -913,10 +822,6 @@
   color: #999aaa;
   font-size: 11px;
 }
-
-/* =========================================================
-   ORDER DETAILS MODAL
-========================================================= */
 
 .order-modal-overlay,
 .cancel-modal-overlay {
@@ -1071,16 +976,8 @@
 .modal-cancel-btn:hover:not(:disabled) {
   color: #ffffff;
   border-color: #dc5266;
-  background: linear-gradient(
-    135deg,
-    #e05268,
-    #d43f58
-  );
+  background: linear-gradient(135deg, #e05268, #d43f58);
 }
-
-/* =========================================================
-   CANCEL CONFIRMATION MODAL
-========================================================= */
 
 .cancel-modal {
   width: min(420px, 100%);
@@ -1192,11 +1089,7 @@
   gap: 7px;
   border: 0;
   color: #ffffff;
-  background: linear-gradient(
-    135deg,
-    #e05268,
-    #d43f58
-  );
+  background: linear-gradient(135deg, #e05268, #d43f58);
   box-shadow: 0 8px 18px rgba(212, 63, 88, 0.2);
 }
 
@@ -1205,10 +1098,6 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
-
-/* =========================================================
-   SPINNER
-========================================================= */
 
 .spin {
   animation: customerOrdersSpin 0.8s linear infinite;
@@ -1223,10 +1112,6 @@
     transform: rotate(360deg);
   }
 }
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 
 @media (max-width: 1050px) {
   .order-card-main {
@@ -1429,9 +1314,6 @@
     grid-template-columns: 1fr;
   }
 }
-/* =========================================================
-   PREMIUM CONTENT SCALE — CUSTOMER ORDERS
-   ========================================================= */
 
 .customer-orders-page {
   width: 100%;
@@ -1443,7 +1325,6 @@
   margin: 0 auto;
 }
 
-/* Header */
 .customer-orders-header {
   margin-bottom: 28px;
 }
@@ -1458,7 +1339,6 @@
   margin-top: 8px;
 }
 
-/* Statistics */
 .orders-stats {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
@@ -1484,7 +1364,6 @@
   font-size: 21px;
 }
 
-/* Toolbar */
 .orders-toolbar {
   margin-bottom: 22px;
   gap: 14px;
@@ -1514,7 +1393,6 @@
   font-size: 12px;
 }
 
-/* Order cards */
 .orders-list {
   gap: 16px;
 }
@@ -1569,7 +1447,6 @@
   font-size: 9px;
 }
 
-/* Order actions */
 .order-card-actions {
   gap: 10px;
 }
@@ -1585,15 +1462,10 @@
   height: 42px;
 }
 
-/* Expanded order content */
 .order-details {
   margin-top: 18px;
   padding-top: 20px;
 }
-
-/* =========================================================
-   LARGE DESKTOP
-   ========================================================= */
 
 @media (min-width: 1400px) {
   .customer-orders-page {
@@ -1620,10 +1492,6 @@
   }
 }
 
-/* =========================================================
-   TABLET
-   ========================================================= */
-
 @media (max-width: 900px) {
   .customer-orders-page {
     padding: 28px 24px 48px;
@@ -1637,10 +1505,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
 
 @media (max-width: 600px) {
   .customer-orders-page {

@@ -1,5 +1,3 @@
-// frontend/src/pages/customer/Invoices.jsx
-
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -24,18 +22,10 @@ import api from "./../api/api";
 import "./Invoices.css";
 
 const Invoices = () => {
-  // =====================================================
-  // STATE
-  // =====================================================
-
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [selectedInvoice, setSelectedInvoice] = useState(null);
-
-  // =====================================================
-  // FETCH INVOICES
-  // =====================================================
 
   useEffect(() => {
     fetchInvoices();
@@ -52,31 +42,24 @@ const Invoices = () => {
       const orderList = Array.isArray(data)
         ? data
         : Array.isArray(data?.orders)
-        ? data.orders
-        : Array.isArray(data?.data)
-        ? data.data
-        : Array.isArray(data?.results)
-        ? data.results
-        : [];
+          ? data.orders
+          : Array.isArray(data?.data)
+            ? data.data
+            : Array.isArray(data?.results)
+              ? data.results
+              : [];
 
       setOrders(orderList);
     } catch (error) {
       console.error("Invoice fetch error:", error);
 
-      toast.error(
-        error.response?.data?.message ||
-          "Unable to load invoices"
-      );
+      toast.error(error.response?.data?.message || "Unable to load invoices");
 
       setOrders([]);
     } finally {
       setLoading(false);
     }
   };
-
-  // =====================================================
-  // FILTER INVOICES
-  // =====================================================
 
   const invoices = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -100,10 +83,6 @@ const Invoices = () => {
     });
   }, [orders, search]);
 
-  // =====================================================
-  // FORMAT DATE
-  // =====================================================
-
   const formatDate = (date) => {
     if (!date) {
       return "—";
@@ -122,10 +101,6 @@ const Invoices = () => {
     });
   };
 
-  // =====================================================
-  // FORMAT TIME
-  // =====================================================
-
   const formatTime = (date) => {
     if (!date) {
       return "";
@@ -143,10 +118,6 @@ const Invoices = () => {
     });
   };
 
-  // =====================================================
-  // FORMAT CURRENCY
-  // =====================================================
-
   const formatCurrency = (amount) => {
     const numericAmount = Number(amount || 0);
 
@@ -155,10 +126,6 @@ const Invoices = () => {
       maximumFractionDigits: 2,
     })}`;
   };
-
-  // =====================================================
-  // PAYMENT ICON
-  // =====================================================
 
   const getPaymentIcon = (method) => {
     switch (String(method || "").toLowerCase()) {
@@ -177,10 +144,6 @@ const Invoices = () => {
     }
   };
 
-  // =====================================================
-  // STATUS ICON
-  // =====================================================
-
   const getStatusIcon = (status) => {
     switch (String(status || "").toLowerCase()) {
       case "paid":
@@ -197,10 +160,6 @@ const Invoices = () => {
         return <FaClock />;
     }
   };
-
-  // =====================================================
-  // STATUS CLASS
-  // =====================================================
 
   const getStatusClass = (status) => {
     switch (String(status || "").toLowerCase()) {
@@ -219,10 +178,6 @@ const Invoices = () => {
     }
   };
 
-  // =====================================================
-  // PAYMENT LABEL
-  // =====================================================
-
   const getPaymentLabel = (method) => {
     if (!method) {
       return "Unpaid";
@@ -230,14 +185,8 @@ const Invoices = () => {
 
     return String(method)
       .replace(/_/g, " ")
-      .replace(/\b\w/g, (letter) =>
-        letter.toUpperCase()
-      );
+      .replace(/\b\w/g, (letter) => letter.toUpperCase());
   };
-
-  // =====================================================
-  // ESCAPE HTML
-  // =====================================================
 
   const escapeHtml = (value) => {
     return String(value ?? "")
@@ -248,40 +197,21 @@ const Invoices = () => {
       .replace(/'/g, "&#039;");
   };
 
-  // =====================================================
-  // GET ITEM TOTAL
-  // =====================================================
-
   const getItemTotal = (item) => {
     const explicitTotal = Number(
-      item?.total ??
-        item?.totalAmount ??
-        item?.lineTotal
+      item?.total ?? item?.totalAmount ?? item?.lineTotal,
     );
 
-    if (
-      Number.isFinite(explicitTotal) &&
-      explicitTotal >= 0
-    ) {
+    if (Number.isFinite(explicitTotal) && explicitTotal >= 0) {
       return explicitTotal;
     }
 
-    const quantity =
-      Number(item?.quantity || 1);
+    const quantity = Number(item?.quantity || 1);
 
-    const unitPrice =
-      Number(
-        item?.unitPrice ??
-          item?.price ??
-          0
-      );
+    const unitPrice = Number(item?.unitPrice ?? item?.price ?? 0);
 
     return quantity * unitPrice;
   };
-
-  // =====================================================
-  // GET CUSTOMER NAME
-  // =====================================================
 
   const getCustomerName = (invoice) => {
     return (
@@ -292,10 +222,6 @@ const Invoices = () => {
     );
   };
 
-  // =====================================================
-  // GET CUSTOMER EMAIL
-  // =====================================================
-
   const getCustomerEmail = (invoice) => {
     return (
       invoice?.customerSnapshot?.email ||
@@ -304,10 +230,6 @@ const Invoices = () => {
       ""
     );
   };
-
-  // =====================================================
-  // GET CUSTOMER PHONE
-  // =====================================================
 
   const getCustomerPhone = (invoice) => {
     return (
@@ -318,25 +240,13 @@ const Invoices = () => {
     );
   };
 
-  // =====================================================
-  // GENERATE INVOICE NUMBER
-  // =====================================================
-
   const getInvoiceNumber = (invoice) => {
     return (
       invoice?.invoiceNumber ||
       invoice?.orderNumber ||
-      (invoice?._id
-        ? `INV-${invoice._id
-            .slice(-8)
-            .toUpperCase()}`
-        : "INVOICE")
+      (invoice?._id ? `INV-${invoice._id.slice(-8).toUpperCase()}` : "INVOICE")
     );
   };
-
-  // =====================================================
-  // DOWNLOAD / PRINT INVOICE
-  // =====================================================
 
   const handleDownload = (invoice) => {
     if (!invoice) {
@@ -345,67 +255,37 @@ const Invoices = () => {
     }
 
     try {
-      const invoiceNumber =
-        getInvoiceNumber(invoice);
+      const invoiceNumber = getInvoiceNumber(invoice);
 
       const invoiceDate = formatDate(
-        invoice.createdAt ||
-          invoice.orderDate ||
-          invoice.date
+        invoice.createdAt || invoice.orderDate || invoice.date,
       );
 
       const invoiceTime = formatTime(
-        invoice.createdAt ||
-          invoice.orderDate ||
-          invoice.date
+        invoice.createdAt || invoice.orderDate || invoice.date,
       );
 
-      const customerName =
-        getCustomerName(invoice);
+      const customerName = getCustomerName(invoice);
 
-      const customerEmail =
-        getCustomerEmail(invoice);
+      const customerEmail = getCustomerEmail(invoice);
 
-      const customerPhone =
-        getCustomerPhone(invoice);
+      const customerPhone = getCustomerPhone(invoice);
 
-      const paymentMethod =
-        getPaymentLabel(
-          invoice.paymentMethod
-        );
+      const paymentMethod = getPaymentLabel(invoice.paymentMethod);
 
-      const paymentStatus =
-        invoice.paymentStatus ||
-        "pending";
+      const paymentStatus = invoice.paymentStatus || "pending";
 
-      const items = Array.isArray(
-        invoice.items
-      )
-        ? invoice.items
-        : [];
+      const items = Array.isArray(invoice.items) ? invoice.items : [];
 
-      const subtotal = Number(
-        invoice.subtotal || 0
-      );
+      const subtotal = Number(invoice.subtotal || 0);
 
-      const discount = Number(
-        invoice.discount || 0
-      );
+      const discount = Number(invoice.discount || 0);
 
-      const tax = Number(
-        invoice.tax || 0
-      );
+      const tax = Number(invoice.tax || 0);
 
       const totalAmount = Number(
-        invoice.totalAmount ??
-          invoice.total ??
-          invoice.grandTotal ??
-          0
+        invoice.totalAmount ?? invoice.total ?? invoice.grandTotal ?? 0,
       );
-
-      // -------------------------------------------------
-      // ITEM ROWS
-      // -------------------------------------------------
 
       const itemRows =
         items.length > 0
@@ -414,24 +294,13 @@ const Invoices = () => {
                 const name =
                   item?.name ||
                   item?.product?.name ||
-                  `Ice Cream Item ${
-                    index + 1
-                  }`;
+                  `Ice Cream Item ${index + 1}`;
 
-                const quantity =
-                  Number(
-                    item?.quantity || 1
-                  );
+                const quantity = Number(item?.quantity || 1);
 
-                const unitPrice =
-                  Number(
-                    item?.unitPrice ??
-                      item?.price ??
-                      0
-                  );
+                const unitPrice = Number(item?.unitPrice ?? item?.price ?? 0);
 
-                const itemTotal =
-                  getItemTotal(item);
+                const itemTotal = getItemTotal(item);
 
                 return `
                   <tr>
@@ -444,15 +313,11 @@ const Invoices = () => {
                     </td>
 
                     <td class="right">
-                      ${formatCurrency(
-                        unitPrice
-                      )}
+                      ${formatCurrency(unitPrice)}
                     </td>
 
                     <td class="right strong">
-                      ${formatCurrency(
-                        itemTotal
-                      )}
+                      ${formatCurrency(itemTotal)}
                     </td>
                   </tr>
                 `;
@@ -468,10 +333,6 @@ const Invoices = () => {
                 </td>
               </tr>
             `;
-
-      // -------------------------------------------------
-      // OPTIONAL SUMMARY ROWS
-      // -------------------------------------------------
 
       const subtotalRow =
         subtotal > 0
@@ -509,21 +370,10 @@ const Invoices = () => {
             `
           : "";
 
-      // -------------------------------------------------
-      // CREATE PRINT DOCUMENT
-      // -------------------------------------------------
-
-      const printWindow =
-        window.open(
-          "",
-          "_blank",
-          "width=900,height=900"
-        );
+      const printWindow = window.open("", "_blank", "width=900,height=900");
 
       if (!printWindow) {
-        toast.error(
-          "Please allow pop-ups to download the invoice."
-        );
+        toast.error("Please allow pop-ups to download the invoice.");
         return;
       }
 
@@ -972,15 +822,11 @@ const Invoices = () => {
                 </div>
 
                 <h1>
-                  ${escapeHtml(
-                    invoiceNumber
-                  )}
+                  ${escapeHtml(invoiceNumber)}
                 </h1>
 
                 <p>
-                  Generated ${escapeHtml(
-                    invoiceDate
-                  )}
+                  Generated ${escapeHtml(invoiceDate)}
                 </p>
 
               </div>
@@ -998,9 +844,7 @@ const Invoices = () => {
                 </span>
 
                 <span class="meta-value">
-                  ${escapeHtml(
-                    invoiceDate
-                  )}
+                  ${escapeHtml(invoiceDate)}
                 </span>
 
               </div>
@@ -1012,9 +856,7 @@ const Invoices = () => {
                 </span>
 
                 <span class="meta-value">
-                  ${escapeHtml(
-                    invoiceTime || "—"
-                  )}
+                  ${escapeHtml(invoiceTime || "—")}
                 </span>
 
               </div>
@@ -1026,9 +868,7 @@ const Invoices = () => {
                 </span>
 
                 <span class="meta-value">
-                  ${escapeHtml(
-                    paymentMethod
-                  )}
+                  ${escapeHtml(paymentMethod)}
                 </span>
 
               </div>
@@ -1046,18 +886,14 @@ const Invoices = () => {
                 </h3>
 
                 <p class="customer-name">
-                  ${escapeHtml(
-                    customerName
-                  )}
+                  ${escapeHtml(customerName)}
                 </p>
 
                 ${
                   customerEmail
                     ? `
                       <div class="customer-detail">
-                        ${escapeHtml(
-                          customerEmail
-                        )}
+                        ${escapeHtml(customerEmail)}
                       </div>
                     `
                     : ""
@@ -1067,9 +903,7 @@ const Invoices = () => {
                   customerPhone
                     ? `
                       <div class="customer-detail">
-                        ${escapeHtml(
-                          customerPhone
-                        )}
+                        ${escapeHtml(customerPhone)}
                       </div>
                     `
                     : ""
@@ -1085,18 +919,9 @@ const Invoices = () => {
 
                 <p class="customer-name">
                   ${escapeHtml(
-                    String(
-                      paymentStatus
-                    )
-                      .replace(
-                        /_/g,
-                        " "
-                      )
-                      .replace(
-                        /\b\w/g,
-                        (letter) =>
-                          letter.toUpperCase()
-                      )
+                    String(paymentStatus)
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (letter) => letter.toUpperCase()),
                   )}
                 </p>
 
@@ -1105,9 +930,7 @@ const Invoices = () => {
                     ? `
                       <div class="customer-detail">
                         Payment ID:
-                        ${escapeHtml(
-                          invoice.paymentId
-                        )}
+                        ${escapeHtml(invoice.paymentId)}
                       </div>
                     `
                     : ""
@@ -1118,9 +941,7 @@ const Invoices = () => {
                     ? `
                       <div class="customer-detail">
                         Razorpay Order:
-                        ${escapeHtml(
-                          invoice.paymentOrderId
-                        )}
+                        ${escapeHtml(invoice.paymentOrderId)}
                       </div>
                     `
                     : ""
@@ -1199,9 +1020,7 @@ const Invoices = () => {
                   </span>
 
                   <strong>
-                    ${formatCurrency(
-                      totalAmount
-                    )}
+                    ${formatCurrency(totalAmount)}
                   </strong>
 
                 </div>
@@ -1209,18 +1028,10 @@ const Invoices = () => {
                 <div
                   class="
                     payment-status
-                    ${
-                      String(
-                        paymentStatus
-                      ).toLowerCase()
-                    }
+                    ${String(paymentStatus).toLowerCase()}
                   "
                 >
-                  ${escapeHtml(
-                    String(
-                      paymentStatus
-                    ).toUpperCase()
-                  )}
+                  ${escapeHtml(String(paymentStatus).toUpperCase())}
                 </div>
 
               </div>
@@ -1276,32 +1087,16 @@ const Invoices = () => {
 
       printWindow.document.close();
 
-      toast.success(
-        "Invoice opened for PDF download."
-      );
+      toast.success("Invoice opened for PDF download.");
     } catch (error) {
-      console.error(
-        "Invoice download error:",
-        error
-      );
+      console.error("Invoice download error:", error);
 
-      toast.error(
-        "Unable to generate invoice."
-      );
+      toast.error("Unable to generate invoice.");
     }
   };
 
-  // =====================================================
-  // RENDER
-  // =====================================================
-
   return (
     <div className="customer-invoices-page">
-
-      {/* =================================================
-          HEADER
-      ================================================= */}
-
       <motion.div
         className="invoices-header"
         initial={{
@@ -1313,44 +1108,26 @@ const Invoices = () => {
           y: 0,
         }}
       >
-
         <div>
-
           <span className="invoices-eyebrow">
-
             <FaFileInvoiceDollar />
-
             BILLING CENTER
-
           </span>
 
-          <h1>
-            My Invoices
-          </h1>
+          <h1>My Invoices</h1>
 
           <p>
-            View your order invoices,
-            payment details, and purchase
-            history.
+            View your order invoices, payment details, and purchase history.
           </p>
-
         </div>
 
         <div className="invoice-header-icon">
-
           <FaFileInvoiceDollar />
-
         </div>
-
       </motion.div>
 
-      {/* =================================================
-          SUMMARY
-      ================================================= */}
-
       <div className="invoice-summary-grid">
-
-        {/* TOTAL */}
+        
 
         <motion.div
           className="invoice-summary-card"
@@ -1366,28 +1143,16 @@ const Invoices = () => {
             delay: 0.05,
           }}
         >
-
           <div className="summary-icon">
-
             <FaFileInvoiceDollar />
-
           </div>
 
           <div>
+            <span>Total Invoices</span>
 
-            <span>
-              Total Invoices
-            </span>
-
-            <strong>
-              {orders.length}
-            </strong>
-
+            <strong>{orders.length}</strong>
           </div>
-
         </motion.div>
-
-        {/* PAID */}
 
         <motion.div
           className="invoice-summary-card"
@@ -1403,39 +1168,23 @@ const Invoices = () => {
             delay: 0.1,
           }}
         >
-
           <div className="summary-icon paid">
-
             <FaCheckCircle />
-
           </div>
 
           <div>
-
-            <span>
-              Paid Orders
-            </span>
+            <span>Paid Orders</span>
 
             <strong>
-
               {
                 orders.filter(
                   (order) =>
-                    String(
-                      order?.paymentStatus ||
-                      ""
-                    ).toLowerCase() ===
-                    "paid"
+                    String(order?.paymentStatus || "").toLowerCase() === "paid",
                 ).length
               }
-
             </strong>
-
           </div>
-
         </motion.div>
-
-        {/* SPENT */}
 
         <motion.div
           className="invoice-summary-card"
@@ -1451,597 +1200,279 @@ const Invoices = () => {
             delay: 0.15,
           }}
         >
-
           <div className="summary-icon amount">
-
             <FaReceipt />
-
           </div>
 
           <div>
-
-            <span>
-              Total Spent
-            </span>
+            <span>Total Spent</span>
 
             <strong>
-
               {formatCurrency(
                 orders
                   .filter(
                     (order) =>
-                      String(
-                        order?.paymentStatus ||
-                        ""
-                      ).toLowerCase() ===
-                      "paid"
+                      String(order?.paymentStatus || "").toLowerCase() ===
+                      "paid",
                   )
                   .reduce(
-                    (
-                      total,
-                      order
-                    ) =>
-                      total +
-                      Number(
-                        order?.totalAmount ||
-                          0
-                      ),
-                    0
-                  )
+                    (total, order) => total + Number(order?.totalAmount || 0),
+                    0,
+                  ),
               )}
-
             </strong>
-
           </div>
-
         </motion.div>
-
       </div>
 
-      {/* =================================================
-          TOOLBAR
-      ================================================= */}
-
       <div className="invoices-toolbar">
-
         <div className="invoice-search">
-
           <FaSearch />
 
           <input
             type="text"
             placeholder="Search invoice or order number..."
             value={search}
-            onChange={(e) =>
-              setSearch(
-                e.target.value
-              )
-            }
+            onChange={(e) => setSearch(e.target.value)}
           />
-
         </div>
 
         <div className="invoice-count">
-
           {invoices.length} invoice
-          {invoices.length !== 1
-            ? "s"
-            : ""}
-
+          {invoices.length !== 1 ? "s" : ""}
         </div>
-
       </div>
 
-      {/* =================================================
-          CONTENT
-      ================================================= */}
-
       <div className="invoices-card">
-
-        {/* LOADING */}
-
         {loading ? (
-
           <div className="invoice-loading">
-
             <div className="invoice-spinner" />
 
-            <p>
-              Loading your invoices...
-            </p>
-
+            <p>Loading your invoices...</p>
           </div>
-
         ) : invoices.length === 0 ? (
-
-          /* EMPTY */
-
           <div className="invoice-empty">
-
             <div className="empty-invoice-icon">
-
               <FaFileInvoiceDollar />
-
             </div>
 
-            <h3>
-              No invoices found
-            </h3>
+            <h3>No invoices found</h3>
 
             <p>
-
               {search
                 ? "Try a different search term."
                 : "Your invoices will appear here after you place an order."}
-
             </p>
-
           </div>
-
         ) : (
-
           <>
-
-            {/* =================================================
-                DESKTOP TABLE
-            ================================================= */}
-
             <div className="invoice-table-wrapper">
-
               <table className="invoice-table">
-
                 <thead>
-
                   <tr>
+                    <th>Invoice</th>
 
-                    <th>
-                      Invoice
-                    </th>
+                    <th>Date</th>
 
-                    <th>
-                      Date
-                    </th>
+                    <th>Items</th>
 
-                    <th>
-                      Items
-                    </th>
+                    <th>Payment</th>
 
-                    <th>
-                      Payment
-                    </th>
+                    <th>Status</th>
 
-                    <th>
-                      Status
-                    </th>
+                    <th>Total</th>
 
-                    <th>
-                      Total
-                    </th>
-
-                    <th>
-                      Action
-                    </th>
-
+                    <th>Action</th>
                   </tr>
-
                 </thead>
 
                 <tbody>
-
-                  {invoices.map(
-                    (
-                      order,
-                      index
-                    ) => (
-
-                      <motion.tr
-                        key={
-                          order?._id ||
-                          order?.id ||
-                          index
-                        }
-                        initial={{
-                          opacity: 0,
-                          y: 8,
-                        }}
-                        animate={{
-                          opacity: 1,
-                          y: 0,
-                        }}
-                        transition={{
-                          delay:
-                            index * 0.03,
-                        }}
-                      >
-
-                        {/* INVOICE */}
-
-                        <td>
-
-                          <div className="invoice-number">
-
-                            <div className="invoice-mini-icon">
-
-                              <FaFileInvoiceDollar />
-
-                            </div>
-
-                            <div>
-
-                              <strong>
-
-                                {order?.orderNumber ||
-                                  "Invoice"}
-
-                              </strong>
-
-                              <small>
-
-                                {order?._id
-                                  ? `#${order._id
-                                      .slice(
-                                        -8
-                                      )
-                                      .toUpperCase()}`
-                                  : ""}
-
-                              </small>
-
-                            </div>
-
+                  {invoices.map((order, index) => (
+                    <motion.tr
+                      key={order?._id || order?.id || index}
+                      initial={{
+                        opacity: 0,
+                        y: 8,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+                      transition={{
+                        delay: index * 0.03,
+                      }}
+                    >
+                      <td>
+                        <div className="invoice-number">
+                          <div className="invoice-mini-icon">
+                            <FaFileInvoiceDollar />
                           </div>
 
-                        </td>
+                          <div>
+                            <strong>{order?.orderNumber || "Invoice"}</strong>
 
-                        {/* DATE */}
-
-                        <td>
-
-                          <div className="invoice-date">
-
-                            <strong>
-                              {formatDate(
-                                order?.createdAt
-                              )}
-                            </strong>
-
-                            <span>
-                              {formatTime(
-                                order?.createdAt
-                              )}
-                            </span>
-
+                            <small>
+                              {order?._id
+                                ? `#${order._id.slice(-8).toUpperCase()}`
+                                : ""}
+                            </small>
                           </div>
+                        </div>
+                      </td>
 
-                        </td>
+                      <td>
+                        <div className="invoice-date">
+                          <strong>{formatDate(order?.createdAt)}</strong>
 
-                        {/* ITEMS */}
+                          <span>{formatTime(order?.createdAt)}</span>
+                        </div>
+                      </td>
 
-                        <td>
+                      <td>
+                        <span className="item-count">
+                          {order?.items?.length || 0} item
+                          {order?.items?.length !== 1 ? "s" : ""}
+                        </span>
+                      </td>
 
-                          <span className="item-count">
+                      <td>
+                        <div className="payment-method">
+                          {getPaymentIcon(order?.paymentMethod)}
 
-                            {order?.items
-                              ?.length ||
-                              0}{" "}
+                          <span>{getPaymentLabel(order?.paymentMethod)}</span>
+                        </div>
+                      </td>
 
-                            item
-                            {order?.items
-                              ?.length !==
-                            1
-                              ? "s"
-                              : ""}
+                      <td>
+                        <span
+                          className={`invoice-status ${getStatusClass(
+                            order?.paymentStatus,
+                          )}`}
+                        >
+                          {getStatusIcon(order?.paymentStatus)}
 
-                          </span>
+                          {String(order?.paymentStatus || "Pending")
+                            .replace(/_/g, " ")
+                            .replace(/\b\w/g, (letter) => letter.toUpperCase())}
+                        </span>
+                      </td>
 
-                        </td>
+                      <td>
+                        <strong className="invoice-total">
+                          {formatCurrency(order?.totalAmount)}
+                        </strong>
+                      </td>
 
-                        {/* PAYMENT */}
-
-                        <td>
-
-                          <div className="payment-method">
-
-                            {getPaymentIcon(
-                              order?.paymentMethod
-                            )}
-
-                            <span>
-
-                              {getPaymentLabel(
-                                order?.paymentMethod
-                              )}
-
-                            </span>
-
-                          </div>
-
-                        </td>
-
-                        {/* STATUS */}
-
-                        <td>
-
-                          <span
-                            className={`invoice-status ${getStatusClass(
-                              order?.paymentStatus
-                            )}`}
+                      <td>
+                        <div className="invoice-actions">
+                          <button
+                            type="button"
+                            className="invoice-action view"
+                            title="View Invoice"
+                            onClick={() => setSelectedInvoice(order)}
                           >
+                            <FaEye />
+                          </button>
 
-                            {getStatusIcon(
-                              order?.paymentStatus
-                            )}
-
-                            {String(
-                              order?.paymentStatus ||
-                                "Pending"
-                            )
-                              .replace(
-                                /_/g,
-                                " "
-                              )
-                              .replace(
-                                /\b\w/g,
-                                (
-                                  letter
-                                ) =>
-                                  letter.toUpperCase()
-                              )}
-
-                          </span>
-
-                        </td>
-
-                        {/* TOTAL */}
-
-                        <td>
-
-                          <strong className="invoice-total">
-
-                            {formatCurrency(
-                              order?.totalAmount
-                            )}
-
-                          </strong>
-
-                        </td>
-
-                        {/* ACTION */}
-
-                        <td>
-
-                          <div className="invoice-actions">
-
-                            <button
-                              type="button"
-                              className="invoice-action view"
-                              title="View Invoice"
-                              onClick={() =>
-                                setSelectedInvoice(
-                                  order
-                                )
-                              }
-                            >
-
-                              <FaEye />
-
-                            </button>
-
-                            <button
-                              type="button"
-                              className="invoice-action download"
-                              title="Download Invoice"
-                              onClick={() =>
-                                handleDownload(
-                                  order
-                                )
-                              }
-                            >
-
-                              <FaDownload />
-
-                            </button>
-
-                          </div>
-
-                        </td>
-
-                      </motion.tr>
-
-                    )
-                  )}
-
+                          <button
+                            type="button"
+                            className="invoice-action download"
+                            title="Download Invoice"
+                            onClick={() => handleDownload(order)}
+                          >
+                            <FaDownload />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
                 </tbody>
-
               </table>
-
             </div>
-
-            {/* =================================================
-                MOBILE CARDS
-            ================================================= */}
 
             <div className="invoice-mobile-list">
-
-              {invoices.map(
-                (order) => (
-
-                  <motion.div
-                    className="invoice-mobile-card"
-                    key={
-                      order?._id ||
-                      order?.id
-                    }
-                    initial={{
-                      opacity: 0,
-                      y: 10,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                  >
-
-                    <div className="mobile-invoice-top">
-
-                      <div className="invoice-number">
-
-                        <div className="invoice-mini-icon">
-
-                          <FaFileInvoiceDollar />
-
-                        </div>
-
-                        <div>
-
-                          <strong>
-
-                            {order?.orderNumber ||
-                              "Invoice"}
-
-                          </strong>
-
-                          <small>
-
-                            {formatDate(
-                              order?.createdAt
-                            )}
-
-                          </small>
-
-                        </div>
-
-                      </div>
-
-                      <span
-                        className={`invoice-status ${getStatusClass(
-                          order?.paymentStatus
-                        )}`}
-                      >
-
-                        {getStatusIcon(
-                          order?.paymentStatus
-                        )}
-
-                        {String(
-                          order?.paymentStatus ||
-                            "Pending"
-                        )
-                          .replace(
-                            /_/g,
-                            " "
-                          )
-                          .replace(
-                            /\b\w/g,
-                            (letter) =>
-                              letter.toUpperCase()
-                          )}
-
-                      </span>
-
-                    </div>
-
-                    <div className="mobile-invoice-details">
-
-                      <div>
-
-                        <span>
-                          Items
-                        </span>
-
-                        <strong>
-                          {order?.items
-                            ?.length ||
-                            0}
-                        </strong>
-
+              {invoices.map((order) => (
+                <motion.div
+                  className="invoice-mobile-card"
+                  key={order?._id || order?.id}
+                  initial={{
+                    opacity: 0,
+                    y: 10,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                >
+                  <div className="mobile-invoice-top">
+                    <div className="invoice-number">
+                      <div className="invoice-mini-icon">
+                        <FaFileInvoiceDollar />
                       </div>
 
                       <div>
+                        <strong>{order?.orderNumber || "Invoice"}</strong>
 
-                        <span>
-                          Payment
-                        </span>
-
-                        <strong>
-                          {getPaymentLabel(
-                            order?.paymentMethod
-                          )}
-                        </strong>
-
+                        <small>{formatDate(order?.createdAt)}</small>
                       </div>
-
-                      <div>
-
-                        <span>
-                          Total
-                        </span>
-
-                        <strong>
-                          {formatCurrency(
-                            order?.totalAmount
-                          )}
-                        </strong>
-
-                      </div>
-
                     </div>
 
-                    <div className="mobile-invoice-actions">
+                    <span
+                      className={`invoice-status ${getStatusClass(
+                        order?.paymentStatus,
+                      )}`}
+                    >
+                      {getStatusIcon(order?.paymentStatus)}
 
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSelectedInvoice(
-                            order
-                          )
-                        }
-                      >
+                      {String(order?.paymentStatus || "Pending")
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (letter) => letter.toUpperCase())}
+                    </span>
+                  </div>
 
-                        <FaEye />
+                  <div className="mobile-invoice-details">
+                    <div>
+                      <span>Items</span>
 
-                        View Invoice
-
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleDownload(
-                            order
-                          )
-                        }
-                      >
-
-                        <FaDownload />
-
-                        Download
-
-                      </button>
-
+                      <strong>{order?.items?.length || 0}</strong>
                     </div>
 
-                  </motion.div>
+                    <div>
+                      <span>Payment</span>
 
-                )
-              )}
+                      <strong>{getPaymentLabel(order?.paymentMethod)}</strong>
+                    </div>
 
+                    <div>
+                      <span>Total</span>
+
+                      <strong>{formatCurrency(order?.totalAmount)}</strong>
+                    </div>
+                  </div>
+
+                  <div className="mobile-invoice-actions">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedInvoice(order)}
+                    >
+                      <FaEye />
+                      View Invoice
+                    </button>
+
+                    <button type="button" onClick={() => handleDownload(order)}>
+                      <FaDownload />
+                      Download
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-
           </>
-
         )}
-
       </div>
 
-      {/* =================================================
-          INVOICE MODAL
-      ================================================= */}
-
       <AnimatePresence>
-
         {selectedInvoice && (
-
           <motion.div
             className="invoice-modal-overlay"
             initial={{
@@ -2053,13 +1484,8 @@ const Invoices = () => {
             exit={{
               opacity: 0,
             }}
-            onClick={() =>
-              setSelectedInvoice(
-                null
-              )
-            }
+            onClick={() => setSelectedInvoice(null)}
           >
-
             <motion.div
               className="invoice-modal"
               initial={{
@@ -2077,241 +1503,107 @@ const Invoices = () => {
                 scale: 0.94,
                 y: 20,
               }}
-              onClick={(e) =>
-                e.stopPropagation()
-              }
+              onClick={(e) => e.stopPropagation()}
             >
-
-              {/* MODAL HEADER */}
-
               <div className="invoice-modal-header">
-
                 <div>
+                  <span>INVOICE</span>
 
-                  <span>
-                    INVOICE
-                  </span>
-
-                  <h2>
-
-                    {selectedInvoice?.orderNumber ||
-                      "Invoice"}
-
-                  </h2>
-
+                  <h2>{selectedInvoice?.orderNumber || "Invoice"}</h2>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSelectedInvoice(
-                      null
-                    )
-                  }
-                >
-
+                <button type="button" onClick={() => setSelectedInvoice(null)}>
                   <FaTimes />
-
                 </button>
-
               </div>
 
-              {/* META */}
-
               <div className="invoice-modal-meta">
-
                 <div>
-
                   <FaCalendarAlt />
 
                   <div>
+                    <span>Date</span>
 
-                    <span>
-                      Date
-                    </span>
-
-                    <strong>
-
-                      {formatDate(
-                        selectedInvoice?.createdAt
-                      )}
-
-                    </strong>
-
+                    <strong>{formatDate(selectedInvoice?.createdAt)}</strong>
                   </div>
-
                 </div>
 
                 <div>
-
                   <FaCreditCard />
 
                   <div>
-
-                    <span>
-                      Payment
-                    </span>
+                    <span>Payment</span>
 
                     <strong>
-
-                      {getPaymentLabel(
-                        selectedInvoice?.paymentMethod
-                      )}
-
+                      {getPaymentLabel(selectedInvoice?.paymentMethod)}
                     </strong>
-
                   </div>
-
                 </div>
 
                 <div>
-
                   <FaCheckCircle />
 
                   <div>
-
-                    <span>
-                      Status
-                    </span>
+                    <span>Status</span>
 
                     <strong>
-
-                      {String(
-                        selectedInvoice?.paymentStatus ||
-                          "Pending"
-                      )
-                        .replace(
-                          /_/g,
-                          " "
-                        )
-                        .replace(
-                          /\b\w/g,
-                          (letter) =>
-                            letter.toUpperCase()
-                        )}
-
+                      {String(selectedInvoice?.paymentStatus || "Pending")
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (letter) => letter.toUpperCase())}
                     </strong>
-
                   </div>
-
                 </div>
-
               </div>
-
-              {/* ITEMS */}
 
               <div className="invoice-modal-items">
+                <h3>Order Items</h3>
 
-                <h3>
-                  Order Items
-                </h3>
-
-                {selectedInvoice?.items?.map(
-                  (
-                    item,
-                    index
-                  ) => (
-
-                    <div
-                      className="invoice-item"
-                      key={`${item?.product?._id || item?.product || index}-${index}`}
-                    >
-
-                      <div>
-
-                        <strong>
-                          {item?.name ||
-                            item?.product?.name ||
-                            "Ice Cream Item"}
-                        </strong>
-
-                        <span>
-                          Qty:{" "}
-                          {item?.quantity ||
-                            1}
-                        </span>
-
-                      </div>
-
+                {selectedInvoice?.items?.map((item, index) => (
+                  <div
+                    className="invoice-item"
+                    key={`${item?.product?._id || item?.product || index}-${index}`}
+                  >
+                    <div>
                       <strong>
-
-                        {formatCurrency(
-                          getItemTotal(
-                            item
-                          )
-                        )}
-
+                        {item?.name || item?.product?.name || "Ice Cream Item"}
                       </strong>
 
+                      <span>Qty: {item?.quantity || 1}</span>
                     </div>
 
-                  )
-                )}
-
+                    <strong>{formatCurrency(getItemTotal(item))}</strong>
+                  </div>
+                ))}
               </div>
-
-              {/* TOTAL */}
 
               <div className="invoice-modal-total">
+                <span>Total Amount</span>
 
-                <span>
-                  Total Amount
-                </span>
-
-                <strong>
-
-                  {formatCurrency(
-                    selectedInvoice?.totalAmount
-                  )}
-
-                </strong>
-
+                <strong>{formatCurrency(selectedInvoice?.totalAmount)}</strong>
               </div>
 
-              {/* FOOTER */}
-
               <div className="invoice-modal-footer">
-
                 <button
                   type="button"
                   className="modal-download"
-                  onClick={() =>
-                    handleDownload(
-                      selectedInvoice
-                    )
-                  }
+                  onClick={() => handleDownload(selectedInvoice)}
                 >
-
                   <FaDownload />
-
                   Download Invoice
-
                 </button>
 
                 <button
                   type="button"
                   className="modal-close"
-                  onClick={() =>
-                    setSelectedInvoice(
-                      null
-                    )
-                  }
+                  onClick={() => setSelectedInvoice(null)}
                 >
-
                   Close
-
                 </button>
-
               </div>
-
             </motion.div>
-
           </motion.div>
-
         )}
-
       </AnimatePresence>
-
     </div>
   );
 };

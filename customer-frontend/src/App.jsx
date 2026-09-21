@@ -5,15 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { useAuth } from "./context/AuthContext";
 
-// ==================================================
-// CUSTOMER LAYOUT
-// ==================================================
-
 import CustomerLayout from "./Layout/CustomerLayout";
-
-// ==================================================
-// CUSTOMER PAGES
-// ==================================================
 
 import Home from "./pages/Home";
 import CustomerDashboard from "./pages/CustomerDashboard";
@@ -22,10 +14,6 @@ import CustomerOrders from "./pages/Orders";
 import CustomerCart from "./pages/Cart";
 import CustomerInvoices from "./pages/Invoices";
 import CustomerProfile from "./pages/Profile";
-
-// ==================================================
-// LOADING SCREEN
-// ==================================================
 
 const LoadingScreen = () => {
   return (
@@ -36,29 +24,17 @@ const LoadingScreen = () => {
   );
 };
 
-// ==================================================
-// PROTECTED CUSTOMER ROUTE
-// ==================================================
-
 const ProtectedRoute = ({ children }) => {
-  const {
-    user,
-    loading,
-    isAuthenticated,
-    isCustomer,
-  } = useAuth();
+  const { user, loading, isAuthenticated, isCustomer } = useAuth();
 
-  // Authentication/session is still being restored
   if (loading) {
     return <LoadingScreen />;
   }
 
-  // No authenticated user
   if (!isAuthenticated || !user) {
     return <Navigate to="/" replace />;
   }
 
-  // Only customer accounts can access this frontend
   if (!isCustomer || user.role !== "customer") {
     return <Navigate to="/" replace />;
   }
@@ -66,79 +42,31 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// ==================================================
-// CUSTOMER ENTRY
-// ==================================================
-
 const CustomerEntry = () => {
-  const {
-    user,
-    loading,
-    isAuthenticated,
-    isCustomer,
-  } = useAuth();
+  const { user, loading, isAuthenticated, isCustomer } = useAuth();
 
   if (loading) {
     return <LoadingScreen />;
   }
 
-  // ==================================================
-  // GUEST
-  // ==================================================
-
   if (!isAuthenticated || !user) {
     return <Home />;
   }
-
-  // ==================================================
-  // CUSTOMER
-  // ==================================================
 
   if (isCustomer && user.role === "customer") {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // ==================================================
-  // FALLBACK
-  // ==================================================
-
   return <Home />;
 };
-
-// ==================================================
-// APP
-// ==================================================
 
 const App = () => {
   return (
     <>
       <Routes>
+        <Route path="/" element={<CustomerEntry />} />
 
-        {/* ==================================================
-            PUBLIC CUSTOMER WEBSITE
-        ================================================== */}
-
-        <Route
-          path="/"
-          element={<CustomerEntry />}
-        />
-
-        <Route
-          path="/home"
-          element={<Home />}
-        />
-
-        {/* ==================================================
-            PROTECTED CUSTOMER AREA
-
-            CustomerLayout contains:
-            - Sidebar
-            - Topbar
-            - Customer profile
-            - Navigation
-            - Logout
-            - Outlet
-        ================================================== */}
+        <Route path="/home" element={<Home />} />
 
         <Route
           element={
@@ -147,77 +75,21 @@ const App = () => {
             </ProtectedRoute>
           }
         >
+          <Route path="/dashboard" element={<CustomerDashboard />} />
 
-          {/* ==================================================
-              DASHBOARD
-          ================================================== */}
+          <Route path="/products" element={<CustomerProducts />} />
 
-          <Route
-            path="/dashboard"
-            element={<CustomerDashboard />}
-          />
+          <Route path="/orders" element={<CustomerOrders />} />
 
-          {/* ==================================================
-              PRODUCTS
-          ================================================== */}
+          <Route path="/cart" element={<CustomerCart />} />
 
-          <Route
-            path="/products"
-            element={<CustomerProducts />}
-          />
+          <Route path="/invoices" element={<CustomerInvoices />} />
 
-          {/* ==================================================
-              ORDERS
-          ================================================== */}
-
-          <Route
-            path="/orders"
-            element={<CustomerOrders />}
-          />
-
-          {/* ==================================================
-              CART
-          ================================================== */}
-
-          <Route
-            path="/cart"
-            element={<CustomerCart />}
-          />
-
-          {/* ==================================================
-              INVOICES
-          ================================================== */}
-
-          <Route
-            path="/invoices"
-            element={<CustomerInvoices />}
-          />
-
-          {/* ==================================================
-              PROFILE
-          ================================================== */}
-
-          <Route
-            path="/profile"
-            element={<CustomerProfile />}
-          />
-
+          <Route path="/profile" element={<CustomerProfile />} />
         </Route>
 
-        {/* ==================================================
-            UNKNOWN ROUTES
-        ================================================== */}
-
-        <Route
-          path="*"
-          element={<Navigate to="/" replace />}
-        />
-
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-
-      {/* ==================================================
-          GLOBAL TOAST
-      ================================================== */}
 
       <ToastContainer
         position="top-right"

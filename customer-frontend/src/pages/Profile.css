@@ -5,9 +5,7 @@
   color: #172033;
 }
 
-/* =========================
-   HEADER
-========================= */
+
 
 .profile-page-header {
   display: flex;
@@ -62,9 +60,7 @@
   font-weight: 850;
 }
 
-/* =========================
-   LAYOUT
-========================= */
+
 
 .profile-layout {
   display: grid;
@@ -73,9 +69,7 @@
   align-items: start;
 }
 
-/* =========================
-   OVERVIEW CARD
-========================= */
+
 
 .profile-overview-card {
   padding: 30px 24px;
@@ -179,9 +173,7 @@
   line-height: 1.45;
 }
 
-/* =========================
-   FORM CARD
-========================= */
+
 
 .profile-form-card {
   min-width: 0;
@@ -225,9 +217,7 @@
   background: #f3e8ff;
 }
 
-/* =========================
-   FORM
-========================= */
+
 
 .profile-form-card form {
   padding: 27px;
@@ -329,9 +319,7 @@
   line-height: 1.5;
 }
 
-/* =========================
-   FOOTER
-========================= */
+
 
 .profile-form-footer {
   display: flex;
@@ -405,9 +393,7 @@
   }
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+
 
 @media (max-width: 950px) {
   .profile-layout {

@@ -92,11 +92,7 @@ const normalizePaymentStatus = (status) => {
   return value || "pending";
 };
 
-const getOrderId = (order) =>
-  order?.id ||
-  order?._id ||
-  order?.orderId ||
-  "";
+const getOrderId = (order) => order?.id || order?._id || order?.orderId || "";
 
 const getOrderNumber = (order) =>
   order?.orderNumber ||
@@ -136,19 +132,15 @@ const getItemsCount = (order) => {
   }
 
   return order.items.reduce(
-    (total, item) =>
-      total + (Number(item?.quantity) || 0),
-    0
+    (total, item) => total + (Number(item?.quantity) || 0),
+    0,
   );
 };
 
 const getOrderTotal = (order) => {
-  return Number(
-    order?.totalAmount ??
-      order?.total ??
-      order?.grandTotal ??
-      0
-  ) || 0;
+  return (
+    Number(order?.totalAmount ?? order?.total ?? order?.grandTotal ?? 0) || 0
+  );
 };
 
 const extractOrders = (response) => {
@@ -194,11 +186,9 @@ const Orders = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [paymentFilter, setPaymentFilter] = useState("all");
 
-  const [selectedOrder, setSelectedOrder] =
-    useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const [updatingOrderId, setUpdatingOrderId] =
-    useState(null);
+  const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
   const fetchOrders = async (showRefresh = false) => {
     try {
@@ -214,10 +204,7 @@ const Orders = () => {
     } catch (error) {
       console.error("Failed to load orders:", error);
 
-      toast.error(
-        error?.response?.data?.message ||
-          "Unable to load orders."
-      );
+      toast.error(error?.response?.data?.message || "Unable to load orders.");
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -232,22 +219,15 @@ const Orders = () => {
     const query = search.trim().toLowerCase();
 
     return orders.filter((order) => {
-      const orderNumber =
-        getOrderNumber(order).toLowerCase();
+      const orderNumber = getOrderNumber(order).toLowerCase();
 
-      const customer =
-        getCustomerName(order).toLowerCase();
+      const customer = getCustomerName(order).toLowerCase();
 
-      const phone =
-        getCustomerPhone(order).toLowerCase();
+      const phone = getCustomerPhone(order).toLowerCase();
 
-      const status =
-        normalizeStatus(order?.status);
+      const status = normalizeStatus(order?.status);
 
-      const paymentStatus =
-        normalizePaymentStatus(
-          order?.paymentStatus
-        );
+      const paymentStatus = normalizePaymentStatus(order?.paymentStatus);
 
       const matchesSearch =
         !query ||
@@ -255,60 +235,35 @@ const Orders = () => {
         customer.includes(query) ||
         phone.includes(query);
 
-      const matchesStatus =
-        statusFilter === "all" ||
-        status === statusFilter;
+      const matchesStatus = statusFilter === "all" || status === statusFilter;
 
       const matchesPayment =
-        paymentFilter === "all" ||
-        paymentStatus === paymentFilter;
+        paymentFilter === "all" || paymentStatus === paymentFilter;
 
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesPayment
-      );
+      return matchesSearch && matchesStatus && matchesPayment;
     });
-  }, [
-    orders,
-    search,
-    statusFilter,
-    paymentFilter,
-  ]);
+  }, [orders, search, statusFilter, paymentFilter]);
 
   const stats = useMemo(() => {
     const total = orders.length;
 
     const pending = orders.filter(
-      (order) =>
-        normalizeStatus(order?.status) ===
-        "pending"
+      (order) => normalizeStatus(order?.status) === "pending",
     ).length;
 
     const processing = orders.filter((order) =>
-      ["confirmed", "processing"].includes(
-        normalizeStatus(order?.status)
-      )
+      ["confirmed", "processing"].includes(normalizeStatus(order?.status)),
     ).length;
 
     const completed = orders.filter(
-      (order) =>
-        normalizeStatus(order?.status) ===
-        "completed"
+      (order) => normalizeStatus(order?.status) === "completed",
     ).length;
 
     const paidRevenue = orders
       .filter(
-        (order) =>
-          normalizePaymentStatus(
-            order?.paymentStatus
-          ) === "paid"
+        (order) => normalizePaymentStatus(order?.paymentStatus) === "paid",
       )
-      .reduce(
-        (sum, order) =>
-          sum + getOrderTotal(order),
-        0
-      );
+      .reduce((sum, order) => sum + getOrderTotal(order), 0);
 
     return {
       total,
@@ -319,19 +274,14 @@ const Orders = () => {
     };
   }, [orders]);
 
-  const handleStatusChange = async (
-    order,
-    newStatus
-  ) => {
+  const handleStatusChange = async (order, newStatus) => {
     const orderId = getOrderId(order);
 
     if (!orderId || !newStatus) {
       return;
     }
 
-    const previousStatus = normalizeStatus(
-      order?.status
-    );
+    const previousStatus = normalizeStatus(order?.status);
 
     if (previousStatus === newStatus) {
       return;
@@ -340,61 +290,45 @@ const Orders = () => {
     try {
       setUpdatingOrderId(orderId);
 
-      const response = await api.patch(
-        `/orders/${orderId}/status`,
-        {
-          status: newStatus,
-        }
-      );
+      const response = await api.patch(`/orders/${orderId}/status`, {
+        status: newStatus,
+      });
 
       const updatedOrder =
-        response?.data?.order ||
-        response?.data?.data ||
-        response?.data;
+        response?.data?.order || response?.data?.data || response?.data;
 
       setOrders((currentOrders) =>
         currentOrders.map((item) =>
           getOrderId(item) === orderId
             ? {
                 ...item,
-                ...(updatedOrder &&
-                typeof updatedOrder ===
-                  "object"
+                ...(updatedOrder && typeof updatedOrder === "object"
                   ? updatedOrder
                   : {}),
                 status: newStatus,
               }
-            : item
-        )
+            : item,
+        ),
       );
 
       setSelectedOrder((current) =>
-        current &&
-        getOrderId(current) === orderId
+        current && getOrderId(current) === orderId
           ? {
               ...current,
-              ...(updatedOrder &&
-              typeof updatedOrder ===
-                "object"
+              ...(updatedOrder && typeof updatedOrder === "object"
                 ? updatedOrder
                 : {}),
               status: newStatus,
             }
-          : current
+          : current,
       );
 
-      toast.success(
-        `Order marked as ${newStatus}.`
-      );
+      toast.success(`Order marked as ${newStatus}.`);
     } catch (error) {
-      console.error(
-        "Failed to update order:",
-        error
-      );
+      console.error("Failed to update order:", error);
 
       toast.error(
-        error?.response?.data?.message ||
-          "Unable to update order status."
+        error?.response?.data?.message || "Unable to update order status.",
       );
     } finally {
       setUpdatingOrderId(null);
@@ -409,7 +343,6 @@ const Orders = () => {
 
   return (
     <div className="admin-orders-page">
-      {/* ================= HEADER ================= */}
       <motion.section
         className="orders-hero"
         initial={{ opacity: 0, y: 14 }}
@@ -417,15 +350,13 @@ const Orders = () => {
         transition={{ duration: 0.35 }}
       >
         <div>
-          <span className="orders-eyebrow">
-            ORDER MANAGEMENT
-          </span>
+          <span className="orders-eyebrow">ORDER MANAGEMENT</span>
 
           <h2>Orders</h2>
 
           <p>
-            Monitor customer orders, payments,
-            and fulfilment status from one place.
+            Monitor customer orders, payments, and fulfilment status from one
+            place.
           </p>
         </div>
 
@@ -435,21 +366,12 @@ const Orders = () => {
           onClick={() => fetchOrders(true)}
           disabled={refreshing}
         >
-          <FaSyncAlt
-            className={
-              refreshing
-                ? "orders-spin"
-                : ""
-            }
-          />
+          <FaSyncAlt className={refreshing ? "orders-spin" : ""} />
 
-          {refreshing
-            ? "Refreshing..."
-            : "Refresh Orders"}
+          {refreshing ? "Refreshing..." : "Refresh Orders"}
         </button>
       </motion.section>
 
-      {/* ================= STATS ================= */}
       <section className="orders-stat-grid">
         <motion.div
           className="order-stat-card"
@@ -514,15 +436,12 @@ const Orders = () => {
 
           <div className="order-stat-content">
             <span>Paid Revenue</span>
-            <strong>
-              {formatCurrency(stats.paidRevenue)}
-            </strong>
+            <strong>{formatCurrency(stats.paidRevenue)}</strong>
             <small>From paid orders</small>
           </div>
         </motion.div>
       </section>
 
-      {/* ================= FILTERS ================= */}
       <section className="orders-toolbar">
         <div className="orders-search">
           <FaSearch />
@@ -531,9 +450,7 @@ const Orders = () => {
             type="text"
             placeholder="Search order number, customer or phone..."
             value={search}
-            onChange={(event) =>
-              setSearch(event.target.value)
-            }
+            onChange={(event) => setSearch(event.target.value)}
           />
 
           {search && (
@@ -552,19 +469,13 @@ const Orders = () => {
 
           <select
             value={statusFilter}
-            onChange={(event) =>
-              setStatusFilter(event.target.value)
-            }
+            onChange={(event) => setStatusFilter(event.target.value)}
           >
             {STATUS_OPTIONS.map((status) => (
-              <option
-                value={status}
-                key={status}
-              >
+              <option value={status} key={status}>
                 {status === "all"
                   ? "All Statuses"
-                  : status.charAt(0).toUpperCase() +
-                    status.slice(1)}
+                  : status.charAt(0).toUpperCase() + status.slice(1)}
               </option>
             ))}
           </select>
@@ -577,41 +488,25 @@ const Orders = () => {
 
           <select
             value={paymentFilter}
-            onChange={(event) =>
-              setPaymentFilter(event.target.value)
-            }
+            onChange={(event) => setPaymentFilter(event.target.value)}
           >
-            <option value="all">
-              All Payments
-            </option>
+            <option value="all">All Payments</option>
 
-            <option value="paid">
-              Paid
-            </option>
+            <option value="paid">Paid</option>
 
-            <option value="pending">
-              Pending
-            </option>
+            <option value="pending">Pending</option>
 
-            <option value="failed">
-              Failed
-            </option>
+            <option value="failed">Failed</option>
 
-            <option value="cancelled">
-              Cancelled
-            </option>
+            <option value="cancelled">Cancelled</option>
 
-            <option value="refunded">
-              Refunded
-            </option>
+            <option value="refunded">Refunded</option>
           </select>
 
           <FaChevronDown className="select-arrow" />
         </div>
 
-        {(search ||
-          statusFilter !== "all" ||
-          paymentFilter !== "all") && (
+        {(search || statusFilter !== "all" || paymentFilter !== "all") && (
           <button
             type="button"
             className="orders-reset-button"
@@ -622,22 +517,17 @@ const Orders = () => {
         )}
       </section>
 
-      {/* ================= TABLE ================= */}
       <section className="orders-table-card">
         <div className="orders-table-header">
           <div>
-            <span className="orders-table-eyebrow">
-              SALES RECORDS
-            </span>
+            <span className="orders-table-eyebrow">SALES RECORDS</span>
 
             <h3>All Orders</h3>
           </div>
 
           <span className="orders-result-count">
             {filteredOrders.length}{" "}
-            {filteredOrders.length === 1
-              ? "order"
-              : "orders"}
+            {filteredOrders.length === 1 ? "order" : "orders"}
           </span>
         </div>
 
@@ -649,9 +539,7 @@ const Orders = () => {
 
             <strong>Loading orders...</strong>
 
-            <span>
-              Fetching the latest order records.
-            </span>
+            <span>Fetching the latest order records.</span>
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="orders-empty">
@@ -661,18 +549,10 @@ const Orders = () => {
 
             <h3>No orders found</h3>
 
-            <p>
-              Try changing your search or
-              filters.
-            </p>
+            <p>Try changing your search or filters.</p>
 
-            {(search ||
-              statusFilter !== "all" ||
-              paymentFilter !== "all") && (
-              <button
-                type="button"
-                onClick={resetFilters}
-              >
+            {(search || statusFilter !== "all" || paymentFilter !== "all") && (
+              <button type="button" onClick={resetFilters}>
                 Clear Filters
               </button>
             )}
@@ -694,351 +574,227 @@ const Orders = () => {
               </thead>
 
               <tbody>
-                {filteredOrders.map(
-                  (order, index) => {
-                    const orderId =
-                      getOrderId(order);
+                {filteredOrders.map((order, index) => {
+                  const orderId = getOrderId(order);
 
-                    const status =
-                      normalizeStatus(
-                        order?.status
-                      );
+                  const status = normalizeStatus(order?.status);
 
-                    const paymentStatus =
-                      normalizePaymentStatus(
-                        order?.paymentStatus
-                      );
+                  const paymentStatus = normalizePaymentStatus(
+                    order?.paymentStatus,
+                  );
 
-                    const isUpdating =
-                      updatingOrderId ===
-                      orderId;
+                  const isUpdating = updatingOrderId === orderId;
 
-                    return (
-                      <motion.tr
-                        key={
-                          orderId ||
-                          getOrderNumber(order)
-                        }
-                        initial={{
-                          opacity: 0,
-                          y: 8,
-                        }}
-                        animate={{
-                          opacity: 1,
-                          y: 0,
-                        }}
-                        transition={{
-                          delay:
-                            index * 0.025,
-                        }}
-                      >
-                        <td>
-                          <div className="order-number-cell">
-                            <div className="order-number-icon">
-                              <FaShoppingBag />
-                            </div>
-
-                            <div>
-                              <strong>
-                                {getOrderNumber(
-                                  order
-                                )}
-                              </strong>
-
-                              <span>
-                                {order?.orderType ===
-                                "online"
-                                  ? "Online Order"
-                                  : "POS Order"}
-                              </span>
-                            </div>
+                  return (
+                    <motion.tr
+                      key={orderId || getOrderNumber(order)}
+                      initial={{
+                        opacity: 0,
+                        y: 8,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                      }}
+                      transition={{
+                        delay: index * 0.025,
+                      }}
+                    >
+                      <td>
+                        <div className="order-number-cell">
+                          <div className="order-number-icon">
+                            <FaShoppingBag />
                           </div>
-                        </td>
 
-                        <td>
-                          <div className="customer-cell">
-                            <div className="customer-mini-avatar">
-                              {getCustomerName(
-                                order
-                              )
-                                .slice(0, 1)
-                                .toUpperCase()}
-                            </div>
-
-                            <div>
-                              <strong>
-                                {getCustomerName(
-                                  order
-                                )}
-                              </strong>
-
-                              <span>
-                                {getCustomerPhone(
-                                  order
-                                )}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-
-                        <td>
-                          <div className="date-cell">
-                            <strong>
-                              {formatDate(
-                                order?.createdAt
-                              )}
-                            </strong>
+                          <div>
+                            <strong>{getOrderNumber(order)}</strong>
 
                             <span>
-                              {new Date(
-                                order?.createdAt ||
-                                  Date.now()
-                              ).toLocaleTimeString(
-                                "en-IN",
-                                {
-                                  hour: "2-digit",
-                                  minute:
-                                    "2-digit",
-                                }
-                              )}
+                              {order?.orderType === "online"
+                                ? "Online Order"
+                                : "POS Order"}
                             </span>
                           </div>
-                        </td>
+                        </div>
+                      </td>
 
-                        <td>
-                          <span className="items-count">
-                            {getItemsCount(order)}
-                            {getItemsCount(
-                              order
-                            ) === 1
-                              ? " item"
-                              : " items"}
-                          </span>
-                        </td>
-
-                        <td>
-                          <strong className="order-amount">
-                            {formatCurrency(
-                              getOrderTotal(
-                                order
-                              )
-                            )}
-                          </strong>
-                        </td>
-
-                        <td>
-                          <span
-                            className={`payment-badge ${getPaymentClass(
-                              paymentStatus
-                            )}`}
-                          >
-                            {paymentStatus}
-                          </span>
-                        </td>
-
-                        <td>
-                          <div className="status-select-wrapper">
-                            <select
-                              className={`order-status-select ${getStatusClass(
-                                status
-                              )}`}
-                              value={status}
-                              disabled={
-                                isUpdating
-                              }
-                              onChange={(
-                                event
-                              ) =>
-                                handleStatusChange(
-                                  order,
-                                  event.target
-                                    .value
-                                )
-                              }
-                            >
-                              {STATUS_OPTIONS.filter(
-                                (item) =>
-                                  item !== "all"
-                              ).map(
-                                (
-                                  statusOption
-                                ) => (
-                                  <option
-                                    key={
-                                      statusOption
-                                    }
-                                    value={
-                                      statusOption
-                                    }
-                                  >
-                                    {statusOption
-                                      .charAt(
-                                        0
-                                      )
-                                      .toUpperCase() +
-                                      statusOption.slice(
-                                        1
-                                      )}
-                                  </option>
-                                )
-                              )}
-                            </select>
-
-                            {isUpdating && (
-                              <FaSpinner className="status-spinner orders-spin" />
-                            )}
+                      <td>
+                        <div className="customer-cell">
+                          <div className="customer-mini-avatar">
+                            {getCustomerName(order).slice(0, 1).toUpperCase()}
                           </div>
-                        </td>
 
-                        <td>
-                          <button
-                            type="button"
-                            className="view-order-button"
-                            onClick={() =>
-                              setSelectedOrder(
-                                order
-                              )
+                          <div>
+                            <strong>{getCustomerName(order)}</strong>
+
+                            <span>{getCustomerPhone(order)}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>
+                        <div className="date-cell">
+                          <strong>{formatDate(order?.createdAt)}</strong>
+
+                          <span>
+                            {new Date(
+                              order?.createdAt || Date.now(),
+                            ).toLocaleTimeString("en-IN", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
+                      </td>
+
+                      <td>
+                        <span className="items-count">
+                          {getItemsCount(order)}
+                          {getItemsCount(order) === 1 ? " item" : " items"}
+                        </span>
+                      </td>
+
+                      <td>
+                        <strong className="order-amount">
+                          {formatCurrency(getOrderTotal(order))}
+                        </strong>
+                      </td>
+
+                      <td>
+                        <span
+                          className={`payment-badge ${getPaymentClass(
+                            paymentStatus,
+                          )}`}
+                        >
+                          {paymentStatus}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="status-select-wrapper">
+                          <select
+                            className={`order-status-select ${getStatusClass(
+                              status,
+                            )}`}
+                            value={status}
+                            disabled={isUpdating}
+                            onChange={(event) =>
+                              handleStatusChange(order, event.target.value)
                             }
                           >
-                            <FaEye />
-                            View
-                          </button>
-                        </td>
-                      </motion.tr>
-                    );
-                  }
-                )}
+                            {STATUS_OPTIONS.filter(
+                              (item) => item !== "all",
+                            ).map((statusOption) => (
+                              <option key={statusOption} value={statusOption}>
+                                {statusOption.charAt(0).toUpperCase() +
+                                  statusOption.slice(1)}
+                              </option>
+                            ))}
+                          </select>
+
+                          {isUpdating && (
+                            <FaSpinner className="status-spinner orders-spin" />
+                          )}
+                        </div>
+                      </td>
+
+                      <td>
+                        <button
+                          type="button"
+                          className="view-order-button"
+                          onClick={() => setSelectedOrder(order)}
+                        >
+                          <FaEye />
+                          View
+                        </button>
+                      </td>
+                    </motion.tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
       </section>
 
-      {/* ================= MOBILE LIST ================= */}
-      {!loading &&
-        filteredOrders.length > 0 && (
-          <section className="orders-mobile-list">
-            {filteredOrders.map((order) => {
-              const orderId =
-                getOrderId(order);
+      {!loading && filteredOrders.length > 0 && (
+        <section className="orders-mobile-list">
+          {filteredOrders.map((order) => {
+            const orderId = getOrderId(order);
 
-              const status =
-                normalizeStatus(
-                  order?.status
-                );
+            const status = normalizeStatus(order?.status);
 
-              const paymentStatus =
-                normalizePaymentStatus(
-                  order?.paymentStatus
-                );
+            const paymentStatus = normalizePaymentStatus(order?.paymentStatus);
 
-              return (
-                <div
-                  className="mobile-order-card"
-                  key={orderId}
-                >
-                  <div className="mobile-order-top">
-                    <div className="mobile-order-number">
-                      <div className="order-number-icon">
-                        <FaShoppingBag />
-                      </div>
-
-                      <div>
-                        <strong>
-                          {getOrderNumber(
-                            order
-                          )}
-                        </strong>
-
-                        <span>
-                          {formatDate(
-                            order?.createdAt
-                          )}
-                        </span>
-                      </div>
+            return (
+              <div className="mobile-order-card" key={orderId}>
+                <div className="mobile-order-top">
+                  <div className="mobile-order-number">
+                    <div className="order-number-icon">
+                      <FaShoppingBag />
                     </div>
 
-                    <span
-                      className={`payment-badge ${getPaymentClass(
-                        paymentStatus
-                      )}`}
-                    >
-                      {paymentStatus}
-                    </span>
-                  </div>
-
-                  <div className="mobile-order-customer">
-                    <FaUser />
-
-                    <span>
-                      {getCustomerName(order)}
-                    </span>
-                  </div>
-
-                  <div className="mobile-order-bottom">
                     <div>
-                      <small>Total</small>
+                      <strong>{getOrderNumber(order)}</strong>
 
-                      <strong>
-                        {formatCurrency(
-                          getOrderTotal(order)
-                        )}
-                      </strong>
+                      <span>{formatDate(order?.createdAt)}</span>
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSelectedOrder(order)
-                      }
-                    >
-                      <FaEye />
-                      View
-                    </button>
                   </div>
 
-                  <div className="mobile-order-status">
-                    <span>Status</span>
-
-                    <select
-                      className={`order-status-select ${getStatusClass(
-                        status
-                      )}`}
-                      value={status}
-                      disabled={
-                        updatingOrderId ===
-                        orderId
-                      }
-                      onChange={(event) =>
-                        handleStatusChange(
-                          order,
-                          event.target.value
-                        )
-                      }
-                    >
-                      {STATUS_OPTIONS.filter(
-                        (item) =>
-                          item !== "all"
-                      ).map((item) => (
-                        <option
-                          value={item}
-                          key={item}
-                        >
-                          {item
-                            .charAt(0)
-                            .toUpperCase() +
-                            item.slice(1)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <span
+                    className={`payment-badge ${getPaymentClass(
+                      paymentStatus,
+                    )}`}
+                  >
+                    {paymentStatus}
+                  </span>
                 </div>
-              );
-            })}
-          </section>
-        )}
 
-      {/* ================= ORDER MODAL ================= */}
+                <div className="mobile-order-customer">
+                  <FaUser />
+
+                  <span>{getCustomerName(order)}</span>
+                </div>
+
+                <div className="mobile-order-bottom">
+                  <div>
+                    <small>Total</small>
+
+                    <strong>{formatCurrency(getOrderTotal(order))}</strong>
+                  </div>
+
+                  <button type="button" onClick={() => setSelectedOrder(order)}>
+                    <FaEye />
+                    View
+                  </button>
+                </div>
+
+                <div className="mobile-order-status">
+                  <span>Status</span>
+
+                  <select
+                    className={`order-status-select ${getStatusClass(status)}`}
+                    value={status}
+                    disabled={updatingOrderId === orderId}
+                    onChange={(event) =>
+                      handleStatusChange(order, event.target.value)
+                    }
+                  >
+                    {STATUS_OPTIONS.filter((item) => item !== "all").map(
+                      (item) => (
+                        <option value={item} key={item}>
+                          {item.charAt(0).toUpperCase() + item.slice(1)}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                </div>
+              </div>
+            );
+          })}
+        </section>
+      )}
+
       <AnimatePresence>
         {selectedOrder && (
           <motion.div
@@ -1046,9 +802,7 @@ const Orders = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() =>
-              setSelectedOrder(null)
-            }
+            onClick={() => setSelectedOrder(null)}
           >
             <motion.div
               className="order-modal"
@@ -1070,28 +824,18 @@ const Orders = () => {
               transition={{
                 duration: 0.22,
               }}
-              onClick={(event) =>
-                event.stopPropagation()
-              }
+              onClick={(event) => event.stopPropagation()}
             >
               <div className="order-modal-header">
                 <div>
-                  <span>
-                    ORDER DETAILS
-                  </span>
+                  <span>ORDER DETAILS</span>
 
-                  <h3>
-                    {getOrderNumber(
-                      selectedOrder
-                    )}
-                  </h3>
+                  <h3>{getOrderNumber(selectedOrder)}</h3>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() =>
-                    setSelectedOrder(null)
-                  }
+                  onClick={() => setSelectedOrder(null)}
                   aria-label="Close order details"
                 >
                   <FaTimes />
@@ -1101,38 +845,25 @@ const Orders = () => {
               <div className="order-modal-summary">
                 <div>
                   <span>Customer</span>
-                  <strong>
-                    {getCustomerName(
-                      selectedOrder
-                    )}
-                  </strong>
+                  <strong>{getCustomerName(selectedOrder)}</strong>
                 </div>
 
                 <div>
                   <span>Order Date</span>
-                  <strong>
-                    {formatDateTime(
-                      selectedOrder?.createdAt
-                    )}
-                  </strong>
+                  <strong>{formatDateTime(selectedOrder?.createdAt)}</strong>
                 </div>
 
                 <div>
                   <span>Payment</span>
                   <strong>
-                    {normalizePaymentStatus(
-                      selectedOrder?.paymentStatus
-                    )}
+                    {normalizePaymentStatus(selectedOrder?.paymentStatus)}
                   </strong>
                 </div>
 
                 <div>
                   <span>Order Type</span>
                   <strong>
-                    {selectedOrder?.orderType ===
-                    "online"
-                      ? "Online"
-                      : "POS"}
+                    {selectedOrder?.orderType === "online" ? "Online" : "POS"}
                   </strong>
                 </div>
               </div>
@@ -1141,118 +872,69 @@ const Orders = () => {
                 <div>
                   <FaUser />
 
-                  <span>
-                    {getCustomerName(
-                      selectedOrder
-                    )}
-                  </span>
+                  <span>{getCustomerName(selectedOrder)}</span>
                 </div>
 
                 <div>
                   <FaCreditCard />
 
-                  <span>
-                    {getCustomerPhone(
-                      selectedOrder
-                    )}
-                  </span>
+                  <span>{getCustomerPhone(selectedOrder)}</span>
                 </div>
 
                 <div>
                   <FaCalendarAlt />
 
-                  <span>
-                    {getCustomerEmail(
-                      selectedOrder
-                    )}
-                  </span>
+                  <span>{getCustomerEmail(selectedOrder)}</span>
                 </div>
               </div>
 
               <div className="order-items-section">
                 <div className="modal-section-title">
                   <span>ORDER ITEMS</span>
-                  <strong>
-                    {getItemsCount(
-                      selectedOrder
-                    )}{" "}
-                    items
-                  </strong>
+                  <strong>{getItemsCount(selectedOrder)} items</strong>
                 </div>
 
-                {Array.isArray(
-                  selectedOrder?.items
-                ) &&
-                selectedOrder.items.length >
-                  0 ? (
+                {Array.isArray(selectedOrder?.items) &&
+                selectedOrder.items.length > 0 ? (
                   <div className="order-items-list">
-                    {selectedOrder.items.map(
-                      (item, index) => {
-                        const quantity =
-                          Number(
-                            item?.quantity
-                          ) || 1;
+                    {selectedOrder.items.map((item, index) => {
+                      const quantity = Number(item?.quantity) || 1;
 
-                        const unitPrice =
-                          Number(
-                            item?.unitPrice
-                          ) || 0;
+                      const unitPrice = Number(item?.unitPrice) || 0;
 
-                        const itemTotal =
-                          Number(
-                            item?.total ??
-                              unitPrice *
-                                quantity
-                          ) || 0;
+                      const itemTotal =
+                        Number(item?.total ?? unitPrice * quantity) || 0;
 
-                        return (
-                          <div
-                            className="order-item-row"
-                            key={
-                              item?.product ||
-                              item?.sku ||
-                              index
-                            }
-                          >
-                            <div className="order-item-image">
-                              {item?.image ? (
-                                <img
-                                  src={
-                                    item.image
-                                  }
-                                  alt={
-                                    item?.name ||
-                                    "Product"
-                                  }
-                                />
-                              ) : (
-                                <FaShoppingBag />
-                              )}
-                            </div>
-
-                            <div className="order-item-info">
-                              <strong>
-                                {item?.name ||
-                                  "Ice Cream Item"}
-                              </strong>
-
-                              <span>
-                                {quantity} ×{" "}
-                                {formatCurrency(
-                                  unitPrice
-                                )}
-                              </span>
-                            </div>
-
-                            <strong className="order-item-total">
-                              {formatCurrency(
-                                itemTotal
-                              )}
-                            </strong>
+                      return (
+                        <div
+                          className="order-item-row"
+                          key={item?.product || item?.sku || index}
+                        >
+                          <div className="order-item-image">
+                            {item?.image ? (
+                              <img
+                                src={item.image}
+                                alt={item?.name || "Product"}
+                              />
+                            ) : (
+                              <FaShoppingBag />
+                            )}
                           </div>
-                        );
-                      }
-                    )}
+
+                          <div className="order-item-info">
+                            <strong>{item?.name || "Ice Cream Item"}</strong>
+
+                            <span>
+                              {quantity} × {formatCurrency(unitPrice)}
+                            </span>
+                          </div>
+
+                          <strong className="order-item-total">
+                            {formatCurrency(itemTotal)}
+                          </strong>
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="no-order-items">
@@ -1265,85 +947,49 @@ const Orders = () => {
                 <div>
                   <span>Subtotal</span>
 
-                  <strong>
-                    {formatCurrency(
-                      selectedOrder?.subtotal
-                    )}
-                  </strong>
+                  <strong>{formatCurrency(selectedOrder?.subtotal)}</strong>
                 </div>
 
                 <div>
                   <span>Discount</span>
 
-                  <strong>
-                    -{" "}
-                    {formatCurrency(
-                      selectedOrder?.discount
-                    )}
-                  </strong>
+                  <strong>- {formatCurrency(selectedOrder?.discount)}</strong>
                 </div>
 
                 <div>
                   <span>Tax</span>
 
-                  <strong>
-                    {formatCurrency(
-                      selectedOrder?.tax
-                    )}
-                  </strong>
+                  <strong>{formatCurrency(selectedOrder?.tax)}</strong>
                 </div>
 
                 <div className="grand-total">
                   <span>Total Amount</span>
 
                   <strong>
-                    {formatCurrency(
-                      getOrderTotal(
-                        selectedOrder
-                      )
-                    )}
+                    {formatCurrency(getOrderTotal(selectedOrder))}
                   </strong>
                 </div>
               </div>
 
               <div className="order-modal-footer">
                 <div className="modal-status-control">
-                  <label>
-                    ORDER STATUS
-                  </label>
+                  <label>ORDER STATUS</label>
 
                   <div className="modal-status-select">
                     <select
-                      value={normalizeStatus(
-                        selectedOrder?.status
-                      )}
-                      disabled={
-                        updatingOrderId ===
-                        getOrderId(
-                          selectedOrder
-                        )
-                      }
+                      value={normalizeStatus(selectedOrder?.status)}
+                      disabled={updatingOrderId === getOrderId(selectedOrder)}
                       onChange={(event) =>
-                        handleStatusChange(
-                          selectedOrder,
-                          event.target.value
-                        )
+                        handleStatusChange(selectedOrder, event.target.value)
                       }
                     >
-                      {STATUS_OPTIONS.filter(
-                        (item) =>
-                          item !== "all"
-                      ).map((item) => (
-                        <option
-                          value={item}
-                          key={item}
-                        >
-                          {item
-                            .charAt(0)
-                            .toUpperCase() +
-                            item.slice(1)}
-                        </option>
-                      ))}
+                      {STATUS_OPTIONS.filter((item) => item !== "all").map(
+                        (item) => (
+                          <option value={item} key={item}>
+                            {item.charAt(0).toUpperCase() + item.slice(1)}
+                          </option>
+                        ),
+                      )}
                     </select>
 
                     <FaChevronDown />
@@ -1353,9 +999,7 @@ const Orders = () => {
                 <button
                   type="button"
                   className="close-modal-button"
-                  onClick={() =>
-                    setSelectedOrder(null)
-                  }
+                  onClick={() => setSelectedOrder(null)}
                 >
                   <FaCheck />
                   Done

@@ -66,17 +66,11 @@ const orderItemSchema = new mongoose.Schema(
   },
   {
     _id: true,
-  }
+  },
 );
 
 const orderSchema = new mongoose.Schema(
   {
-    /*
-     * Human-readable unique order number.
-     *
-     * Example:
-     * ORD-20260907-00001
-     */
     orderNumber: {
       type: String,
       required: true,
@@ -86,11 +80,6 @@ const orderSchema = new mongoose.Schema(
       index: true,
     },
 
-    /*
-     * Optional customer.
-     *
-     * Walk-in bills can have no customer record.
-     */
     customer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Customer",
@@ -98,12 +87,6 @@ const orderSchema = new mongoose.Schema(
       index: true,
     },
 
-    /*
-     * Snapshot of customer information.
-     *
-     * This preserves historical billing information even if
-     * the customer later changes their profile.
-     */
     customerSnapshot: {
       name: {
         type: String,
@@ -140,9 +123,6 @@ const orderSchema = new mongoose.Schema(
       },
     },
 
-    /*
-     * Monetary breakdown.
-     */
     subtotal: {
       type: Number,
       required: true,
@@ -169,10 +149,6 @@ const orderSchema = new mongoose.Schema(
       default: 0,
     },
 
-    /*
-     * Payment information is intentionally kept separate.
-     * Razorpay integration will populate these later.
-     */
     paymentStatus: {
       type: String,
       enum: [
@@ -189,20 +165,10 @@ const orderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: [
-        "cash",
-        "upi",
-        "card",
-        "razorpay",
-        "other",
-        "unpaid",
-      ],
+      enum: ["cash", "upi", "card", "razorpay", "other", "unpaid"],
       default: "unpaid",
     },
 
-    /*
-     * These fields will be populated by the payment module.
-     */
     paymentId: {
       type: String,
       trim: true,
@@ -222,9 +188,6 @@ const orderSchema = new mongoose.Schema(
       default: "",
     },
 
-    /*
-     * Order lifecycle.
-     */
     status: {
       type: String,
       enum: [
@@ -242,10 +205,7 @@ const orderSchema = new mongoose.Schema(
 
     orderType: {
       type: String,
-      enum: [
-        "pos",
-        "online",
-      ],
+      enum: ["pos", "online"],
       default: "pos",
       index: true,
     },
@@ -253,16 +213,10 @@ const orderSchema = new mongoose.Schema(
     notes: {
       type: String,
       trim: true,
-      maxlength: [
-        1000,
-        "Notes cannot exceed 1000 characters",
-      ],
+      maxlength: [1000, "Notes cannot exceed 1000 characters"],
       default: "",
     },
 
-    /*
-     * Staff/admin who created the order.
-     */
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -270,9 +224,6 @@ const orderSchema = new mongoose.Schema(
       index: true,
     },
 
-    /*
-     * Useful timestamps for reporting.
-     */
     paidAt: {
       type: Date,
       default: null,
@@ -290,12 +241,9 @@ const orderSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-/*
- * Reporting indexes.
- */
 orderSchema.index({
   createdAt: -1,
 });
@@ -315,9 +263,6 @@ orderSchema.index({
   createdAt: -1,
 });
 
-/*
- * Round monetary values before validation/save.
- */
 orderSchema.pre("validate", function (next) {
   const moneyFields = [
     "subtotal",
@@ -328,35 +273,29 @@ orderSchema.pre("validate", function (next) {
 
   moneyFields.forEach((field) => {
     if (typeof this[field] === "number") {
-      this[field] =
-        Math.round(this[field] * 100) / 100;
+      this[field] = Math.round(this[field] * 100) / 100;
     }
   });
 
   this.items.forEach((item) => {
     if (typeof item.unitPrice === "number") {
-      item.unitPrice =
-        Math.round(item.unitPrice * 100) / 100;
+      item.unitPrice = Math.round(item.unitPrice * 100) / 100;
     }
 
     if (typeof item.taxAmount === "number") {
-      item.taxAmount =
-        Math.round(item.taxAmount * 100) / 100;
+      item.taxAmount = Math.round(item.taxAmount * 100) / 100;
     }
 
     if (typeof item.discountAmount === "number") {
-      item.discountAmount =
-        Math.round(item.discountAmount * 100) / 100;
+      item.discountAmount = Math.round(item.discountAmount * 100) / 100;
     }
 
     if (typeof item.subtotal === "number") {
-      item.subtotal =
-        Math.round(item.subtotal * 100) / 100;
+      item.subtotal = Math.round(item.subtotal * 100) / 100;
     }
 
     if (typeof item.total === "number") {
-      item.total =
-        Math.round(item.total * 100) / 100;
+      item.total = Math.round(item.total * 100) / 100;
     }
   });
 

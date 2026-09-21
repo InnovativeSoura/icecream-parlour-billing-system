@@ -1,5 +1,3 @@
-/* frontend/src/pages/staff/StaffReports.css */
-
 .staff-reports-page {
   width: 100%;
   max-width: 1600px;
@@ -7,10 +5,6 @@
   padding: 4px 4px 32px;
   color: #17213d;
 }
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .staff-reports-header {
   display: flex;
@@ -129,10 +123,6 @@
   }
 }
 
-/* =========================================================
-   PERIOD BAR
-========================================================= */
-
 .staff-report-period-bar {
   display: flex;
   align-items: center;
@@ -200,10 +190,6 @@
   box-shadow: 0 3px 9px rgba(38, 32, 64, 0.08);
 }
 
-/* =========================================================
-   ERROR
-========================================================= */
-
 .staff-report-error {
   display: flex;
   align-items: center;
@@ -258,10 +244,6 @@
   cursor: pointer;
 }
 
-/* =========================================================
-   LOADING
-========================================================= */
-
 .staff-report-loading {
   min-height: 300px;
   display: flex;
@@ -276,10 +258,6 @@
   font-weight: 700;
   box-shadow: 0 7px 25px rgba(33, 37, 57, 0.045);
 }
-
-/* =========================================================
-   STAT CARDS
-========================================================= */
 
 .staff-report-stat-grid {
   display: grid;
@@ -429,10 +407,6 @@
   font-weight: 850;
 }
 
-/* =========================================================
-   MAIN GRID
-========================================================= */
-
 .staff-report-main-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.85fr);
@@ -493,10 +467,6 @@
   color: #7c3aed;
   font-size: 14px;
 }
-
-/* =========================================================
-   SALES CHART
-========================================================= */
 
 .staff-report-chart {
   min-height: 310px;
@@ -600,11 +570,7 @@
   width: 100%;
   min-height: 5px;
   border-radius: 8px 8px 3px 3px;
-  background: linear-gradient(
-    180deg,
-    #8b5cf6 0%,
-    #6d28d9 100%
-  );
+  background: linear-gradient(180deg, #8b5cf6 0%, #6d28d9 100%);
   box-shadow: 0 5px 14px rgba(124, 58, 237, 0.18);
   transition:
     height 0.45s ease,
@@ -621,10 +587,6 @@
   font-size: 9px;
   font-weight: 700;
 }
-
-/* =========================================================
-   PAYMENT METHODS
-========================================================= */
 
 .staff-report-payment-list {
   padding: 2px 21px 21px;
@@ -723,11 +685,7 @@
   height: 100%;
   min-width: 3px;
   border-radius: inherit;
-  background: linear-gradient(
-    90deg,
-    #8b5cf6,
-    #6d28d9
-  );
+  background: linear-gradient(90deg, #8b5cf6, #6d28d9);
   transition: width 0.45s ease;
 }
 
@@ -739,10 +697,6 @@
   font-size: 9px;
   font-weight: 650;
 }
-
-/* =========================================================
-   PRODUCTS
-========================================================= */
 
 .staff-report-products-list {
   padding: 0 21px 15px;
@@ -812,10 +766,6 @@
   font-size: 11px;
   font-weight: 800;
 }
-
-/* =========================================================
-   ORDER STATUS
-========================================================= */
 
 .staff-report-status-list {
   padding: 0 21px 18px;
@@ -888,16 +838,8 @@
 }
 
 .staff-report-status-row .staff-report-progress > div {
-  background: linear-gradient(
-    90deg,
-    #b19aef,
-    #7c3aed
-  );
+  background: linear-gradient(90deg, #b19aef, #7c3aed);
 }
-
-/* =========================================================
-   EMPTY STATES
-========================================================= */
 
 .staff-report-empty-inline {
   min-height: 180px;
@@ -964,10 +906,6 @@
   font-size: 11px;
   line-height: 1.6;
 }
-
-/* =========================================================
-   RECENT SALES
-========================================================= */
 
 .staff-report-recent-panel {
   margin-bottom: 18px;
@@ -1142,10 +1080,6 @@
   font-weight: 850;
 }
 
-/* =========================================================
-   FOOTER
-========================================================= */
-
 .staff-report-footer {
   display: flex;
   align-items: center;
@@ -1173,18 +1107,10 @@
   font-weight: 700;
 }
 
-/* =========================================================
-   FOCUS
-========================================================= */
-
 .staff-reports-page button:focus-visible {
   outline: 3px solid rgba(124, 58, 237, 0.2);
   outline-offset: 2px;
 }
-
-/* =========================================================
-   RESPONSIVE — 1300
-========================================================= */
 
 @media (max-width: 1300px) {
   .staff-report-stat-grid {
@@ -1195,10 +1121,6 @@
     grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.85fr);
   }
 }
-
-/* =========================================================
-   RESPONSIVE — 1050
-========================================================= */
 
 @media (max-width: 1050px) {
   .staff-reports-header {
@@ -1220,10 +1142,6 @@
     grid-template-columns: 1fr;
   }
 }
-
-/* =========================================================
-   RESPONSIVE — 760
-========================================================= */
 
 @media (max-width: 760px) {
   .staff-reports-page {
@@ -1298,10 +1216,6 @@
     gap: 7px;
   }
 }
-
-/* =========================================================
-   RESPONSIVE — 560
-========================================================= */
 
 @media (max-width: 560px) {
   .staff-reports-header {
@@ -1496,10 +1410,6 @@
     font-size: 8px;
   }
 }
-
-/* =========================================================
-   REDUCED MOTION
-========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   .staff-report-spin {

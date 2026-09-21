@@ -37,15 +37,7 @@ const StaffDashboard = () => {
     }
   }, []);
 
-  const staffName =
-    user?.name ||
-    user?.fullName ||
-    user?.username ||
-    "Staff";
-
-  // =========================================================
-  // FETCH DASHBOARD DATA
-  // =========================================================
+  const staffName = user?.name || user?.fullName || user?.username || "Staff";
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -71,10 +63,10 @@ const StaffDashboard = () => {
             Array.isArray(data)
               ? data
               : Array.isArray(data?.orders)
-              ? data.orders
-              : Array.isArray(data?.data)
-              ? data.data
-              : []
+                ? data.orders
+                : Array.isArray(data?.data)
+                  ? data.data
+                  : [],
           );
         }
 
@@ -85,10 +77,10 @@ const StaffDashboard = () => {
             Array.isArray(data)
               ? data
               : Array.isArray(data?.customers)
-              ? data.customers
-              : Array.isArray(data?.data)
-              ? data.data
-              : []
+                ? data.customers
+                : Array.isArray(data?.data)
+                  ? data.data
+                  : [],
           );
         }
 
@@ -99,10 +91,10 @@ const StaffDashboard = () => {
             Array.isArray(data)
               ? data
               : Array.isArray(data?.products)
-              ? data.products
-              : Array.isArray(data?.data)
-              ? data.data
-              : []
+                ? data.products
+                : Array.isArray(data?.data)
+                  ? data.data
+                  : [],
           );
         }
 
@@ -113,10 +105,10 @@ const StaffDashboard = () => {
             Array.isArray(data)
               ? data
               : Array.isArray(data?.inventory)
-              ? data.inventory
-              : Array.isArray(data?.data)
-              ? data.data
-              : []
+                ? data.inventory
+                : Array.isArray(data?.data)
+                  ? data.data
+                  : [],
           );
         }
       } catch (error) {
@@ -130,10 +122,6 @@ const StaffDashboard = () => {
     fetchDashboard();
   }, []);
 
-  // =========================================================
-  // HELPERS
-  // =========================================================
-
   const getOrderStatus = (order) =>
     String(order?.status || "pending").toLowerCase();
 
@@ -146,7 +134,7 @@ const StaffDashboard = () => {
         order?.total ??
         order?.grandTotal ??
         order?.amount ??
-        0
+        0,
     ) || 0;
 
   const formatCurrency = (value) =>
@@ -169,10 +157,6 @@ const StaffDashboard = () => {
     });
   };
 
-  // =========================================================
-  // STATISTICS
-  // =========================================================
-
   const statistics = useMemo(() => {
     const today = new Date();
 
@@ -190,7 +174,7 @@ const StaffDashboard = () => {
 
     const todaysSales = todaysOrders.reduce(
       (total, order) => total + getOrderAmount(order),
-      0
+      0,
     );
 
     const pendingOrders = orders.filter((order) => {
@@ -213,14 +197,14 @@ const StaffDashboard = () => {
           item?.stock ??
           item?.currentStock ??
           item?.availableQuantity ??
-          0
+          0,
       );
 
       const threshold = Number(
         item?.lowStockThreshold ??
           item?.minimumStock ??
           item?.reorderLevel ??
-          5
+          5,
       );
 
       return quantity <= threshold;
@@ -236,23 +220,11 @@ const StaffDashboard = () => {
     };
   }, [orders, inventory]);
 
-  // =========================================================
-  // RECENT ORDERS
-  // =========================================================
-
   const recentOrders = useMemo(() => {
     return [...orders]
-      .sort(
-        (a, b) =>
-          new Date(b?.createdAt || 0) -
-          new Date(a?.createdAt || 0)
-      )
+      .sort((a, b) => new Date(b?.createdAt || 0) - new Date(a?.createdAt || 0))
       .slice(0, 6);
   }, [orders]);
-
-  // =========================================================
-  // QUICK ACTIONS
-  // =========================================================
 
   const quickActions = [
     {
@@ -285,17 +257,8 @@ const StaffDashboard = () => {
     },
   ];
 
-  // =========================================================
-  // RENDER
-  // =========================================================
-
   return (
     <section className="staff-dashboard">
-
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
-
       <motion.div
         className="staff-dashboard-header"
         initial={{ opacity: 0, y: 18 }}
@@ -303,18 +266,14 @@ const StaffDashboard = () => {
         transition={{ duration: 0.45 }}
       >
         <div className="staff-dashboard-header-copy">
-          <span className="staff-dashboard-eyebrow">
-            STAFF OVERVIEW
-          </span>
+          <span className="staff-dashboard-eyebrow">STAFF OVERVIEW</span>
 
           <h2>
             Welcome back, {staffName}
             <span className="staff-wave">👋</span>
           </h2>
 
-          <p>
-            Here's what's happening at your ice cream parlour today.
-          </p>
+          <p>Here's what's happening at your ice cream parlour today.</p>
         </div>
 
         <button
@@ -327,12 +286,7 @@ const StaffDashboard = () => {
         </button>
       </motion.div>
 
-      {/* =====================================================
-          STAT CARDS
-      ===================================================== */}
-
       <div className="staff-stat-grid">
-
         <motion.div
           className="staff-stat-card"
           initial={{ opacity: 0, y: 20 }}
@@ -344,18 +298,14 @@ const StaffDashboard = () => {
               <FaReceipt />
             </div>
 
-            <span className="staff-stat-tag">
-              TODAY
-            </span>
+            <span className="staff-stat-tag">TODAY</span>
           </div>
 
           <strong className="staff-stat-number">
             {loading ? "—" : statistics.todaysOrders.length}
           </strong>
 
-          <span className="staff-stat-label">
-            Today's Orders
-          </span>
+          <span className="staff-stat-label">Today's Orders</span>
 
           <div className="staff-stat-footer">
             <FaCheckCircle />
@@ -374,20 +324,14 @@ const StaffDashboard = () => {
               <FaChartLine />
             </div>
 
-            <span className="staff-stat-tag">
-              SALES
-            </span>
+            <span className="staff-stat-tag">SALES</span>
           </div>
 
           <strong className="staff-stat-number staff-stat-currency">
-            {loading
-              ? "—"
-              : formatCurrency(statistics.todaysSales)}
+            {loading ? "—" : formatCurrency(statistics.todaysSales)}
           </strong>
 
-          <span className="staff-stat-label">
-            Today's Sales
-          </span>
+          <span className="staff-stat-label">Today's Sales</span>
 
           <div className="staff-stat-footer">
             <FaCheckCircle />
@@ -406,20 +350,14 @@ const StaffDashboard = () => {
               <FaClock />
             </div>
 
-            <span className="staff-stat-tag staff-tag-warning">
-              ACTIVE
-            </span>
+            <span className="staff-stat-tag staff-tag-warning">ACTIVE</span>
           </div>
 
           <strong className="staff-stat-number">
-            {loading
-              ? "—"
-              : statistics.pendingOrders.length}
+            {loading ? "—" : statistics.pendingOrders.length}
           </strong>
 
-          <span className="staff-stat-label">
-            Active Orders
-          </span>
+          <span className="staff-stat-label">Active Orders</span>
 
           <div className="staff-stat-footer">
             <FaClock />
@@ -438,37 +376,23 @@ const StaffDashboard = () => {
               <FaUsers />
             </div>
 
-            <span className="staff-stat-tag">
-              CUSTOMERS
-            </span>
+            <span className="staff-stat-tag">CUSTOMERS</span>
           </div>
 
           <strong className="staff-stat-number">
             {loading ? "—" : customers.length}
           </strong>
 
-          <span className="staff-stat-label">
-            Customer Records
-          </span>
+          <span className="staff-stat-label">Customer Records</span>
 
           <div className="staff-stat-footer">
             <FaUsers />
             <span>Customer database</span>
           </div>
         </motion.div>
-
       </div>
 
-      {/* =====================================================
-          MAIN GRID
-      ===================================================== */}
-
       <div className="staff-dashboard-grid">
-
-        {/* ===================================================
-            QUICK ACTIONS
-        =================================================== */}
-
         <motion.div
           className="staff-panel staff-quick-panel"
           initial={{ opacity: 0, y: 20 }}
@@ -477,9 +401,7 @@ const StaffDashboard = () => {
         >
           <div className="staff-panel-header">
             <div>
-              <span className="staff-panel-eyebrow">
-                WORKSPACE
-              </span>
+              <span className="staff-panel-eyebrow">WORKSPACE</span>
 
               <h3>Quick Actions</h3>
             </div>
@@ -516,10 +438,6 @@ const StaffDashboard = () => {
           </div>
         </motion.div>
 
-        {/* ===================================================
-            OPERATIONS
-        =================================================== */}
-
         <motion.div
           className="staff-panel staff-operation-panel"
           initial={{ opacity: 0, y: 20 }}
@@ -528,9 +446,7 @@ const StaffDashboard = () => {
         >
           <div className="staff-panel-header">
             <div>
-              <span className="staff-panel-eyebrow">
-                OPERATIONS
-              </span>
+              <span className="staff-panel-eyebrow">OPERATIONS</span>
 
               <h3>Today's Activity</h3>
             </div>
@@ -542,7 +458,6 @@ const StaffDashboard = () => {
           </div>
 
           <div className="staff-operation-list">
-
             <div className="staff-operation-row">
               <div className="staff-operation-icon">
                 <FaCheckCircle />
@@ -554,9 +469,7 @@ const StaffDashboard = () => {
               </div>
 
               <strong className="staff-operation-value">
-                {loading
-                  ? "—"
-                  : statistics.completedOrders.length}
+                {loading ? "—" : statistics.completedOrders.length}
               </strong>
             </div>
 
@@ -571,9 +484,7 @@ const StaffDashboard = () => {
               </div>
 
               <strong className="staff-operation-value">
-                {loading
-                  ? "—"
-                  : statistics.pendingOrders.length}
+                {loading ? "—" : statistics.pendingOrders.length}
               </strong>
             </div>
 
@@ -588,20 +499,12 @@ const StaffDashboard = () => {
               </div>
 
               <strong className="staff-operation-value">
-                {loading
-                  ? "—"
-                  : statistics.paidOrders.length}
+                {loading ? "—" : statistics.paidOrders.length}
               </strong>
             </div>
-
           </div>
         </motion.div>
-
       </div>
-
-      {/* =====================================================
-          RECENT ORDERS
-      ===================================================== */}
 
       <motion.div
         className="staff-panel staff-orders-panel"
@@ -611,9 +514,7 @@ const StaffDashboard = () => {
       >
         <div className="staff-panel-header">
           <div>
-            <span className="staff-panel-eyebrow">
-              ORDERS
-            </span>
+            <span className="staff-panel-eyebrow">ORDERS</span>
 
             <h3>Recent Orders</h3>
           </div>
@@ -641,9 +542,7 @@ const StaffDashboard = () => {
 
             <strong>No recent orders</strong>
 
-            <span>
-              New customer orders will appear here.
-            </span>
+            <span>New customer orders will appear here.</span>
           </div>
         ) : (
           <div className="staff-orders-table-wrapper">
@@ -662,8 +561,7 @@ const StaffDashboard = () => {
               <tbody>
                 {recentOrders.map((order) => {
                   const status = getOrderStatus(order);
-                  const paymentStatus =
-                    getPaymentStatus(order);
+                  const paymentStatus = getPaymentStatus(order);
 
                   const customerName =
                     order?.customerSnapshot?.name ||
@@ -689,25 +587,17 @@ const StaffDashboard = () => {
                       <td>
                         <div className="staff-customer-cell">
                           <div className="staff-customer-avatar">
-                            {customerName
-                              .charAt(0)
-                              .toUpperCase()}
+                            {customerName.charAt(0).toUpperCase()}
                           </div>
 
                           <span>{customerName}</span>
                         </div>
                       </td>
 
-                      <td>
-                        {formatDate(order?.createdAt)}
-                      </td>
+                      <td>{formatDate(order?.createdAt)}</td>
 
                       <td>
-                        <strong>
-                          {formatCurrency(
-                            getOrderAmount(order)
-                          )}
-                        </strong>
+                        <strong>{formatCurrency(getOrderAmount(order))}</strong>
                       </td>
 
                       <td>
@@ -719,9 +609,7 @@ const StaffDashboard = () => {
                       </td>
 
                       <td>
-                        <span
-                          className={`staff-status-badge status-${status}`}
-                        >
+                        <span className={`staff-status-badge status-${status}`}>
                           <span />
                           {status}
                         </span>
@@ -735,14 +623,7 @@ const StaffDashboard = () => {
         )}
       </motion.div>
 
-      {/* =====================================================
-          BOTTOM GRID
-      ===================================================== */}
-
       <div className="staff-bottom-grid">
-
-        {/* INVENTORY */}
-
         <motion.div
           className="staff-panel staff-inventory-panel"
           initial={{ opacity: 0, y: 20 }}
@@ -751,9 +632,7 @@ const StaffDashboard = () => {
         >
           <div className="staff-panel-header">
             <div>
-              <span className="staff-panel-eyebrow">
-                INVENTORY
-              </span>
+              <span className="staff-panel-eyebrow">INVENTORY</span>
 
               <h3>Stock Overview</h3>
             </div>
@@ -776,54 +655,45 @@ const StaffDashboard = () => {
 
               <div>
                 <strong>Inventory looks healthy</strong>
-                <span>
-                  No low-stock items require immediate attention.
-                </span>
+                <span>No low-stock items require immediate attention.</span>
               </div>
             </div>
           ) : (
             <div className="staff-low-stock-list">
-              {statistics.lowStock
-                .slice(0, 4)
-                .map((item, index) => {
-                  const quantity = Number(
-                    item?.quantity ??
-                      item?.stock ??
-                      item?.currentStock ??
-                      0
-                  );
+              {statistics.lowStock.slice(0, 4).map((item, index) => {
+                const quantity = Number(
+                  item?.quantity ?? item?.stock ?? item?.currentStock ?? 0,
+                );
 
-                  const name =
-                    item?.product?.name ||
-                    item?.name ||
-                    item?.productName ||
-                    `Product ${index + 1}`;
+                const name =
+                  item?.product?.name ||
+                  item?.name ||
+                  item?.productName ||
+                  `Product ${index + 1}`;
 
-                  return (
-                    <div
-                      className="staff-low-stock-row"
-                      key={item?._id || item?.id || index}
-                    >
-                      <div className="staff-stock-product-icon">
-                        <FaIceCream />
-                      </div>
-
-                      <div className="staff-stock-product-copy">
-                        <strong>{name}</strong>
-                        <span>Stock level</span>
-                      </div>
-
-                      <span className="staff-low-stock-value">
-                        {quantity} left
-                      </span>
+                return (
+                  <div
+                    className="staff-low-stock-row"
+                    key={item?._id || item?.id || index}
+                  >
+                    <div className="staff-stock-product-icon">
+                      <FaIceCream />
                     </div>
-                  );
-                })}
+
+                    <div className="staff-stock-product-copy">
+                      <strong>{name}</strong>
+                      <span>Stock level</span>
+                    </div>
+
+                    <span className="staff-low-stock-value">
+                      {quantity} left
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           )}
         </motion.div>
-
-        {/* SYSTEM SUMMARY */}
 
         <motion.div
           className="staff-panel staff-summary-panel"
@@ -833,9 +703,7 @@ const StaffDashboard = () => {
         >
           <div className="staff-panel-header">
             <div>
-              <span className="staff-panel-eyebrow">
-                SYSTEM
-              </span>
+              <span className="staff-panel-eyebrow">SYSTEM</span>
 
               <h3>Service Status</h3>
             </div>
@@ -847,7 +715,6 @@ const StaffDashboard = () => {
           </div>
 
           <div className="staff-service-list">
-
             <div className="staff-service-row">
               <div className="staff-service-check">
                 <FaCheckCircle />
@@ -886,15 +753,9 @@ const StaffDashboard = () => {
 
               <b>Connected</b>
             </div>
-
           </div>
         </motion.div>
-
       </div>
-
-      {/* =====================================================
-          FOOTER
-      ===================================================== */}
 
       <div className="staff-dashboard-footer">
         <span>
@@ -902,15 +763,10 @@ const StaffDashboard = () => {
           IceCream Billing System
         </span>
 
-        <span>
-          Staff Control Center
-        </span>
+        <span>Staff Control Center</span>
 
-        <span>
-          © {new Date().getFullYear()} All rights reserved.
-        </span>
+        <span>© {new Date().getFullYear()} All rights reserved.</span>
       </div>
-
     </section>
   );
 };

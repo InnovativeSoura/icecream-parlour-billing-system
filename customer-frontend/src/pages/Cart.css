@@ -1,18 +1,9 @@
-/* ==========================================================================
-   MY CART — PREMIUM CUSTOMER CART
-   ========================================================================== */
-
 .my-cart-page {
   width: 100%;
   min-height: calc(100vh - 90px);
   padding: 34px 38px 55px;
   box-sizing: border-box;
 }
-
-
-/* ==========================================================================
-   PAGE HEADER
-   ========================================================================== */
 
 .my-cart-header {
   width: 100%;
@@ -62,11 +53,6 @@
   color: #716b82;
 }
 
-
-/* ==========================================================================
-   ITEM COUNT BADGE
-   ========================================================================== */
-
 .my-cart-item-badge {
   min-width: 112px;
   min-height: 82px;
@@ -81,12 +67,11 @@
   border: 1px solid rgba(124, 58, 237, 0.14);
   border-radius: 20px;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.94),
-      rgba(248, 245, 255, 0.9)
-    );
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.94),
+    rgba(248, 245, 255, 0.9)
+  );
 
   box-shadow:
     0 12px 35px rgba(62, 40, 102, 0.08),
@@ -115,11 +100,6 @@
   color: #81798f;
 }
 
-
-/* ==========================================================================
-   MAIN CART LAYOUT
-   ========================================================================== */
-
 .my-cart-layout {
   width: 100%;
 
@@ -132,11 +112,6 @@
   gap: 26px;
 }
 
-
-/* ==========================================================================
-   CART ITEMS CARD
-   ========================================================================== */
-
 .my-cart-items-card,
 .my-cart-summary-card {
   position: relative;
@@ -144,12 +119,11 @@
   border: 1px solid rgba(118, 87, 161, 0.12);
   border-radius: 26px;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.96),
-      rgba(250, 248, 255, 0.94)
-    );
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(250, 248, 255, 0.94)
+  );
 
   box-shadow:
     0 20px 60px rgba(49, 31, 78, 0.08),
@@ -167,11 +141,6 @@
   position: sticky;
   top: 110px;
 }
-
-
-/* ==========================================================================
-   SECTION HEADER
-   ========================================================================== */
 
 .my-cart-section-header {
   min-height: 88px;
@@ -209,11 +178,6 @@
   color: #82798e;
 }
 
-
-/* ==========================================================================
-   CLEAR CART BUTTON
-   ========================================================================== */
-
 .my-cart-clear-button {
   display: inline-flex;
   align-items: center;
@@ -247,8 +211,7 @@
 
   background: #fef2f2;
 
-  box-shadow:
-    0 7px 18px rgba(220, 38, 38, 0.1);
+  box-shadow: 0 7px 18px rgba(220, 38, 38, 0.1);
 }
 
 .my-cart-clear-button:disabled {
@@ -257,19 +220,9 @@
   transform: none;
 }
 
-
-/* ==========================================================================
-   CART ITEMS LIST
-   ========================================================================== */
-
 .my-cart-items-list {
   width: 100%;
 }
-
-
-/* ==========================================================================
-   SINGLE CART ITEM
-   ========================================================================== */
 
 .my-cart-item {
   position: relative;
@@ -302,18 +255,12 @@
 }
 
 .my-cart-item:hover {
-  background:
-    linear-gradient(
-      90deg,
-      rgba(124, 58, 237, 0.025),
-      rgba(236, 72, 153, 0.018)
-    );
+  background: linear-gradient(
+    90deg,
+    rgba(124, 58, 237, 0.025),
+    rgba(236, 72, 153, 0.018)
+  );
 }
-
-
-/* ==========================================================================
-   PRODUCT IMAGE
-   ========================================================================== */
 
 .my-cart-product-image {
   position: relative;
@@ -331,17 +278,11 @@
 
   overflow: hidden;
 
-  background:
-    linear-gradient(
-      145deg,
-      #f5efff,
-      #fdf4fa
-    );
+  background: linear-gradient(145deg, #f5efff, #fdf4fa);
 
   border: 1px solid rgba(124, 58, 237, 0.1);
 
-  box-shadow:
-    0 9px 25px rgba(80, 45, 120, 0.08);
+  box-shadow: 0 9px 25px rgba(80, 45, 120, 0.08);
 }
 
 .my-cart-product-image img {
@@ -352,12 +293,10 @@
 
   object-fit: cover;
 
-  transition:
-    transform 0.35s ease;
+  transition: transform 0.35s ease;
 }
 
-.my-cart-item:hover
-.my-cart-product-image img {
+.my-cart-item:hover .my-cart-product-image img {
   transform: scale(1.06);
 }
 
@@ -370,18 +309,8 @@
 
   font-size: 2rem;
 
-  background:
-    linear-gradient(
-      145deg,
-      #f3e8ff,
-      #fce7f3
-    );
+  background: linear-gradient(145deg, #f3e8ff, #fce7f3);
 }
-
-
-/* ==========================================================================
-   PRODUCT INFORMATION
-   ========================================================================== */
 
 .my-cart-product-info {
   min-width: 0;
@@ -435,11 +364,6 @@
   display: none;
 }
 
-
-/* ==========================================================================
-   UNIT PRICE
-   ========================================================================== */
-
 .my-cart-unit-price,
 .my-cart-item-total {
   display: flex;
@@ -474,11 +398,6 @@
 .my-cart-item-total svg {
   font-size: 0.67rem;
 }
-
-
-/* ==========================================================================
-   QUANTITY
-   ========================================================================== */
 
 .my-cart-quantity {
   display: flex;
@@ -549,19 +468,9 @@
   color: #292031;
 }
 
-
-/* ==========================================================================
-   ITEM TOTAL
-   ========================================================================== */
-
 .my-cart-item-total strong {
   font-size: 1rem;
 }
-
-
-/* ==========================================================================
-   REMOVE BUTTON
-   ========================================================================== */
 
 .my-cart-remove-button {
   width: 34px;
@@ -591,8 +500,7 @@
 
   background: #fef2f2;
 
-  box-shadow:
-    0 7px 17px rgba(220, 38, 38, 0.1);
+  box-shadow: 0 7px 17px rgba(220, 38, 38, 0.1);
 }
 
 .my-cart-remove-button:disabled {
@@ -604,11 +512,6 @@
 .my-cart-remove-button svg {
   font-size: 0.72rem;
 }
-
-
-/* ==========================================================================
-   CONTINUE SHOPPING
-   ========================================================================== */
 
 .my-cart-continue {
   padding: 20px 25px;
@@ -650,19 +553,9 @@
   cursor: not-allowed;
 }
 
-
-/* ==========================================================================
-   SUMMARY CARD
-   ========================================================================== */
-
 .my-cart-summary-card {
   padding: 25px;
 }
-
-
-/* ==========================================================================
-   SUMMARY TOP
-   ========================================================================== */
 
 .my-cart-summary-top {
   display: flex;
@@ -685,17 +578,11 @@
 
   border-radius: 14px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #7c3aed,
-      #a855f7
-    );
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
 
   color: #ffffff;
 
-  box-shadow:
-    0 9px 22px rgba(124, 58, 237, 0.22);
+  box-shadow: 0 9px 22px rgba(124, 58, 237, 0.22);
 }
 
 .my-cart-summary-icon svg {
@@ -724,11 +611,6 @@
 
   color: #21182d;
 }
-
-
-/* ==========================================================================
-   SUMMARY LINES
-   ========================================================================== */
 
 .my-cart-summary-lines {
   display: flex;
@@ -773,30 +655,19 @@
   font-size: 0.61rem;
 }
 
-
-/* ==========================================================================
-   SUMMARY DIVIDER
-   ========================================================================== */
-
 .my-cart-summary-divider {
   width: 100%;
   height: 1px;
 
   margin: 22px 0;
 
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(112, 83, 145, 0.16),
-      transparent
-    );
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(112, 83, 145, 0.16),
+    transparent
+  );
 }
-
-
-/* ==========================================================================
-   GRAND TOTAL
-   ========================================================================== */
 
 .my-cart-grand-total {
   display: flex;
@@ -832,11 +703,6 @@
   font-size: 0.85rem;
 }
 
-
-/* ==========================================================================
-   CHECKOUT BUTTON
-   ========================================================================== */
-
 .my-cart-checkout-button {
   position: relative;
 
@@ -854,13 +720,7 @@
   border: none;
   border-radius: 15px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #6d28d9,
-      #7c3aed 50%,
-      #9333ea
-    );
+  background: linear-gradient(135deg, #6d28d9, #7c3aed 50%, #9333ea);
 
   color: #ffffff;
 
@@ -868,8 +728,7 @@
   font-size: 0.9rem;
   font-weight: 850;
 
-  box-shadow:
-    0 13px 30px rgba(109, 40, 217, 0.25);
+  box-shadow: 0 13px 30px rgba(109, 40, 217, 0.25);
 
   cursor: pointer;
 
@@ -891,18 +750,16 @@
   width: 80%;
   height: 100%;
 
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent
-    );
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
 
   transform: skewX(-18deg);
 
-  transition:
-    left 0.6s ease;
+  transition: left 0.6s ease;
 }
 
 .my-cart-checkout-button:hover::before {
@@ -910,8 +767,7 @@
 }
 
 .my-cart-checkout-button:hover {
-  box-shadow:
-    0 17px 35px rgba(109, 40, 217, 0.32);
+  box-shadow: 0 17px 35px rgba(109, 40, 217, 0.32);
 }
 
 .my-cart-checkout-button:disabled {
@@ -919,8 +775,7 @@
 
   cursor: not-allowed;
 
-  box-shadow:
-    0 7px 18px rgba(109, 40, 217, 0.13);
+  box-shadow: 0 7px 18px rgba(109, 40, 217, 0.13);
 }
 
 .my-cart-checkout-button svg {
@@ -931,14 +786,8 @@
   margin-left: 2px;
 }
 
-
-/* ==========================================================================
-   SPINNER
-   ========================================================================== */
-
 .my-cart-spinner {
-  animation:
-    my-cart-spin 0.8s linear infinite;
+  animation: my-cart-spin 0.8s linear infinite;
 }
 
 @keyframes my-cart-spin {
@@ -950,11 +799,6 @@
     transform: rotate(360deg);
   }
 }
-
-
-/* ==========================================================================
-   SECURITY BOX
-   ========================================================================== */
 
 .my-cart-security {
   display: flex;
@@ -968,12 +812,11 @@
   border: 1px solid rgba(16, 185, 129, 0.13);
   border-radius: 13px;
 
-  background:
-    linear-gradient(
-      135deg,
-      rgba(236, 253, 245, 0.9),
-      rgba(240, 253, 250, 0.7)
-    );
+  background: linear-gradient(
+    135deg,
+    rgba(236, 253, 245, 0.9),
+    rgba(240, 253, 250, 0.7)
+  );
 }
 
 .my-cart-security-icon {
@@ -1019,11 +862,6 @@
   color: #548274;
 }
 
-
-/* ==========================================================================
-   PAYMENT METHODS
-   ========================================================================== */
-
 .my-cart-payment-methods {
   margin-top: 20px;
 }
@@ -1067,18 +905,12 @@
   font-size: 0.62rem;
   font-weight: 850;
 
-  box-shadow:
-    0 3px 10px rgba(58, 35, 84, 0.035);
+  box-shadow: 0 3px 10px rgba(58, 35, 84, 0.035);
 }
 
 .my-cart-payment-method svg {
   font-size: 0.75rem;
 }
-
-
-/* ==========================================================================
-   EMPTY CART PAGE
-   ========================================================================== */
 
 .my-cart-empty-page {
   min-height: calc(100vh - 90px);
@@ -1102,15 +934,13 @@
   border: 1px solid rgba(124, 58, 237, 0.11);
   border-radius: 28px;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.96),
-      rgba(250, 247, 255, 0.95)
-    );
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(250, 247, 255, 0.95)
+  );
 
-  box-shadow:
-    0 25px 70px rgba(55, 34, 89, 0.09);
+  box-shadow: 0 25px 70px rgba(55, 34, 89, 0.09);
 }
 
 .my-cart-empty-icon {
@@ -1125,17 +955,11 @@
 
   border-radius: 25px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #f3e8ff,
-      #fce7f3
-    );
+  background: linear-gradient(135deg, #f3e8ff, #fce7f3);
 
   color: #7c3aed;
 
-  box-shadow:
-    0 15px 35px rgba(124, 58, 237, 0.1);
+  box-shadow: 0 15px 35px rgba(124, 58, 237, 0.1);
 }
 
 .my-cart-empty-icon svg {
@@ -1164,11 +988,6 @@
   color: #81788d;
 }
 
-
-/* ==========================================================================
-   PRIMARY BUTTON
-   ========================================================================== */
-
 .my-cart-primary-button {
   min-height: 49px;
 
@@ -1183,12 +1002,7 @@
   border: none;
   border-radius: 13px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #6d28d9,
-      #9333ea
-    );
+  background: linear-gradient(135deg, #6d28d9, #9333ea);
 
   color: #ffffff;
 
@@ -1196,8 +1010,7 @@
   font-size: 0.83rem;
   font-weight: 850;
 
-  box-shadow:
-    0 11px 25px rgba(109, 40, 217, 0.22);
+  box-shadow: 0 11px 25px rgba(109, 40, 217, 0.22);
 
   cursor: pointer;
 
@@ -1207,14 +1020,8 @@
 }
 
 .my-cart-primary-button:hover {
-  box-shadow:
-    0 15px 30px rgba(109, 40, 217, 0.29);
+  box-shadow: 0 15px 30px rgba(109, 40, 217, 0.29);
 }
-
-
-/* ==========================================================================
-   CLEAR CART MODAL
-   ========================================================================== */
 
 .my-cart-modal-overlay {
   position: fixed;
@@ -1229,14 +1036,11 @@
 
   padding: 20px;
 
-  background:
-    rgba(25, 15, 39, 0.55);
+  background: rgba(25, 15, 39, 0.55);
 
-  backdrop-filter:
-    blur(9px);
+  backdrop-filter: blur(9px);
 
-  -webkit-backdrop-filter:
-    blur(9px);
+  -webkit-backdrop-filter: blur(9px);
 }
 
 .my-cart-confirm-modal {
@@ -1249,15 +1053,13 @@
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 24px;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.98),
-      rgba(249, 246, 255, 0.98)
-    );
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(249, 246, 255, 0.98)
+  );
 
-  box-shadow:
-    0 30px 80px rgba(27, 15, 40, 0.28);
+  box-shadow: 0 30px 80px rgba(27, 15, 40, 0.28);
 }
 
 .my-cart-modal-icon {
@@ -1272,12 +1074,7 @@
 
   border-radius: 17px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #fee2e2,
-      #fef2f2
-    );
+  background: linear-gradient(135deg, #fee2e2, #fef2f2);
 
   color: #dc2626;
 }
@@ -1306,11 +1103,6 @@
 
   color: #81778b;
 }
-
-
-/* ==========================================================================
-   MODAL ACTIONS
-   ========================================================================== */
 
 .my-cart-modal-actions {
   display: flex;
@@ -1358,27 +1150,16 @@
 .my-cart-modal-confirm {
   border: none;
 
-  background:
-    linear-gradient(
-      135deg,
-      #dc2626,
-      #ef4444
-    );
+  background: linear-gradient(135deg, #dc2626, #ef4444);
 
   color: #ffffff;
 
-  box-shadow:
-    0 9px 22px rgba(220, 38, 38, 0.18);
+  box-shadow: 0 9px 22px rgba(220, 38, 38, 0.18);
 }
 
 .my-cart-modal-confirm svg {
   font-size: 0.7rem;
 }
-
-
-/* ==========================================================================
-   LARGE LAPTOP
-   ========================================================================== */
 
 @media (max-width: 1350px) {
   .my-cart-page {
@@ -1418,11 +1199,6 @@
   }
 }
 
-
-/* ==========================================================================
-   TABLET
-   ========================================================================== */
-
 @media (max-width: 1120px) {
   .my-cart-layout {
     grid-template-columns: 1fr;
@@ -1458,11 +1234,6 @@
     max-width: 650px;
   }
 }
-
-
-/* ==========================================================================
-   TABLET / COMPACT
-   ========================================================================== */
 
 @media (max-width: 900px) {
   .my-cart-page {
@@ -1510,19 +1281,11 @@
   }
 }
 
-
-/* ==========================================================================
-   MOBILE
-   ========================================================================== */
-
 @media (max-width: 680px) {
   .my-cart-page {
     min-height: calc(100vh - 75px);
 
-    padding:
-      21px
-      15px
-      40px;
+    padding: 21px 15px 40px;
   }
 
   .my-cart-header {
@@ -1569,11 +1332,6 @@
     font-size: 0.6rem;
   }
 
-
-  /* ------------------------------------------------------------------------
-     Items Card
-     ------------------------------------------------------------------------ */
-
   .my-cart-items-card,
   .my-cart-summary-card {
     border-radius: 21px;
@@ -1604,11 +1362,6 @@
   .my-cart-clear-button svg {
     font-size: 0.63rem;
   }
-
-
-  /* ------------------------------------------------------------------------
-     Item
-     ------------------------------------------------------------------------ */
 
   .my-cart-item {
     display: grid;
@@ -1736,11 +1489,6 @@
     font-size: 0.73rem;
   }
 
-
-  /* ------------------------------------------------------------------------
-     Summary
-     ------------------------------------------------------------------------ */
-
   .my-cart-summary-card {
     padding: 19px;
   }
@@ -1845,11 +1593,6 @@
     font-size: 0.55rem;
   }
 
-
-  /* ------------------------------------------------------------------------
-     Empty Cart
-     ------------------------------------------------------------------------ */
-
   .my-cart-empty-page {
     min-height: calc(100vh - 75px);
 
@@ -1896,11 +1639,6 @@
     font-size: 0.7rem;
   }
 
-
-  /* ------------------------------------------------------------------------
-     Modal
-     ------------------------------------------------------------------------ */
-
   .my-cart-modal-overlay {
     padding: 15px;
   }
@@ -1934,11 +1672,6 @@
     font-size: 0.68rem;
   }
 }
-
-
-/* ==========================================================================
-   VERY SMALL MOBILE
-   ========================================================================== */
 
 @media (max-width: 390px) {
   .my-cart-page {
@@ -2007,11 +1740,6 @@
     gap: 7px;
   }
 }
-
-
-/* ==========================================================================
-   REDUCED MOTION
-   ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
   .my-cart-page *,

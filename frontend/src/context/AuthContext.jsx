@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 import api from "../api/api";
 
@@ -15,15 +10,10 @@ export const AuthProvider = ({ children }) => {
 
   const isAuthenticated = Boolean(user);
 
-  // =========================================================
-  // RESTORE EXISTING SESSION
-  // =========================================================
-
   useEffect(() => {
     const restoreSession = async () => {
       const token = localStorage.getItem("icecream_token");
 
-      // No existing session
       if (!token) {
         setUser(null);
         setLoading(false);
@@ -38,10 +28,7 @@ export const AuthProvider = ({ children }) => {
 
           setUser(restoredUser);
 
-          localStorage.setItem(
-            "icecream_user",
-            JSON.stringify(restoredUser)
-          );
+          localStorage.setItem("icecream_user", JSON.stringify(restoredUser));
         } else {
           localStorage.removeItem("icecream_token");
           localStorage.removeItem("icecream_user");
@@ -49,10 +36,7 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
         }
       } catch (error) {
-        console.error(
-          "Session restoration failed:",
-          error
-        );
+        console.error("Session restoration failed:", error);
 
         localStorage.removeItem("icecream_token");
         localStorage.removeItem("icecream_user");
@@ -66,10 +50,6 @@ export const AuthProvider = ({ children }) => {
     restoreSession();
   }, []);
 
-  // =========================================================
-  // LOGIN
-  // =========================================================
-
   const login = async (email, password) => {
     try {
       const response = await api.post("/auth/login", {
@@ -78,35 +58,19 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (!response.data?.success) {
-        throw new Error(
-          response.data?.message || "Login failed"
-        );
+        throw new Error(response.data?.message || "Login failed");
       }
 
-      const {
-        token,
-        user: loggedInUser,
-      } = response.data;
+      const { token, user: loggedInUser } = response.data;
 
       if (!token || !loggedInUser) {
-        throw new Error(
-          "Invalid login response from server."
-        );
+        throw new Error("Invalid login response from server.");
       }
 
-      // Save authentication token
-      localStorage.setItem(
-        "icecream_token",
-        token
-      );
+      localStorage.setItem("icecream_token", token);
 
-      // Save user information
-      localStorage.setItem(
-        "icecream_user",
-        JSON.stringify(loggedInUser)
-      );
+      localStorage.setItem("icecream_user", JSON.stringify(loggedInUser));
 
-      // Update context
       setUser(loggedInUser);
 
       return loggedInUser;
@@ -116,14 +80,10 @@ export const AuthProvider = ({ children }) => {
       throw new Error(
         error?.response?.data?.message ||
           error?.message ||
-          "Unable to login. Please try again."
+          "Unable to login. Please try again.",
       );
     }
   };
-
-  // =========================================================
-  // REGISTER
-  // =========================================================
 
   const register = async ({
     name,
@@ -132,152 +92,67 @@ export const AuthProvider = ({ children }) => {
     password,
     role = "customer",
   }) => {
-    /*
-     * Public registration supports:
-     *
-     * customer
-     * staff
-     *
-     * Admin accounts must NOT be created
-     * through the public registration page.
-     */
-
-    const normalizedRole = String(
-      role || "customer"
-    )
+    const normalizedRole = String(role || "customer")
       .trim()
       .toLowerCase();
 
-    // -------------------------------------------------------
-    // Validate registration role
-    // -------------------------------------------------------
-
-    if (
-      !["customer", "staff"].includes(
-        normalizedRole
-      )
-    ) {
-      throw new Error(
-        "Invalid registration role."
-      );
+    if (!["customer", "staff"].includes(normalizedRole)) {
+      throw new Error("Invalid registration role.");
     }
 
     try {
-      const response = await api.post(
-        "/auth/register",
-        {
-          name: name?.trim(),
-          email: email?.trim(),
-          phone: phone?.trim() || "",
-          password,
-          role: normalizedRole,
-        }
-      );
+      const response = await api.post("/auth/register", {
+        name: name?.trim(),
+        email: email?.trim(),
+        phone: phone?.trim() || "",
+        password,
+        role: normalizedRole,
+      });
 
       if (!response.data?.success) {
-        throw new Error(
-          response.data?.message ||
-            "Registration failed"
-        );
+        throw new Error(response.data?.message || "Registration failed");
       }
 
-      const {
-        token,
-        user: registeredUser,
-      } = response.data;
+      const { token, user: registeredUser } = response.data;
 
       if (!token || !registeredUser) {
-        throw new Error(
-          "Invalid registration response from server."
-        );
+        throw new Error("Invalid registration response from server.");
       }
 
-      // -----------------------------------------------------
-      // Save authentication token
-      // -----------------------------------------------------
+      localStorage.setItem("icecream_token", token);
 
-      localStorage.setItem(
-        "icecream_token",
-        token
-      );
-
-      // -----------------------------------------------------
-      // Save registered user
-      // -----------------------------------------------------
-
-      localStorage.setItem(
-        "icecream_user",
-        JSON.stringify(registeredUser)
-      );
-
-      // -----------------------------------------------------
-      // Update authentication context
-      // -----------------------------------------------------
+      localStorage.setItem("icecream_user", JSON.stringify(registeredUser));
 
       setUser(registeredUser);
 
       return registeredUser;
     } catch (error) {
-      console.error(
-        "Registration failed:",
-        error
-      );
+      console.error("Registration failed:", error);
 
       throw new Error(
         error?.response?.data?.message ||
           error?.message ||
-          "Unable to create account. Please try again."
+          "Unable to create account. Please try again.",
       );
     }
   };
 
-  // =========================================================
-  // LOGOUT
-  // =========================================================
-
   const logout = () => {
-    // Remove authentication data
     localStorage.removeItem("icecream_token");
     localStorage.removeItem("icecream_user");
 
-    // Clear React authentication state
     setUser(null);
-
-    /*
-     * IMPORTANT:
-     *
-     * The Home page now contains the Login/Register
-     * interface.
-     *
-     * Therefore logout must return to "/"
-     * instead of "/login".
-     */
 
     window.location.href = "/";
   };
 
-  // =========================================================
-  // ROLE HELPERS
-  // =========================================================
+  const isAdmin = user?.role === "admin";
 
-  const isAdmin =
-    user?.role === "admin";
+  const isStaff = user?.role === "staff";
 
-  const isStaff =
-    user?.role === "staff";
-
-  const isCustomer =
-    user?.role === "customer";
-
-  // =========================================================
-  // AUTH CONTEXT VALUE
-  // =========================================================
+  const isCustomer = user?.role === "customer";
 
   const value = {
-    // -------------------------------------------------------
-    // User state
-    // -------------------------------------------------------
-
     user,
     setUser,
 
@@ -285,41 +160,23 @@ export const AuthProvider = ({ children }) => {
 
     isAuthenticated,
 
-    // -------------------------------------------------------
-    // Authentication methods
-    // -------------------------------------------------------
-
     login,
     register,
     logout,
-
-    // -------------------------------------------------------
-    // Role helpers
-    // -------------------------------------------------------
 
     isAdmin,
     isStaff,
     isCustomer,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-// ===========================================================
-// USE AUTH HOOK
-// ===========================================================
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error(
-      "useAuth must be used inside AuthProvider"
-    );
+    throw new Error("useAuth must be used inside AuthProvider");
   }
 
   return context;

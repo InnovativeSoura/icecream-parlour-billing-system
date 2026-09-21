@@ -157,14 +157,7 @@ const StaffLayout = () => {
   ];
 
   return (
-    <div
-      className={`staff-layout ${
-        collapsed ? "sidebar-is-collapsed" : ""
-      }`}
-    >
-      {/* =====================================================
-          MOBILE OVERLAY
-          ===================================================== */}
+    <div className={`staff-layout ${collapsed ? "sidebar-is-collapsed" : ""}`}>
       {mobileOpen && (
         <button
           type="button"
@@ -174,15 +167,9 @@ const StaffLayout = () => {
         />
       )}
 
-      {/* =====================================================
-          SIDEBAR
-          ===================================================== */}
       <aside
-        className={`staff-sidebar ${
-          mobileOpen ? "mobile-sidebar-open" : ""
-        }`}
+        className={`staff-sidebar ${mobileOpen ? "mobile-sidebar-open" : ""}`}
       >
-        {/* BRAND */}
         <div className="staff-brand">
           <button
             type="button"
@@ -198,7 +185,6 @@ const StaffLayout = () => {
             <span>BILLING SYSTEM</span>
           </div>
 
-          {/* MOBILE CLOSE */}
           <button
             type="button"
             className="mobile-sidebar-close"
@@ -209,15 +195,9 @@ const StaffLayout = () => {
           </button>
         </div>
 
-        {/* ===================================================
-            NAVIGATION
-            =================================================== */}
         <div className="staff-sidebar-navigation">
-          {/* MAIN MENU */}
           <div className="staff-nav-group">
-            <div className="staff-nav-group-title">
-              Main Menu
-            </div>
+            <div className="staff-nav-group-title">Main Menu</div>
 
             <nav className="staff-nav-list">
               {mainNavigation.map((item) => {
@@ -229,9 +209,7 @@ const StaffLayout = () => {
                     to={item.path}
                     end={item.path === "/staff/dashboard"}
                     className={({ isActive }) =>
-                      `staff-nav-item ${
-                        isActive ? "active" : ""
-                      }`
+                      `staff-nav-item ${isActive ? "active" : ""}`
                     }
                     onClick={closeMobileSidebar}
                   >
@@ -239,9 +217,7 @@ const StaffLayout = () => {
                       <Icon />
                     </span>
 
-                    <span className="staff-nav-label">
-                      {item.label}
-                    </span>
+                    <span className="staff-nav-label">{item.label}</span>
 
                     <span className="staff-nav-arrow">
                       <FaChevronRight />
@@ -252,11 +228,8 @@ const StaffLayout = () => {
             </nav>
           </div>
 
-          {/* MANAGEMENT */}
           <div className="staff-nav-group">
-            <div className="staff-nav-group-title">
-              Management
-            </div>
+            <div className="staff-nav-group-title">Management</div>
 
             <nav className="staff-nav-list">
               {managementNavigation.map((item) => {
@@ -267,9 +240,7 @@ const StaffLayout = () => {
                     key={item.path}
                     to={item.path}
                     className={({ isActive }) =>
-                      `staff-nav-item ${
-                        isActive ? "active" : ""
-                      }`
+                      `staff-nav-item ${isActive ? "active" : ""}`
                     }
                     onClick={closeMobileSidebar}
                   >
@@ -277,9 +248,7 @@ const StaffLayout = () => {
                       <Icon />
                     </span>
 
-                    <span className="staff-nav-label">
-                      {item.label}
-                    </span>
+                    <span className="staff-nav-label">{item.label}</span>
 
                     <span className="staff-nav-arrow">
                       <FaChevronRight />
@@ -291,51 +260,27 @@ const StaffLayout = () => {
           </div>
         </div>
 
-        {/* ===================================================
-            SIDEBAR BOTTOM
-            =================================================== */}
         <div className="staff-sidebar-bottom">
-          {/* COLLAPSE BUTTON */}
           <button
             type="button"
             className="staff-sidebar-collapse"
             onClick={() => setCollapsed((value) => !value)}
-            aria-label={
-              collapsed
-                ? "Expand sidebar"
-                : "Collapse sidebar"
-            }
-            title={
-              collapsed
-                ? "Expand sidebar"
-                : "Collapse sidebar"
-            }
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {collapsed ? (
-              <FaChevronRight />
-            ) : (
-              <FaChevronLeft />
-            )}
+            {collapsed ? <FaChevronRight /> : <FaChevronLeft />}
           </button>
 
-          {/* PROFILE */}
           <div className="staff-sidebar-profile">
-            <div className="staff-avatar staff-avatar-sidebar">
-              {initials}
-            </div>
+            <div className="staff-avatar staff-avatar-sidebar">{initials}</div>
 
             <div className="staff-sidebar-profile-info">
               <strong>{staffName}</strong>
 
-              <span>
-                {staffRole === "staff"
-                  ? "Staff Member"
-                  : staffRole}
-              </span>
+              <span>{staffRole === "staff" ? "Staff Member" : staffRole}</span>
             </div>
           </div>
 
-          {/* LOGOUT */}
           <button
             type="button"
             className="staff-logout-button"
@@ -343,24 +288,14 @@ const StaffLayout = () => {
           >
             <FaSignOutAlt />
 
-            <span className="staff-logout-label">
-              Logout
-            </span>
+            <span className="staff-logout-label">Logout</span>
           </button>
         </div>
       </aside>
 
-      {/* =====================================================
-          MAIN AREA
-          ===================================================== */}
       <div className="staff-main">
-        {/* ===================================================
-            TOPBAR
-            =================================================== */}
         <header className="staff-topbar">
-          {/* LEFT */}
           <div className="staff-topbar-left">
-            {/* MOBILE MENU */}
             <button
               type="button"
               className="staff-mobile-menu-button"
@@ -372,19 +307,14 @@ const StaffLayout = () => {
               <span />
             </button>
 
-            {/* PAGE TITLE */}
             <div className="staff-page-heading">
-              <span className="staff-page-eyebrow">
-                {pageInfo.eyebrow}
-              </span>
+              <span className="staff-page-eyebrow">{pageInfo.eyebrow}</span>
 
               <h1>{pageInfo.title}</h1>
             </div>
           </div>
 
-          {/* RIGHT */}
           <div className="staff-topbar-right">
-            {/* DATE */}
             <div className="staff-date">
               <div className="staff-date-icon">
                 <FaCalendarAlt />
@@ -399,18 +329,13 @@ const StaffLayout = () => {
 
             <div className="staff-topbar-divider" />
 
-            {/* PROFILE */}
             <button
               type="button"
               className="staff-topbar-profile"
-              onClick={() =>
-                handleNavigation("/staff/dashboard")
-              }
+              onClick={() => handleNavigation("/staff/dashboard")}
               aria-label="Open staff dashboard"
             >
-              <div className="staff-avatar staff-avatar-topbar">
-                {initials}
-              </div>
+              <div className="staff-avatar staff-avatar-topbar">{initials}</div>
 
               <div className="staff-topbar-profile-copy">
                 <strong>{staffName}</strong>
@@ -423,9 +348,6 @@ const StaffLayout = () => {
           </div>
         </header>
 
-        {/* ===================================================
-            PAGE CONTENT
-            =================================================== */}
         <main className="staff-content">
           <Outlet />
         </main>

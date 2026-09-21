@@ -2,26 +2,11 @@ import User from "../models/User.js";
 import Customer from "../models/Customer.js";
 import generateToken from "../utils/generateToken.js";
 
-/*
-|--------------------------------------------------------------------------
-| Ensure Customer Profile
-|--------------------------------------------------------------------------
-|
-| User = authentication / authorization identity
-| Customer = actual business/customer profile
-|
-| Only customer-role users need a Customer business profile.
-|--------------------------------------------------------------------------
-*/
-
 const ensureCustomerProfile = async (user) => {
   if (!user || user.role !== "customer") {
     return null;
   }
 
-  /*
-   * 1. Find customer already linked to this User.
-   */
   let customer = await Customer.findOne({
     user: user._id,
   });
@@ -30,10 +15,6 @@ const ensureCustomerProfile = async (user) => {
     return customer;
   }
 
-  /*
-   * 2. Try to repair an older customer record
-   *    using the same email.
-   */
   if (user.email) {
     customer = await Customer.findOne({
       email: user.email.toLowerCase(),
@@ -54,21 +35,12 @@ const ensureCustomerProfile = async (user) => {
 
       await customer.save();
 
-      console.log(
-        `Customer profile linked to User: ${user.email}`
-      );
+      console.log(`Customer profile linked to User: ${user.email}`);
 
       return customer;
     }
   }
 
-  /*
-   * 3. Create a new Customer profile.
-   *
-   * IMPORTANT:
-   * Empty phone numbers are stored as null instead of "".
-   * This prevents conflicts with old unique phone indexes.
-   */
   customer = await Customer.create({
     user: user._id,
     name: user.name,
@@ -78,123 +50,64 @@ const ensureCustomerProfile = async (user) => {
     isActive: true,
   });
 
-  console.log(
-    `Customer profile created for User: ${user.email}`
-  );
+  console.log(`Customer profile created for User: ${user.email}`);
 
   return customer;
 };
 
-/*
-|--------------------------------------------------------------------------
-| Register User
-|--------------------------------------------------------------------------
-*/
-
 export const registerUser = async (req, res) => {
   try {
-    const {
-      name,
-      email,
-      phone,
-      password,
-      role,
-    } = req.body;
+    const { name, email, phone, password, role } = req.body;
 
-    /*
-     * Basic validation.
-     */
-    if (
-      !name ||
-      !email ||
-      !password
-    ) {
+    if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
-        message:
-          "Name, email and password are required",
+        message: "Name, email and password are required",
       });
     }
 
     const normalizedName = name.trim();
 
-    const normalizedEmail =
-      email.trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
 
-    const normalizedPhone =
-      phone?.trim() || null;
+    const normalizedPhone = phone?.trim() || null;
 
-    /*
-     * Validate name.
-     */
     if (normalizedName.length < 2) {
       return res.status(400).json({
         success: false,
-        message:
-          "Name must contain at least 2 characters",
+        message: "Name must contain at least 2 characters",
       });
     }
 
-    /*
-     * Validate password.
-     */
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
-        message:
-          "Password must contain at least 6 characters",
+        message: "Password must contain at least 6 characters",
       });
     }
 
-    /*
-     * Public registration is allowed only for:
-     *
-     * customer
-     * staff
-     *
-     * ADMIN accounts must never be created
-     * through the public registration page.
-     */
-    const normalizedRole =
-      String(role || "customer")
-        .trim()
-        .toLowerCase();
+    const normalizedRole = String(role || "customer")
+      .trim()
+      .toLowerCase();
 
-    if (
-      !["customer", "staff"].includes(
-        normalizedRole
-      )
-    ) {
+    if (!["customer", "staff"].includes(normalizedRole)) {
       return res.status(400).json({
         success: false,
-        message:
-          "Invalid registration role",
+        message: "Invalid registration role",
       });
     }
 
-    /*
-     * Check whether email already exists.
-     */
-    const existingUser =
-      await User.findOne({
-        email: normalizedEmail,
-      });
+    const existingUser = await User.findOne({
+      email: normalizedEmail,
+    });
 
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message:
-          "An account with this email already exists",
+        message: "An account with this email already exists",
       });
     }
 
-    /*
-     * Create User.
-     *
-     * IMPORTANT:
-     * We now use the role selected on the
-     * registration page.
-     */
     const user = await User.create({
       name: normalizedName,
       email: normalizedEmail,
@@ -203,35 +116,18 @@ export const registerUser = async (req, res) => {
       role: normalizedRole,
     });
 
-    /*
-     * Customer users require a Customer business profile.
-     *
-     * Staff users do NOT need a Customer profile.
-     */
     if (normalizedRole === "customer") {
       try {
         await ensureCustomerProfile(user);
       } catch (customerError) {
-        /*
-         * Roll back User if Customer creation fails.
-         */
-        await User.findByIdAndDelete(
-          user._id
-        );
+        await User.findByIdAndDelete(user._id);
 
         throw customerError;
       }
     }
 
-    /*
-     * Generate authentication token.
-     */
-    const token =
-      generateToken(user._id);
+    const token = generateToken(user._id);
 
-    /*
-     * Return authenticated user.
-     */
     return res.status(201).json({
       success: true,
 
@@ -253,176 +149,100 @@ export const registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(
-      "Register error:",
-      error
-    );
+    console.error("Register error:", error);
 
-    /*
-     * Handle duplicate MongoDB key errors
-     * more clearly.
-     */
     if (error?.code === 11000) {
-      const duplicateField =
-        Object.keys(
-          error.keyPattern || {}
-        )[0];
+      const duplicateField = Object.keys(error.keyPattern || {})[0];
 
-      if (
-        duplicateField === "email"
-      ) {
+      if (duplicateField === "email") {
         return res.status(409).json({
           success: false,
-          message:
-            "An account with this email already exists",
+          message: "An account with this email already exists",
         });
       }
 
-      if (
-        duplicateField === "phone"
-      ) {
+      if (duplicateField === "phone") {
         return res.status(409).json({
           success: false,
-          message:
-            "This phone number is already registered",
+          message: "This phone number is already registered",
         });
       }
 
       return res.status(409).json({
         success: false,
-        message:
-          "A record with the provided information already exists",
+        message: "A record with the provided information already exists",
       });
     }
 
-    /*
-     * Mongoose validation errors.
-     */
-    if (
-      error?.name ===
-      "ValidationError"
-    ) {
-      const firstError =
-        Object.values(
-          error.errors || {}
-        )[0];
+    if (error?.name === "ValidationError") {
+      const firstError = Object.values(error.errors || {})[0];
 
       return res.status(400).json({
         success: false,
-        message:
-          firstError?.message ||
-          "Invalid registration data",
+        message: firstError?.message || "Invalid registration data",
       });
     }
 
     return res.status(500).json({
       success: false,
-      message:
-        "Unable to create account",
+      message: "Unable to create account",
     });
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| Login User
-|--------------------------------------------------------------------------
-*/
-
-export const loginUser = async (
-  req,
-  res
-) => {
+export const loginUser = async (req, res) => {
   try {
-    const {
-      email,
-      password,
-    } = req.body;
+    const { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message:
-          "Email and password are required",
+        message: "Email and password are required",
       });
     }
 
-    const normalizedEmail =
-      email.trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
 
-    /*
-     * password is select:false in User.js,
-     * therefore explicitly select it.
-     */
-    const user =
-      await User.findOne({
-        email: normalizedEmail,
-      }).select("+password");
+    const user = await User.findOne({
+      email: normalizedEmail,
+    }).select("+password");
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message:
-          "Invalid email or password",
+        message: "Invalid email or password",
       });
     }
 
-    /*
-     * Check account status.
-     */
     if (!user.isActive) {
       return res.status(403).json({
         success: false,
-        message:
-          "Your account has been deactivated",
+        message: "Your account has been deactivated",
       });
     }
 
-    /*
-     * Compare password.
-     */
-    const isPasswordValid =
-      await user.comparePassword(
-        password
-      );
+    const isPasswordValid = await user.comparePassword(password);
 
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message:
-          "Invalid email or password",
+        message: "Invalid email or password",
       });
     }
 
-    /*
-     * Update last login.
-     */
     user.lastLogin = new Date();
 
     await user.save();
 
-    /*
-     * Ensure Customer profile for customer accounts.
-     *
-     * Staff and admin accounts do not need
-     * Customer documents.
-     */
     if (user.role === "customer") {
-      await ensureCustomerProfile(
-        user
-      );
+      await ensureCustomerProfile(user);
     }
 
-    /*
-     * Generate token.
-     */
-    const token =
-      generateToken(user._id);
+    const token = generateToken(user._id);
 
     return res.status(200).json({
       success: true,
-      message:
-        "Login successful",
+      message: "Login successful",
 
       token,
 
@@ -438,40 +258,19 @@ export const loginUser = async (
       },
     });
   } catch (error) {
-    console.error(
-      "Login error:",
-      error
-    );
+    console.error("Login error:", error);
 
     return res.status(500).json({
       success: false,
-      message:
-        "Unable to login",
+      message: "Unable to login",
     });
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| Get Current User
-|--------------------------------------------------------------------------
-*/
-
-export const getCurrentUser = async (
-  req,
-  res
-) => {
+export const getCurrentUser = async (req, res) => {
   try {
-    /*
-     * Only customer accounts require
-     * a Customer profile.
-     */
-    if (
-      req.user.role === "customer"
-    ) {
-      await ensureCustomerProfile(
-        req.user
-      );
+    if (req.user.role === "customer") {
+      await ensureCustomerProfile(req.user);
     }
 
     return res.status(200).json({
@@ -490,15 +289,11 @@ export const getCurrentUser = async (
       },
     });
   } catch (error) {
-    console.error(
-      "Current user error:",
-      error
-    );
+    console.error("Current user error:", error);
 
     return res.status(500).json({
       success: false,
-      message:
-        "Unable to retrieve user",
+      message: "Unable to retrieve user",
     });
   }
 };

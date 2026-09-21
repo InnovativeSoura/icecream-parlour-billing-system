@@ -105,10 +105,6 @@ const StaffBilling = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [completedOrder, setCompletedOrder] = useState(null);
 
-  /* =========================================================
-     LOAD PRODUCTS
-  ========================================================= */
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -127,8 +123,7 @@ const StaffBilling = () => {
         console.error("Failed to load products:", error);
 
         toast.error(
-          error?.response?.data?.message ||
-            "Unable to load products."
+          error?.response?.data?.message || "Unable to load products.",
         );
       } finally {
         setLoadingProducts(false);
@@ -137,10 +132,6 @@ const StaffBilling = () => {
 
     fetchProducts();
   }, []);
-
-  /* =========================================================
-     LOAD CUSTOMERS
-  ========================================================= */
 
   useEffect(() => {
     if (customerMode !== "registered") return;
@@ -162,8 +153,7 @@ const StaffBilling = () => {
         console.error("Failed to load customers:", error);
 
         toast.error(
-          error?.response?.data?.message ||
-            "Unable to load customers."
+          error?.response?.data?.message || "Unable to load customers.",
         );
       } finally {
         setLoadingCustomers(false);
@@ -173,10 +163,6 @@ const StaffBilling = () => {
     fetchCustomers();
   }, [customerMode]);
 
-  /* =========================================================
-     CATEGORIES
-  ========================================================= */
-
   const categories = useMemo(() => {
     const values = products
       .map((product) => getProductCategory(product))
@@ -184,10 +170,6 @@ const StaffBilling = () => {
 
     return ["all", ...new Set(values)];
   }, [products]);
-
-  /* =========================================================
-     FILTER PRODUCTS
-  ========================================================= */
 
   const filteredProducts = useMemo(() => {
     const keyword = search.trim().toLowerCase();
@@ -211,10 +193,6 @@ const StaffBilling = () => {
     });
   }, [products, search, categoryFilter]);
 
-  /* =========================================================
-     CUSTOMER FILTER
-  ========================================================= */
-
   const filteredCustomers = useMemo(() => {
     const keyword = customerSearch.trim().toLowerCase();
 
@@ -235,10 +213,6 @@ const StaffBilling = () => {
       .slice(0, 8);
   }, [customers, customerSearch]);
 
-  /* =========================================================
-     CART
-  ========================================================= */
-
   const addToCart = (product) => {
     const productId = getProductId(product);
 
@@ -255,9 +229,7 @@ const StaffBilling = () => {
     }
 
     setCart((currentCart) => {
-      const existing = currentCart.find(
-        (item) => item.productId === productId
-      );
+      const existing = currentCart.find((item) => item.productId === productId);
 
       if (existing) {
         if (existing.quantity >= stock) {
@@ -271,7 +243,7 @@ const StaffBilling = () => {
                 ...item,
                 quantity: item.quantity + 1,
               }
-            : item
+            : item,
         );
       }
 
@@ -306,7 +278,7 @@ const StaffBilling = () => {
           ...item,
           quantity: item.quantity + 1,
         };
-      })
+      }),
     );
   };
 
@@ -319,15 +291,15 @@ const StaffBilling = () => {
                 ...item,
                 quantity: item.quantity - 1,
               }
-            : item
+            : item,
         )
-        .filter((item) => item.quantity > 0)
+        .filter((item) => item.quantity > 0),
     );
   };
 
   const removeFromCart = (productId) => {
     setCart((currentCart) =>
-      currentCart.filter((item) => item.productId !== productId)
+      currentCart.filter((item) => item.productId !== productId),
     );
   };
 
@@ -337,10 +309,6 @@ const StaffBilling = () => {
     setCart([]);
     toast.info("Current bill cleared.");
   };
-
-  /* =========================================================
-     BILL CALCULATION
-  ========================================================= */
 
   const bill = useMemo(() => {
     let subtotal = 0;
@@ -367,16 +335,9 @@ const StaffBilling = () => {
       subtotal,
       tax,
       total: subtotal + tax,
-      itemCount: cart.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-      ),
+      itemCount: cart.reduce((sum, item) => sum + item.quantity, 0),
     };
   }, [cart]);
-
-  /* =========================================================
-     CUSTOMER SELECTION
-  ========================================================= */
 
   const selectCustomer = (customer) => {
     setSelectedCustomerId(customer?._id || customer?.id || "");
@@ -388,15 +349,10 @@ const StaffBilling = () => {
     () =>
       customers.find(
         (customer) =>
-          String(customer?._id || customer?.id) ===
-          String(selectedCustomerId)
+          String(customer?._id || customer?.id) === String(selectedCustomerId),
       ),
-    [customers, selectedCustomerId]
+    [customers, selectedCustomerId],
   );
-
-  /* =========================================================
-     RESET CUSTOMER
-  ========================================================= */
 
   const resetCustomer = () => {
     setSelectedCustomerId("");
@@ -406,10 +362,6 @@ const StaffBilling = () => {
       phone: "",
     });
   };
-
-  /* =========================================================
-     CREATE ORDER
-  ========================================================= */
 
   const createOrderPayload = () => {
     const items = bill.items.map((item) => ({
@@ -430,12 +382,10 @@ const StaffBilling = () => {
 
     if (
       customerMode === "walk-in" &&
-      (walkInCustomer.name.trim() ||
-        walkInCustomer.phone.trim())
+      (walkInCustomer.name.trim() || walkInCustomer.phone.trim())
     ) {
       payload.customerSnapshot = {
-        name:
-          walkInCustomer.name.trim() || "Walk-in Customer",
+        name: walkInCustomer.name.trim() || "Walk-in Customer",
         phone: walkInCustomer.phone.trim(),
       };
     }
@@ -451,10 +401,7 @@ const StaffBilling = () => {
       return;
     }
 
-    if (
-      customerMode === "registered" &&
-      !selectedCustomerId
-    ) {
+    if (customerMode === "registered" && !selectedCustomerId) {
       toast.warning("Please select a registered customer.");
       setShowCustomerPanel(true);
       return;
@@ -468,15 +415,8 @@ const StaffBilling = () => {
       const response = await api.post("/orders", payload);
 
       const order =
-        response?.data?.order ||
-        response?.data?.data ||
-        response?.data;
+        response?.data?.order || response?.data?.data || response?.data;
 
-      /*
-       * Manual payment endpoint is used after order creation.
-       * If the backend already settles POS orders directly,
-       * a successful order response is enough.
-       */
       try {
         if (order?._id && paymentMethod !== "unpaid") {
           await api.post("/payments/manual", {
@@ -486,16 +426,7 @@ const StaffBilling = () => {
           });
         }
       } catch (paymentError) {
-        console.warn(
-          "Manual payment endpoint response:",
-          paymentError
-        );
-
-        /*
-         * Some backend versions settle POS payments during
-         * order creation. Therefore don't show a hard failure
-         * if the order itself was successfully created.
-         */
+        console.warn("Manual payment endpoint response:", paymentError);
       }
 
       setCompletedOrder(order);
@@ -510,25 +441,18 @@ const StaffBilling = () => {
       console.error("Failed to create sale:", error);
 
       toast.error(
-        error?.response?.data?.message ||
-          "Unable to complete the sale."
+        error?.response?.data?.message || "Unable to complete the sale.",
       );
     } finally {
       setSubmitting(false);
     }
   };
 
-  /* =========================================================
-     PRINT RECEIPT
-  ========================================================= */
-
   const handlePrintReceipt = () => {
     if (!completedOrder) return;
 
     const orderNumber =
-      completedOrder?.orderNumber ||
-      completedOrder?._id ||
-      "POS-RECEIPT";
+      completedOrder?.orderNumber || completedOrder?._id || "POS-RECEIPT";
 
     const customerName =
       selectedCustomer?.name ||
@@ -536,21 +460,16 @@ const StaffBilling = () => {
       completedOrder?.customerSnapshot?.name ||
       "Walk-in Customer";
 
-    const printWindow = window.open(
-      "",
-      "_blank",
-      "width=800,height=900"
-    );
+    const printWindow = window.open("", "_blank", "width=800,height=900");
 
     if (!printWindow) {
       toast.error("Please allow pop-ups to print the receipt.");
       return;
     }
 
-    const orderItems =
-      completedOrder?.items?.length
-        ? completedOrder.items
-        : bill.items;
+    const orderItems = completedOrder?.items?.length
+      ? completedOrder.items
+      : bill.items;
 
     const rows = orderItems
       .map(
@@ -558,16 +477,10 @@ const StaffBilling = () => {
           <tr>
             <td>${item?.name || "Ice Cream"}</td>
             <td>${item?.quantity || 1}</td>
-            <td>₹${Number(
-              item?.unitPrice || item?.price || 0
-            ).toFixed(2)}</td>
-            <td>₹${Number(
-              item?.total ||
-                item?.lineTotal ||
-                0
-            ).toFixed(2)}</td>
+            <td>₹${Number(item?.unitPrice || item?.price || 0).toFixed(2)}</td>
+            <td>₹${Number(item?.total || item?.lineTotal || 0).toFixed(2)}</td>
           </tr>
-        `
+        `,
       )
       .join("");
 
@@ -709,10 +622,7 @@ const StaffBilling = () => {
               <div class="total-row">
                 <span>Subtotal</span>
                 <strong>
-                  ${formatCurrency(
-                    completedOrder?.subtotal ??
-                      bill.subtotal
-                  )}
+                  ${formatCurrency(completedOrder?.subtotal ?? bill.subtotal)}
                 </strong>
               </div>
 
@@ -722,7 +632,7 @@ const StaffBilling = () => {
                   ${formatCurrency(
                     completedOrder?.tax ??
                       completedOrder?.taxAmount ??
-                      bill.tax
+                      bill.tax,
                   )}
                 </strong>
               </div>
@@ -733,7 +643,7 @@ const StaffBilling = () => {
                   ${formatCurrency(
                     completedOrder?.totalAmount ??
                       completedOrder?.total ??
-                      bill.total
+                      bill.total,
                   )}
                 </strong>
               </div>
@@ -756,10 +666,6 @@ const StaffBilling = () => {
     printWindow.document.close();
   };
 
-  /* =========================================================
-     SUCCESS MODAL
-  ========================================================= */
-
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
     setCompletedOrder(null);
@@ -767,10 +673,6 @@ const StaffBilling = () => {
 
   return (
     <div className="staff-billing-page">
-      {/* =====================================================
-          PAGE HEADER
-      ===================================================== */}
-
       <div className="staff-billing-header">
         <div className="staff-billing-title">
           <button
@@ -783,19 +685,14 @@ const StaffBilling = () => {
           </button>
 
           <div>
-            <span className="staff-billing-eyebrow">
-              POINT OF SALE
-            </span>
+            <span className="staff-billing-eyebrow">POINT OF SALE</span>
 
             <h1>
               <FaCashRegister />
               Create New Bill
             </h1>
 
-            <p>
-              Select products, add customer details and
-              complete the sale.
-            </p>
+            <p>Select products, add customer details and complete the sale.</p>
           </div>
         </div>
 
@@ -812,21 +709,11 @@ const StaffBilling = () => {
         </div>
       </div>
 
-      {/* =====================================================
-          MAIN BILLING GRID
-      ===================================================== */}
-
       <div className="staff-billing-layout">
-        {/* ===================================================
-            PRODUCT SECTION
-        =================================================== */}
-
         <section className="staff-product-section">
           <div className="staff-section-header">
             <div>
-              <span className="staff-section-eyebrow">
-                PRODUCTS
-              </span>
+              <span className="staff-section-eyebrow">PRODUCTS</span>
 
               <h2>Choose your ice cream</h2>
             </div>
@@ -836,8 +723,6 @@ const StaffBilling = () => {
             </span>
           </div>
 
-          {/* Search */}
-
           <div className="staff-product-toolbar">
             <div className="staff-billing-search">
               <FaSearch />
@@ -846,9 +731,7 @@ const StaffBilling = () => {
                 type="text"
                 placeholder="Search ice cream, SKU or category..."
                 value={search}
-                onChange={(event) =>
-                  setSearch(event.target.value)
-                }
+                onChange={(event) => setSearch(event.target.value)}
               />
 
               {search && (
@@ -867,24 +750,14 @@ const StaffBilling = () => {
                 <button
                   type="button"
                   key={category}
-                  className={
-                    categoryFilter === category
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() =>
-                    setCategoryFilter(category)
-                  }
+                  className={categoryFilter === category ? "active" : ""}
+                  onClick={() => setCategoryFilter(category)}
                 >
-                  {category === "all"
-                    ? "All"
-                    : category}
+                  {category === "all" ? "All" : category}
                 </button>
               ))}
             </div>
           </div>
-
-          {/* Product Grid */}
 
           {loadingProducts ? (
             <div className="staff-billing-loader">
@@ -899,9 +772,7 @@ const StaffBilling = () => {
 
               <h3>No products found</h3>
 
-              <p>
-                Try another search term or category.
-              </p>
+              <p>Try another search term or category.</p>
 
               <button
                 type="button"
@@ -921,7 +792,7 @@ const StaffBilling = () => {
                 const stock = getProductStock(product);
 
                 const cartItem = cart.find(
-                  (item) => item.productId === productId
+                  (item) => item.productId === productId,
                 );
 
                 const quantity = cartItem?.quantity || 0;
@@ -931,9 +802,7 @@ const StaffBilling = () => {
                   <motion.article
                     key={productId}
                     className={`staff-product-card ${
-                      outOfStock
-                        ? "is-out-of-stock"
-                        : ""
+                      outOfStock ? "is-out-of-stock" : ""
                     }`}
                     whileHover={
                       outOfStock
@@ -980,32 +849,18 @@ const StaffBilling = () => {
 
                       <div className="staff-product-bottom">
                         <div>
-                          <strong>
-                            {formatCurrency(price)}
-                          </strong>
+                          <strong>{formatCurrency(price)}</strong>
 
-                          <span
-                            className={
-                              stock <= 5
-                                ? "low-stock"
-                                : ""
-                            }
-                          >
-                            {outOfStock
-                              ? "Out of stock"
-                              : `${stock} in stock`}
+                          <span className={stock <= 5 ? "low-stock" : ""}>
+                            {outOfStock ? "Out of stock" : `${stock} in stock`}
                           </span>
                         </div>
 
                         <button
                           type="button"
                           disabled={outOfStock}
-                          onClick={() =>
-                            addToCart(product)
-                          }
-                          aria-label={`Add ${getProductName(
-                            product
-                          )}`}
+                          onClick={() => addToCart(product)}
+                          aria-label={`Add ${getProductName(product)}`}
                         >
                           <FaPlus />
                         </button>
@@ -1018,18 +873,10 @@ const StaffBilling = () => {
           )}
         </section>
 
-        {/* ===================================================
-            BILL PANEL
-        =================================================== */}
-
         <aside className="staff-bill-panel">
-          {/* Bill Header */}
-
           <div className="staff-bill-panel-header">
             <div>
-              <span className="staff-section-eyebrow">
-                CURRENT SALE
-              </span>
+              <span className="staff-section-eyebrow">CURRENT SALE</span>
 
               <h2>
                 <FaReceipt />
@@ -1048,8 +895,6 @@ const StaffBilling = () => {
             )}
           </div>
 
-          {/* Cart */}
-
           <div className="staff-bill-items">
             {cart.length === 0 ? (
               <div className="staff-cart-empty">
@@ -1059,10 +904,7 @@ const StaffBilling = () => {
 
                 <h3>Your bill is empty</h3>
 
-                <p>
-                  Select products from the left to start
-                  creating a bill.
-                </p>
+                <p>Select products from the left to start creating a bill.</p>
               </div>
             ) : (
               <AnimatePresence initial={false}>
@@ -1085,10 +927,7 @@ const StaffBilling = () => {
                   >
                     <div className="staff-bill-item-image">
                       {item.image ? (
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                        />
+                        <img src={item.image} alt={item.name} />
                       ) : (
                         <FaIceCream />
                       )}
@@ -1100,11 +939,7 @@ const StaffBilling = () => {
 
                         <button
                           type="button"
-                          onClick={() =>
-                            removeFromCart(
-                              item.productId
-                            )
-                          }
+                          onClick={() => removeFromCart(item.productId)}
                           aria-label={`Remove ${item.name}`}
                         >
                           <FaTrash />
@@ -1119,11 +954,7 @@ const StaffBilling = () => {
                         <div className="staff-quantity-control">
                           <button
                             type="button"
-                            onClick={() =>
-                              decreaseQuantity(
-                                item.productId
-                              )
-                            }
+                            onClick={() => decreaseQuantity(item.productId)}
                           >
                             <FaMinus />
                           </button>
@@ -1132,11 +963,7 @@ const StaffBilling = () => {
 
                           <button
                             type="button"
-                            onClick={() =>
-                              increaseQuantity(
-                                item.productId
-                              )
-                            }
+                            onClick={() => increaseQuantity(item.productId)}
                           >
                             <FaPlus />
                           </button>
@@ -1153,8 +980,6 @@ const StaffBilling = () => {
             )}
           </div>
 
-          {/* Customer */}
-
           <div className="staff-billing-block">
             <div className="staff-block-title">
               <div>
@@ -1165,11 +990,7 @@ const StaffBilling = () => {
               <div className="staff-customer-mode">
                 <button
                   type="button"
-                  className={
-                    customerMode === "walk-in"
-                      ? "active"
-                      : ""
-                  }
+                  className={customerMode === "walk-in" ? "active" : ""}
                   onClick={() => {
                     setCustomerMode("walk-in");
                     resetCustomer();
@@ -1180,14 +1001,8 @@ const StaffBilling = () => {
 
                 <button
                   type="button"
-                  className={
-                    customerMode === "registered"
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() =>
-                    setCustomerMode("registered")
-                  }
+                  className={customerMode === "registered" ? "active" : ""}
+                  onClick={() => setCustomerMode("registered")}
                 >
                   Registered
                 </button>
@@ -1237,13 +1052,9 @@ const StaffBilling = () => {
                     type="text"
                     placeholder="Search customer..."
                     value={customerSearch}
-                    onFocus={() =>
-                      setShowCustomerPanel(true)
-                    }
+                    onFocus={() => setShowCustomerPanel(true)}
                     onChange={(event) => {
-                      setCustomerSearch(
-                        event.target.value
-                      );
+                      setCustomerSearch(event.target.value);
                       setShowCustomerPanel(true);
                     }}
                   />
@@ -1252,14 +1063,11 @@ const StaffBilling = () => {
                 {selectedCustomer && (
                   <div className="staff-selected-customer">
                     <div className="staff-selected-avatar">
-                      {(selectedCustomer.name ||
-                        "C")[0].toUpperCase()}
+                      {(selectedCustomer.name || "C")[0].toUpperCase()}
                     </div>
 
                     <div>
-                      <strong>
-                        {selectedCustomer.name}
-                      </strong>
+                      <strong>{selectedCustomer.name}</strong>
 
                       <span>
                         {selectedCustomer.phone ||
@@ -1268,10 +1076,7 @@ const StaffBilling = () => {
                       </span>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={resetCustomer}
-                    >
+                    <button type="button" onClick={resetCustomer}>
                       ×
                     </button>
                   </div>
@@ -1289,49 +1094,34 @@ const StaffBilling = () => {
                         No customers found.
                       </div>
                     ) : (
-                      filteredCustomers.map(
-                        (customer) => (
-                          <button
-                            type="button"
-                            key={
-                              customer?._id ||
-                              customer?.id
-                            }
-                            className="staff-customer-result"
-                            onClick={() =>
-                              selectCustomer(customer)
-                            }
-                          >
-                            <div className="staff-result-avatar">
-                              {(
-                                customer?.name ||
-                                "C"
-                              )[0].toUpperCase()}
-                            </div>
+                      filteredCustomers.map((customer) => (
+                        <button
+                          type="button"
+                          key={customer?._id || customer?.id}
+                          className="staff-customer-result"
+                          onClick={() => selectCustomer(customer)}
+                        >
+                          <div className="staff-result-avatar">
+                            {(customer?.name || "C")[0].toUpperCase()}
+                          </div>
 
-                            <div>
-                              <strong>
-                                {customer?.name ||
-                                  "Customer"}
-                              </strong>
+                          <div>
+                            <strong>{customer?.name || "Customer"}</strong>
 
-                              <span>
-                                {customer?.phone ||
-                                  customer?.email ||
-                                  "No contact"}
-                              </span>
-                            </div>
-                          </button>
-                        )
-                      )
+                            <span>
+                              {customer?.phone ||
+                                customer?.email ||
+                                "No contact"}
+                            </span>
+                          </div>
+                        </button>
+                      ))
                     )}
                   </div>
                 )}
               </div>
             )}
           </div>
-
-          {/* Payment */}
 
           <div className="staff-billing-block">
             <div className="staff-block-title">
@@ -1349,31 +1139,18 @@ const StaffBilling = () => {
                   <button
                     type="button"
                     key={method.value}
-                    className={
-                      paymentMethod === method.value
-                        ? "active"
-                        : ""
-                    }
-                    onClick={() =>
-                      setPaymentMethod(
-                        method.value
-                      )
-                    }
+                    className={paymentMethod === method.value ? "active" : ""}
+                    onClick={() => setPaymentMethod(method.value)}
                   >
                     <Icon />
                     <span>{method.label}</span>
 
-                    {paymentMethod ===
-                      method.value && (
-                      <FaCheckCircle />
-                    )}
+                    {paymentMethod === method.value && <FaCheckCircle />}
                   </button>
                 );
               })}
             </div>
           </div>
-
-          {/* Notes */}
 
           <div className="staff-billing-block">
             <div className="staff-block-title">
@@ -1387,21 +1164,15 @@ const StaffBilling = () => {
               className="staff-billing-notes"
               placeholder="Add an optional note..."
               value={notes}
-              onChange={(event) =>
-                setNotes(event.target.value)
-              }
+              onChange={(event) => setNotes(event.target.value)}
               rows={2}
             />
           </div>
 
-          {/* Totals */}
-
           <div className="staff-bill-total-section">
             <div className="staff-total-row">
               <span>Subtotal</span>
-              <strong>
-                {formatCurrency(bill.subtotal)}
-              </strong>
+              <strong>{formatCurrency(bill.subtotal)}</strong>
             </div>
 
             <div className="staff-total-row">
@@ -1410,9 +1181,7 @@ const StaffBilling = () => {
                 GST / Tax ({TAX_RATE}%)
               </span>
 
-              <strong>
-                {formatCurrency(bill.tax)}
-              </strong>
+              <strong>{formatCurrency(bill.tax)}</strong>
             </div>
 
             <div className="staff-grand-total">
@@ -1424,21 +1193,14 @@ const StaffBilling = () => {
                 </small>
               </div>
 
-              <strong>
-                {formatCurrency(bill.total)}
-              </strong>
+              <strong>{formatCurrency(bill.total)}</strong>
             </div>
           </div>
-
-          {/* Complete */}
 
           <button
             type="button"
             className="staff-complete-sale"
-            disabled={
-              submitting ||
-              cart.length === 0
-            }
+            disabled={submitting || cart.length === 0}
             onClick={handleCompleteSale}
           >
             {submitting ? (
@@ -1450,18 +1212,12 @@ const StaffBilling = () => {
               <>
                 <FaCashRegister />
                 Complete Sale
-                <strong>
-                  {formatCurrency(bill.total)}
-                </strong>
+                <strong>{formatCurrency(bill.total)}</strong>
               </>
             )}
           </button>
         </aside>
       </div>
-
-      {/* =====================================================
-          SUCCESS MODAL
-      ===================================================== */}
 
       <AnimatePresence>
         {showSuccessModal && (
@@ -1493,15 +1249,13 @@ const StaffBilling = () => {
                 <FaCheckCircle />
               </div>
 
-              <span className="staff-success-label">
-                PAYMENT SUCCESSFUL
-              </span>
+              <span className="staff-success-label">PAYMENT SUCCESSFUL</span>
 
               <h2>Sale Completed!</h2>
 
               <p>
-                The order has been created and the
-                payment has been recorded successfully.
+                The order has been created and the payment has been recorded
+                successfully.
               </p>
 
               <div className="staff-success-order">
@@ -1521,7 +1275,7 @@ const StaffBilling = () => {
                   {formatCurrency(
                     completedOrder?.totalAmount ||
                       completedOrder?.total ||
-                      bill.total
+                      bill.total,
                   )}
                 </strong>
               </div>
@@ -1550,19 +1304,14 @@ const StaffBilling = () => {
         )}
       </AnimatePresence>
 
-      {/* Click outside registered customer dropdown */}
-
-      {showCustomerPanel &&
-        customerMode === "registered" && (
-          <button
-            type="button"
-            className="staff-customer-backdrop"
-            aria-label="Close customer search"
-            onClick={() =>
-              setShowCustomerPanel(false)
-            }
-          />
-        )}
+      {showCustomerPanel && customerMode === "registered" && (
+        <button
+          type="button"
+          className="staff-customer-backdrop"
+          aria-label="Close customer search"
+          onClick={() => setShowCustomerPanel(false)}
+        />
+      )}
     </div>
   );
 };

@@ -2,25 +2,13 @@ import mongoose from "mongoose";
 import Product from "../models/Product.js";
 import Category from "../models/Category.js";
 
-/*
- * GET /api/products
- * Admin / Staff
- */
 export const getProducts = async (req, res) => {
   try {
-    const {
-      category,
-      search,
-      isActive,
-      isAvailable,
-    } = req.query;
+    const { category, search, isActive, isAvailable } = req.query;
 
     const filter = {};
 
-    if (
-      category &&
-      mongoose.Types.ObjectId.isValid(category)
-    ) {
+    if (category && mongoose.Types.ObjectId.isValid(category)) {
       filter.category = category;
     }
 
@@ -46,15 +34,11 @@ export const getProducts = async (req, res) => {
     }
 
     if (isAvailable !== undefined) {
-      filter.isAvailable =
-        isAvailable === "true";
+      filter.isAvailable = isAvailable === "true";
     }
 
     const products = await Product.find(filter)
-      .populate(
-        "category",
-        "name slug"
-      )
+      .populate("category", "name slug")
       .sort({
         createdAt: -1,
       })
@@ -66,10 +50,7 @@ export const getProducts = async (req, res) => {
       products,
     });
   } catch (error) {
-    console.error(
-      "Get products error:",
-      error
-    );
+    console.error("Get products error:", error);
 
     res.status(500).json({
       success: false,
@@ -78,23 +59,13 @@ export const getProducts = async (req, res) => {
   }
 };
 
-/*
- * GET /api/products/available
- * Public
- */
-export const getAvailableProducts = async (
-  req,
-  res
-) => {
+export const getAvailableProducts = async (req, res) => {
   try {
     const products = await Product.find({
       isActive: true,
       isAvailable: true,
     })
-      .populate(
-        "category",
-        "name slug"
-      )
+      .populate("category", "name slug")
       .sort({
         name: 1,
       })
@@ -106,44 +77,27 @@ export const getAvailableProducts = async (
       products,
     });
   } catch (error) {
-    console.error(
-      "Get available products error:",
-      error
-    );
+    console.error("Get available products error:", error);
 
     res.status(500).json({
       success: false,
-      message:
-        "Unable to retrieve available products",
+      message: "Unable to retrieve available products",
     });
   }
 };
 
-/*
- * GET /api/products/:id
- * Admin / Staff
- */
-export const getProductById = async (
-  req,
-  res
-) => {
+export const getProductById = async (req, res) => {
   try {
-    if (
-      !mongoose.Types.ObjectId.isValid(
-        req.params.id
-      )
-    ) {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({
         success: false,
         message: "Invalid product ID",
       });
     }
 
-    const product = await Product.findById(
-      req.params.id
-    ).populate(
+    const product = await Product.findById(req.params.id).populate(
       "category",
-      "name slug"
+      "name slug",
     );
 
     if (!product) {
@@ -158,10 +112,7 @@ export const getProductById = async (
       product,
     });
   } catch (error) {
-    console.error(
-      "Get product error:",
-      error
-    );
+    console.error("Get product error:", error);
 
     res.status(500).json({
       success: false,
@@ -170,14 +121,7 @@ export const getProductById = async (
   }
 };
 
-/*
- * POST /api/products
- * Admin
- */
-export const createProduct = async (
-  req,
-  res
-) => {
+export const createProduct = async (req, res) => {
   try {
     const {
       name,
@@ -194,32 +138,21 @@ export const createProduct = async (
       isActive,
     } = req.body;
 
-    if (
-      !name ||
-      !sku ||
-      !category ||
-      price === undefined
-    ) {
+    if (!name || !sku || !category || price === undefined) {
       return res.status(400).json({
         success: false,
-        message:
-          "Name, SKU, category and price are required",
+        message: "Name, SKU, category and price are required",
       });
     }
 
-    if (
-      !mongoose.Types.ObjectId.isValid(
-        category
-      )
-    ) {
+    if (!mongoose.Types.ObjectId.isValid(category)) {
       return res.status(400).json({
         success: false,
         message: "Invalid category ID",
       });
     }
 
-    const existingCategory =
-      await Category.findById(category);
+    const existingCategory = await Category.findById(category);
 
     if (!existingCategory) {
       return res.status(404).json({
@@ -228,19 +161,16 @@ export const createProduct = async (
       });
     }
 
-    const normalizedSku =
-      sku.trim().toUpperCase();
+    const normalizedSku = sku.trim().toUpperCase();
 
-    const existingProduct =
-      await Product.findOne({
-        sku: normalizedSku,
-      });
+    const existingProduct = await Product.findOne({
+      sku: normalizedSku,
+    });
 
     if (existingProduct) {
       return res.status(409).json({
         success: false,
-        message:
-          "A product with this SKU already exists",
+        message: "A product with this SKU already exists",
       });
     }
 
@@ -251,35 +181,19 @@ export const createProduct = async (
       description: description?.trim() || "",
       image: image?.trim() || "",
       price: Number(price),
-      costPrice:
-        costPrice !== undefined
-          ? Number(costPrice)
-          : 0,
-      taxRate:
-        taxRate !== undefined
-          ? Number(taxRate)
-          : 5,
+      costPrice: costPrice !== undefined ? Number(costPrice) : 0,
+      taxRate: taxRate !== undefined ? Number(taxRate) : 5,
       unit: unit || "piece",
       lowStockThreshold:
-        lowStockThreshold !== undefined
-          ? Number(lowStockThreshold)
-          : 10,
-      isAvailable:
-        typeof isAvailable === "boolean"
-          ? isAvailable
-          : true,
-      isActive:
-        typeof isActive === "boolean"
-          ? isActive
-          : true,
+        lowStockThreshold !== undefined ? Number(lowStockThreshold) : 10,
+      isAvailable: typeof isAvailable === "boolean" ? isAvailable : true,
+      isActive: typeof isActive === "boolean" ? isActive : true,
     });
 
-    const populatedProduct =
-      await Product.findById(product._id)
-        .populate(
-          "category",
-          "name slug"
-        );
+    const populatedProduct = await Product.findById(product._id).populate(
+      "category",
+      "name slug",
+    );
 
     res.status(201).json({
       success: true,
@@ -287,16 +201,12 @@ export const createProduct = async (
       product: populatedProduct,
     });
   } catch (error) {
-    console.error(
-      "Create product error:",
-      error
-    );
+    console.error("Create product error:", error);
 
     if (error.code === 11000) {
       return res.status(409).json({
         success: false,
-        message:
-          "A product with this SKU already exists",
+        message: "A product with this SKU already exists",
       });
     }
 
@@ -307,29 +217,16 @@ export const createProduct = async (
   }
 };
 
-/*
- * PUT /api/products/:id
- * Admin
- */
-export const updateProduct = async (
-  req,
-  res
-) => {
+export const updateProduct = async (req, res) => {
   try {
-    if (
-      !mongoose.Types.ObjectId.isValid(
-        req.params.id
-      )
-    ) {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({
         success: false,
         message: "Invalid product ID",
       });
     }
 
-    const product = await Product.findById(
-      req.params.id
-    );
+    const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -358,21 +255,14 @@ export const updateProduct = async (
     });
 
     if (req.body.category !== undefined) {
-      if (
-        !mongoose.Types.ObjectId.isValid(
-          req.body.category
-        )
-      ) {
+      if (!mongoose.Types.ObjectId.isValid(req.body.category)) {
         return res.status(400).json({
           success: false,
           message: "Invalid category ID",
         });
       }
 
-      const category =
-        await Category.findById(
-          req.body.category
-        );
+      const category = await Category.findById(req.body.category);
 
       if (!category) {
         return res.status(404).json({
@@ -385,38 +275,30 @@ export const updateProduct = async (
     }
 
     if (req.body.sku !== undefined) {
-      const normalizedSku =
-        req.body.sku.trim().toUpperCase();
+      const normalizedSku = req.body.sku.trim().toUpperCase();
 
-      const duplicateProduct =
-        await Product.findOne({
-          sku: normalizedSku,
-          _id: {
-            $ne: product._id,
-          },
-        });
+      const duplicateProduct = await Product.findOne({
+        sku: normalizedSku,
+        _id: {
+          $ne: product._id,
+        },
+      });
 
       if (duplicateProduct) {
         return res.status(409).json({
           success: false,
-          message:
-            "Another product already uses this SKU",
+          message: "Another product already uses this SKU",
         });
       }
 
       product.sku = normalizedSku;
     }
 
-    const updatedProduct =
-      await product.save();
+    const updatedProduct = await product.save();
 
-    const populatedProduct =
-      await Product.findById(
-        updatedProduct._id
-      ).populate(
-        "category",
-        "name slug"
-      );
+    const populatedProduct = await Product.findById(
+      updatedProduct._id,
+    ).populate("category", "name slug");
 
     res.status(200).json({
       success: true,
@@ -424,10 +306,7 @@ export const updateProduct = async (
       product: populatedProduct,
     });
   } catch (error) {
-    console.error(
-      "Update product error:",
-      error
-    );
+    console.error("Update product error:", error);
 
     res.status(500).json({
       success: false,
@@ -436,29 +315,16 @@ export const updateProduct = async (
   }
 };
 
-/*
- * DELETE /api/products/:id
- * Admin
- */
-export const deleteProduct = async (
-  req,
-  res
-) => {
+export const deleteProduct = async (req, res) => {
   try {
-    if (
-      !mongoose.Types.ObjectId.isValid(
-        req.params.id
-      )
-    ) {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({
         success: false,
         message: "Invalid product ID",
       });
     }
 
-    const product = await Product.findById(
-      req.params.id
-    );
+    const product = await Product.findById(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -474,10 +340,7 @@ export const deleteProduct = async (
       message: "Product deleted successfully",
     });
   } catch (error) {
-    console.error(
-      "Delete product error:",
-      error
-    );
+    console.error("Delete product error:", error);
 
     res.status(500).json({
       success: false,

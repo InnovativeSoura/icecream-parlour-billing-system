@@ -1,5 +1,3 @@
-// frontend/src/components/Navbar.jsx
-
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -26,44 +24,27 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-
-      <div className="logo">
-        🍦 IceCream Billing
-      </div>
+      <div className="logo">🍦 IceCream Billing</div>
 
       <div className="nav-links">
-
-        <NavLink to={getDashboardPath()}>
-          Dashboard
-        </NavLink>
+        <NavLink to={getDashboardPath()}>Dashboard</NavLink>
 
         {(user?.role === "admin" || user?.role === "staff") && (
-          <NavLink to="/products">
-            Products
-          </NavLink>
+          <NavLink to="/products">Products</NavLink>
         )}
 
         {(user?.role === "admin" || user?.role === "staff") && (
-          <NavLink to="/inventory">
-            Inventory
-          </NavLink>
+          <NavLink to="/inventory">Inventory</NavLink>
         )}
 
         {(user?.role === "admin" || user?.role === "staff") && (
-          <NavLink to="/customers">
-            Customers
-          </NavLink>
+          <NavLink to="/customers">Customers</NavLink>
         )}
 
-        <button
-          type="button"
-          onClick={handleLogout}
-        >
+        <button type="button" onClick={handleLogout}>
           Logout
         </button>
-
       </div>
-
     </nav>
   );
 };

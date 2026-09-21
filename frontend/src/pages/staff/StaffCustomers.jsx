@@ -417,9 +417,7 @@ const StaffCustomers = () => {
 
   return (
     <section className="staff-customers-page">
-      {/* =====================================================
-          HEADER
-          ===================================================== */}
+      
 
       <header className="staff-customers-header">
         <div>
@@ -449,9 +447,7 @@ const StaffCustomers = () => {
         </button>
       </header>
 
-      {/* =====================================================
-          STATS
-          ===================================================== */}
+      
 
       <div className="staff-customers-stat-grid">
         <article className="staff-customers-stat-card">
@@ -499,12 +495,10 @@ const StaffCustomers = () => {
         </article>
       </div>
 
-      {/* =====================================================
-          MAIN PANEL
-          ===================================================== */}
+      
 
       <div className="staff-customers-panel">
-        {/* TOOLBAR */}
+        
 
         <div className="staff-customers-toolbar">
           <div className="staff-customers-search">
@@ -578,7 +572,7 @@ const StaffCustomers = () => {
           </div>
         </div>
 
-        {/* FILTERS */}
+        
 
         {showFilters && (
           <div className="staff-customers-filters">
@@ -650,7 +644,7 @@ const StaffCustomers = () => {
           </div>
         )}
 
-        {/* RESULT SUMMARY */}
+        
 
         <div className="staff-customers-result-bar">
           <span>
@@ -675,7 +669,7 @@ const StaffCustomers = () => {
           </span>
         </div>
 
-        {/* DESKTOP TABLE */}
+        
 
         {paginatedCustomers.length > 0 ? (
           <>
@@ -813,7 +807,7 @@ const StaffCustomers = () => {
               </table>
             </div>
 
-            {/* MOBILE CARDS */}
+            
 
             <div className="staff-customers-mobile-list">
               {paginatedCustomers.map((customer) => {
@@ -899,7 +893,7 @@ const StaffCustomers = () => {
               })}
             </div>
 
-            {/* PAGINATION */}
+            
 
             <div className="staff-customers-pagination">
               <span>
@@ -987,9 +981,7 @@ const StaffCustomers = () => {
         )}
       </div>
 
-      {/* =====================================================
-          CUSTOMER DETAIL MODAL
-          ===================================================== */}
+      
 
       {selectedCustomer && (
         <div

@@ -1,5 +1,3 @@
-// frontend/src/context/CartContext.jsx
-
 import React, {
   createContext,
   useCallback,
@@ -9,20 +7,11 @@ import React, {
   useState,
 } from "react";
 
-// =====================================================
-// CART CONFIGURATION
-// =====================================================
-
 const CartContext = createContext(null);
 
 const CART_KEY = "icecream_cart";
 
-// Current GST rate used by the customer cart
 const GST_RATE = 0.05;
-
-// =====================================================
-// SAFE CART READER
-// =====================================================
 
 const getStoredCart = () => {
   try {
@@ -42,68 +31,29 @@ const getStoredCart = () => {
       .filter((item) => item && item._id)
       .map((item) => ({
         ...item,
-        quantity: Math.max(
-          1,
-          Number(item.quantity) || 1
-        ),
+        quantity: Math.max(1, Number(item.quantity) || 1),
       }));
   } catch (error) {
-    console.error(
-      "Failed to load cart from localStorage:",
-      error
-    );
+    console.error("Failed to load cart from localStorage:", error);
 
     return [];
   }
 };
 
-// =====================================================
-// CART PROVIDER
-// =====================================================
-
 export const CartProvider = ({ children }) => {
-  // ===================================================
-  // INITIAL CART
-  // ===================================================
-
   const [cartItems, setCartItems] = useState(() => {
     return getStoredCart();
   });
 
-  // ===================================================
-  // PERSIST CART
-  // ===================================================
-
   useEffect(() => {
     try {
-      localStorage.setItem(
-        CART_KEY,
-        JSON.stringify(cartItems)
-      );
+      localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
 
-      // Notify other components in the same tab.
-      window.dispatchEvent(
-        new Event("cartUpdated")
-      );
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
-      console.error(
-        "Failed to save cart to localStorage:",
-        error
-      );
+      console.error("Failed to save cart to localStorage:", error);
     }
   }, [cartItems]);
-
-  // ===================================================
-  // SYNC CART FROM LOCAL STORAGE
-  // ===================================================
-  //
-  // This handles:
-  //
-  // - Multiple tabs
-  // - Existing carts
-  // - Other components modifying localStorage
-  //
-  // ===================================================
 
   useEffect(() => {
     const handleStorageChange = (event) => {
@@ -118,13 +68,9 @@ export const CartProvider = ({ children }) => {
       const storedCart = getStoredCart();
 
       setCartItems((currentCart) => {
-        const currentJSON = JSON.stringify(
-          currentCart
-        );
+        const currentJSON = JSON.stringify(currentCart);
 
-        const storedJSON = JSON.stringify(
-          storedCart
-        );
+        const storedJSON = JSON.stringify(storedCart);
 
         if (currentJSON === storedJSON) {
           return currentCart;
@@ -134,55 +80,34 @@ export const CartProvider = ({ children }) => {
       });
     };
 
-    window.addEventListener(
-      "storage",
-      handleStorageChange
-    );
+    window.addEventListener("storage", handleStorageChange);
 
-    window.addEventListener(
-      "cartUpdated",
-      handleCartUpdated
-    );
+    window.addEventListener("cartUpdated", handleCartUpdated);
 
     return () => {
-      window.removeEventListener(
-        "storage",
-        handleStorageChange
-      );
+      window.removeEventListener("storage", handleStorageChange);
 
-      window.removeEventListener(
-        "cartUpdated",
-        handleCartUpdated
-      );
+      window.removeEventListener("cartUpdated", handleCartUpdated);
     };
   }, []);
 
-  // ===================================================
-  // ADD TO CART
-  // ===================================================
-
   const addToCart = useCallback((product) => {
     if (!product || !product._id) {
-      console.error(
-        "Cannot add invalid product to cart."
-      );
+      console.error("Cannot add invalid product to cart.");
       return;
     }
 
     setCartItems((currentCart) => {
-      const existingItem = currentCart.find(
-        (item) => item._id === product._id
-      );
+      const existingItem = currentCart.find((item) => item._id === product._id);
 
       if (existingItem) {
         return currentCart.map((item) =>
           item._id === product._id
             ? {
                 ...item,
-                quantity:
-                  Number(item.quantity || 1) + 1,
+                quantity: Number(item.quantity || 1) + 1,
               }
-            : item
+            : item,
         );
       }
 
@@ -196,25 +121,15 @@ export const CartProvider = ({ children }) => {
     });
   }, []);
 
-  // ===================================================
-  // REMOVE FROM CART
-  // ===================================================
-
   const removeFromCart = useCallback((id) => {
     if (!id) {
       return;
     }
 
     setCartItems((currentCart) =>
-      currentCart.filter(
-        (item) => item._id !== id
-      )
+      currentCart.filter((item) => item._id !== id),
     );
   }, []);
-
-  // ===================================================
-  // INCREASE QUANTITY
-  // ===================================================
 
   const increaseQuantity = useCallback((id) => {
     if (!id) {
@@ -226,17 +141,12 @@ export const CartProvider = ({ children }) => {
         item._id === id
           ? {
               ...item,
-              quantity:
-                Number(item.quantity || 1) + 1,
+              quantity: Number(item.quantity || 1) + 1,
             }
-          : item
-      )
+          : item,
+      ),
     );
   }, []);
-
-  // ===================================================
-  // DECREASE QUANTITY
-  // ===================================================
 
   const decreaseQuantity = useCallback((id) => {
     if (!id) {
@@ -248,117 +158,63 @@ export const CartProvider = ({ children }) => {
         item._id === id
           ? {
               ...item,
-              quantity: Math.max(
-                1,
-                Number(item.quantity || 1) - 1
-              ),
+              quantity: Math.max(1, Number(item.quantity || 1) - 1),
             }
-          : item
-      )
+          : item,
+      ),
     );
   }, []);
 
-  // ===================================================
-  // SET QUANTITY
-  // ===================================================
-  //
-  // Useful if a future checkout/cart component wants
-  // to directly enter a quantity.
-  //
-  // ===================================================
+  const setQuantity = useCallback((id, quantity) => {
+    if (!id) {
+      return;
+    }
 
-  const setQuantity = useCallback(
-    (id, quantity) => {
-      if (!id) {
-        return;
-      }
+    const parsedQuantity = Number(quantity);
 
-      const parsedQuantity = Number(quantity);
+    if (!Number.isFinite(parsedQuantity)) {
+      return;
+    }
 
-      if (!Number.isFinite(parsedQuantity)) {
-        return;
-      }
-
-      setCartItems((currentCart) =>
-        currentCart.map((item) =>
-          item._id === id
-            ? {
-                ...item,
-                quantity: Math.max(
-                  1,
-                  Math.floor(parsedQuantity)
-                ),
-              }
-            : item
-        )
-      );
-    },
-    []
-  );
-
-  // ===================================================
-  // CLEAR CART
-  // ===================================================
+    setCartItems((currentCart) =>
+      currentCart.map((item) =>
+        item._id === id
+          ? {
+              ...item,
+              quantity: Math.max(1, Math.floor(parsedQuantity)),
+            }
+          : item,
+      ),
+    );
+  }, []);
 
   const clearCart = useCallback(() => {
     setCartItems([]);
   }, []);
 
-  // ===================================================
-  // CART ITEM COUNT
-  // ===================================================
-
   const totalItems = useMemo(() => {
     return cartItems.reduce(
-      (total, item) =>
-        total +
-        Math.max(
-          1,
-          Number(item.quantity) || 1
-        ),
-      0
+      (total, item) => total + Math.max(1, Number(item.quantity) || 1),
+      0,
     );
   }, [cartItems]);
-
-  // ===================================================
-  // SUBTOTAL
-  // ===================================================
 
   const subtotal = useMemo(() => {
-    return cartItems.reduce(
-      (total, item) => {
-        const price = Number(item.price) || 0;
-        const quantity =
-          Math.max(
-            1,
-            Number(item.quantity) || 1
-          );
+    return cartItems.reduce((total, item) => {
+      const price = Number(item.price) || 0;
+      const quantity = Math.max(1, Number(item.quantity) || 1);
 
-        return total + price * quantity;
-      },
-      0
-    );
+      return total + price * quantity;
+    }, 0);
   }, [cartItems]);
-
-  // ===================================================
-  // GST
-  // ===================================================
 
   const gst = useMemo(() => {
     return subtotal * GST_RATE;
   }, [subtotal]);
 
-  // ===================================================
-  // GRAND TOTAL
-  // ===================================================
-
   const grandTotal = useMemo(() => {
     return subtotal + gst;
   }, [subtotal, gst]);
-
-  // ===================================================
-  // FORMATTED VALUES
-  // ===================================================
 
   const formattedSubtotal = useMemo(() => {
     return subtotal.toFixed(2);
@@ -372,16 +228,10 @@ export const CartProvider = ({ children }) => {
     return grandTotal.toFixed(2);
   }, [grandTotal]);
 
-  // ===================================================
-  // CONTEXT VALUE
-  // ===================================================
-
   const value = useMemo(
     () => ({
-      // Cart
       cartItems,
 
-      // Cart operations
       addToCart,
       removeFromCart,
       increaseQuantity,
@@ -389,20 +239,16 @@ export const CartProvider = ({ children }) => {
       setQuantity,
       clearCart,
 
-      // Counts
       totalItems,
 
-      // Pricing
       subtotal,
       gst,
       grandTotal,
 
-      // Formatted pricing
       formattedSubtotal,
       formattedGst,
       formattedGrandTotal,
 
-      // Configuration
       gstRate: GST_RATE,
     }),
     [
@@ -420,31 +266,17 @@ export const CartProvider = ({ children }) => {
       formattedSubtotal,
       formattedGst,
       formattedGrandTotal,
-    ]
+    ],
   );
 
-  // ===================================================
-  // PROVIDER
-  // ===================================================
-
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };
-
-// =====================================================
-// USE CART HOOK
-// =====================================================
 
 export const useCart = () => {
   const context = useContext(CartContext);
 
   if (!context) {
-    throw new Error(
-      "useCart must be used inside CartProvider"
-    );
+    throw new Error("useCart must be used inside CartProvider");
   }
 
   return context;

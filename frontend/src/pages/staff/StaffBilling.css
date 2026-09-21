@@ -1,18 +1,9 @@
-/* =========================================================
-   STAFF BILLING / POS
-   Premium light POS interface
-   ========================================================= */
-
 .staff-billing-page {
   width: 100%;
   min-height: 100%;
   padding: 8px 4px 32px;
   color: #17213d;
 }
-
-/* =========================================================
-   PAGE HEADER
-   ========================================================= */
 
 .staff-billing-header {
   display: flex;
@@ -123,20 +114,12 @@
   font-weight: 800;
 }
 
-/* =========================================================
-   MAIN BILLING LAYOUT
-   ========================================================= */
-
 .staff-billing-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 410px;
   align-items: start;
   gap: 22px;
 }
-
-/* =========================================================
-   PRODUCT SECTION
-   ========================================================= */
 
 .staff-product-section {
   min-width: 0;
@@ -173,10 +156,6 @@
   font-weight: 800;
   white-space: nowrap;
 }
-
-/* =========================================================
-   PRODUCT TOOLBAR
-   ========================================================= */
 
 .staff-product-toolbar {
   display: flex;
@@ -236,7 +215,7 @@
   height: 28px;
   border: 0;
   border-radius: 8px;
-  background: #eeeeF6;
+  background: #eeeef6;
   color: #717a91;
   display: grid;
   place-items: center;
@@ -283,10 +262,6 @@
   box-shadow: 0 7px 18px rgba(124, 58, 237, 0.2);
 }
 
-/* =========================================================
-   PRODUCT GRID
-   ========================================================= */
-
 .staff-product-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -318,13 +293,7 @@
   position: relative;
   height: 145px;
   overflow: hidden;
-  background:
-    linear-gradient(
-      145deg,
-      #f5f1ff 0%,
-      #faf8ff 48%,
-      #f2f7ff 100%
-    );
+  background: linear-gradient(145deg, #f5f1ff 0%, #faf8ff 48%, #f2f7ff 100%);
 }
 
 .staff-product-image img {
@@ -466,10 +435,6 @@
   opacity: 0.45;
 }
 
-/* =========================================================
-   BILL PANEL
-   ========================================================= */
-
 .staff-bill-panel {
   position: sticky;
   top: 18px;
@@ -519,10 +484,6 @@
 .staff-clear-bill:hover {
   background: #fff0f4;
 }
-
-/* =========================================================
-   BILL ITEMS
-   ========================================================= */
 
 .staff-bill-items {
   max-height: 330px;
@@ -658,10 +619,6 @@
   font-weight: 850;
 }
 
-/* =========================================================
-   EMPTY CART
-   ========================================================= */
-
 .staff-cart-empty {
   padding: 27px 20px 30px;
   text-align: center;
@@ -694,10 +651,6 @@
   line-height: 1.55;
 }
 
-/* =========================================================
-   BILLING BLOCKS
-   ========================================================= */
-
 .staff-billing-block {
   position: relative;
   padding: 13px 18px;
@@ -728,10 +681,6 @@
   font-size: 11px;
   font-weight: 800;
 }
-
-/* =========================================================
-   CUSTOMER MODE
-   ========================================================= */
 
 .staff-customer-mode {
   display: flex;
@@ -764,10 +713,6 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
-
-/* =========================================================
-   INPUTS
-   ========================================================= */
 
 .staff-input-field {
   display: flex;
@@ -810,10 +755,6 @@
 .staff-input-field input::placeholder {
   color: #a4aabd;
 }
-
-/* =========================================================
-   REGISTERED CUSTOMER
-   ========================================================= */
 
 .staff-registered-customer {
   position: relative;
@@ -959,10 +900,6 @@
   background: transparent;
 }
 
-/* =========================================================
-   PAYMENT METHODS
-   ========================================================= */
-
 .staff-payment-methods {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1019,10 +956,6 @@
   font-size: 9px;
 }
 
-/* =========================================================
-   NOTES
-   ========================================================= */
-
 .staff-billing-notes {
   display: block;
   width: 100%;
@@ -1047,10 +980,6 @@
 .staff-billing-notes::placeholder {
   color: #a4aabd;
 }
-
-/* =========================================================
-   BILL TOTALS
-   ========================================================= */
 
 .staff-bill-total-section {
   padding: 14px 18px 16px;
@@ -1121,10 +1050,6 @@
   letter-spacing: -0.03em;
 }
 
-/* =========================================================
-   COMPLETE SALE
-   ========================================================= */
-
 .staff-complete-sale {
   display: flex;
   align-items: center;
@@ -1136,11 +1061,7 @@
   padding: 0 15px;
   border: 0;
   border-radius: 13px;
-  background: linear-gradient(
-    135deg,
-    #7c3aed 0%,
-    #6d35cf 100%
-  );
+  background: linear-gradient(135deg, #7c3aed 0%, #6d35cf 100%);
   color: #ffffff;
   box-shadow: 0 11px 25px rgba(124, 58, 237, 0.24);
   cursor: pointer;
@@ -1168,10 +1089,6 @@
   opacity: 0.5;
   box-shadow: none;
 }
-
-/* =========================================================
-   LOADING / EMPTY STATES
-   ========================================================= */
 
 .staff-billing-loader {
   min-height: 350px;
@@ -1232,10 +1149,6 @@
   font-size: 11px;
   font-weight: 800;
 }
-
-/* =========================================================
-   SUCCESS MODAL
-   ========================================================= */
 
 .staff-success-overlay {
   position: fixed;
@@ -1378,10 +1291,6 @@
   gap: 7px;
 }
 
-/* =========================================================
-   ANIMATION
-   ========================================================= */
-
 .spin {
   animation: staffBillingSpin 0.85s linear infinite;
 }
@@ -1392,20 +1301,12 @@
   }
 }
 
-/* =========================================================
-   ACCESSIBILITY
-   ========================================================= */
-
 .staff-billing-page button:focus-visible,
 .staff-billing-page input:focus-visible,
 .staff-billing-page textarea:focus-visible {
   outline: 3px solid rgba(124, 58, 237, 0.18);
   outline-offset: 2px;
 }
-
-/* =========================================================
-   1400px
-   ========================================================= */
 
 @media (max-width: 1400px) {
   .staff-billing-layout {
@@ -1420,10 +1321,6 @@
     height: 132px;
   }
 }
-
-/* =========================================================
-   1200px
-   ========================================================= */
 
 @media (max-width: 1200px) {
   .staff-billing-layout {
@@ -1443,10 +1340,6 @@
     min-width: 100px;
   }
 }
-
-/* =========================================================
-   1000px
-   ========================================================= */
 
 @media (max-width: 1000px) {
   .staff-billing-header {
@@ -1470,10 +1363,6 @@
     max-height: 420px;
   }
 }
-
-/* =========================================================
-   760px
-   ========================================================= */
 
 @media (max-width: 760px) {
   .staff-billing-page {
@@ -1540,10 +1429,6 @@
     padding: 16px;
   }
 }
-
-/* =========================================================
-   560px
-   ========================================================= */
 
 @media (max-width: 560px) {
   .staff-billing-header {
@@ -1644,10 +1529,6 @@
     grid-template-columns: 1fr;
   }
 }
-
-/* =========================================================
-   420px
-   ========================================================= */
 
 @media (max-width: 420px) {
   .staff-product-grid {

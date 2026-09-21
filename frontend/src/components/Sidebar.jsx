@@ -1,5 +1,3 @@
-// frontend/src/components/Sidebar.jsx
-
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
@@ -32,62 +30,36 @@ const Sidebar = () => {
 
   return (
     <aside className="sidebar">
-
-      {/* BRAND */}
-
       <div className="sidebar-brand">
-
-        <div className="sidebar-logo">
-          🍦
-        </div>
+        <div className="sidebar-logo">🍦</div>
 
         <div>
-          <strong>
-            IceCream
-          </strong>
+          <strong>IceCream</strong>
 
-          <span>
-            Billing System
-          </span>
+          <span>Billing System</span>
         </div>
-
       </div>
-
-      {/* PROFILE */}
 
       <div className="sidebar-user">
-
-        <div className="sidebar-user-avatar">
-          {getInitials(userName)}
-        </div>
+        <div className="sidebar-user-avatar">{getInitials(userName)}</div>
 
         <div className="sidebar-user-info">
-          <strong>
-            {userName}
-          </strong>
+          <strong>{userName}</strong>
 
-          <span>
-            {user?.role || "User"}
-          </span>
+          <span>{user?.role || "User"}</span>
         </div>
-
       </div>
 
-      {/* NAVIGATION */}
-
-      <div className="sidebar-title">
-        MENU
-      </div>
+      <div className="sidebar-title">MENU</div>
 
       <nav className="sidebar-navigation">
-
         <NavLink
           to={
             user?.role === "admin"
               ? "/admin/dashboard"
               : user?.role === "staff"
-              ? "/staff/dashboard"
-              : "/customer/dashboard"
+                ? "/staff/dashboard"
+                : "/customer/dashboard"
           }
           className={({ isActive }) =>
             `sidebar-link ${isActive ? "active" : ""}`
@@ -97,15 +69,12 @@ const Sidebar = () => {
           Dashboard
         </NavLink>
 
-        {(user?.role === "admin" ||
-          user?.role === "staff") && (
+        {(user?.role === "admin" || user?.role === "staff") && (
           <>
             <NavLink
               to="/products"
               className={({ isActive }) =>
-                `sidebar-link ${
-                  isActive ? "active" : ""
-                }`
+                `sidebar-link ${isActive ? "active" : ""}`
               }
             >
               <span>▣</span>
@@ -115,9 +84,7 @@ const Sidebar = () => {
             <NavLink
               to="/inventory"
               className={({ isActive }) =>
-                `sidebar-link ${
-                  isActive ? "active" : ""
-                }`
+                `sidebar-link ${isActive ? "active" : ""}`
               }
             >
               <span>▤</span>
@@ -127,9 +94,7 @@ const Sidebar = () => {
             <NavLink
               to="/customers"
               className={({ isActive }) =>
-                `sidebar-link ${
-                  isActive ? "active" : ""
-                }`
+                `sidebar-link ${isActive ? "active" : ""}`
               }
             >
               <span>♙</span>
@@ -137,24 +102,14 @@ const Sidebar = () => {
             </NavLink>
           </>
         )}
-
       </nav>
 
-      {/* LOGOUT */}
-
       <div className="sidebar-footer">
-
-        <button
-          type="button"
-          className="sidebar-logout"
-          onClick={handleLogout}
-        >
+        <button type="button" className="sidebar-logout" onClick={handleLogout}>
           <span>↪</span>
           Logout
         </button>
-
       </div>
-
     </aside>
   );
 };

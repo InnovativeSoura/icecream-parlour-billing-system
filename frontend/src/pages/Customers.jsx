@@ -34,10 +34,6 @@ import api from "../api/api";
 
 import "./Customers.css";
 
-/* =========================================================
-   HELPERS
-========================================================= */
-
 const EMPTY_FORM = {
   name: "",
   phone: "",
@@ -77,10 +73,7 @@ const formatDate = (date) => {
 };
 
 const getInitials = (name = "Customer") => {
-  const words = name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
+  const words = name.trim().split(/\s+/).filter(Boolean);
 
   if (!words.length) {
     return "CU";
@@ -97,66 +90,33 @@ const getCustomerId = (customer) => {
   return customer?.id || customer?._id;
 };
 
-/* =========================================================
-   STAT CARD
-========================================================= */
-
-const StatCard = ({
-  icon,
-  label,
-  value,
-  detail,
-  className = "",
-}) => {
+const StatCard = ({ icon, label, value, detail, className = "" }) => {
   return (
     <motion.div
       className={`customer-stat-card ${className}`}
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
     >
-      <div className="customer-stat-icon">
-        {icon}
-      </div>
+      <div className="customer-stat-icon">{icon}</div>
 
       <div className="customer-stat-content">
-        <span className="customer-stat-label">
-          {label}
-        </span>
+        <span className="customer-stat-label">{label}</span>
 
-        <strong className="customer-stat-value">
-          {value}
-        </strong>
+        <strong className="customer-stat-value">{value}</strong>
 
-        {detail && (
-          <span className="customer-stat-detail">
-            {detail}
-          </span>
-        )}
+        {detail && <span className="customer-stat-detail">{detail}</span>}
       </div>
     </motion.div>
   );
 };
 
-/* =========================================================
-   CUSTOMER AVATAR
-========================================================= */
-
-const CustomerAvatar = ({
-  name,
-  size = "normal",
-}) => {
+const CustomerAvatar = ({ name, size = "normal" }) => {
   return (
-    <div
-      className={`customer-avatar customer-avatar-${size}`}
-    >
+    <div className={`customer-avatar customer-avatar-${size}`}>
       {getInitials(name)}
     </div>
   );
 };
-
-/* =========================================================
-   CUSTOMER FORM MODAL
-========================================================= */
 
 const CustomerFormModal = ({
   open,
@@ -179,10 +139,7 @@ const CustomerFormModal = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onMouseDown={(event) => {
-          if (
-            event.target === event.currentTarget &&
-            !saving
-          ) {
+          if (event.target === event.currentTarget && !saving) {
             onClose();
           }
         }}
@@ -209,16 +166,10 @@ const CustomerFormModal = ({
           <div className="customer-modal-header">
             <div>
               <div className="customer-modal-kicker">
-                {editingCustomer
-                  ? "CUSTOMER MANAGEMENT"
-                  : "NEW CUSTOMER"}
+                {editingCustomer ? "CUSTOMER MANAGEMENT" : "NEW CUSTOMER"}
               </div>
 
-              <h2>
-                {editingCustomer
-                  ? "Edit Customer"
-                  : "Add Customer"}
-              </h2>
+              <h2>{editingCustomer ? "Edit Customer" : "Add Customer"}</h2>
 
               <p>
                 {editingCustomer
@@ -237,10 +188,7 @@ const CustomerFormModal = ({
             </button>
           </div>
 
-          <form
-            className="customer-form"
-            onSubmit={onSubmit}
-          >
+          <form className="customer-form" onSubmit={onSubmit}>
             <div className="customer-form-grid">
               <div className="customer-field customer-field-full">
                 <label htmlFor="customer-name">
@@ -261,9 +209,7 @@ const CustomerFormModal = ({
               </div>
 
               <div className="customer-field">
-                <label htmlFor="customer-phone">
-                  Phone Number
-                </label>
+                <label htmlFor="customer-phone">Phone Number</label>
 
                 <div className="customer-input-icon">
                   <FaPhone />
@@ -282,9 +228,7 @@ const CustomerFormModal = ({
               </div>
 
               <div className="customer-field">
-                <label htmlFor="customer-email">
-                  Email Address
-                </label>
+                <label htmlFor="customer-email">Email Address</label>
 
                 <div className="customer-input-icon">
                   <FaEnvelope />
@@ -304,9 +248,7 @@ const CustomerFormModal = ({
 
               {!editingCustomer && (
                 <div className="customer-field">
-                  <label htmlFor="customer-type">
-                    Customer Type
-                  </label>
+                  <label htmlFor="customer-type">Customer Type</label>
 
                   <select
                     id="customer-type"
@@ -315,28 +257,22 @@ const CustomerFormModal = ({
                     onChange={onChange}
                     disabled={saving}
                   >
-                    <option value="walk-in">
-                      Walk-in Customer
-                    </option>
+                    <option value="walk-in">Walk-in Customer</option>
                   </select>
 
                   <small>
-                    Registered customers are created through
-                    the customer registration flow.
+                    Registered customers are created through the customer
+                    registration flow.
                   </small>
                 </div>
               )}
 
               <div
                 className={`customer-field ${
-                  editingCustomer
-                    ? "customer-field-full"
-                    : ""
+                  editingCustomer ? "customer-field-full" : ""
                 }`}
               >
-                <label htmlFor="customer-status">
-                  Account Status
-                </label>
+                <label htmlFor="customer-status">Account Status</label>
 
                 <select
                   id="customer-status"
@@ -345,20 +281,14 @@ const CustomerFormModal = ({
                   onChange={onChange}
                   disabled={saving}
                 >
-                  <option value="true">
-                    Active
-                  </option>
+                  <option value="true">Active</option>
 
-                  <option value="false">
-                    Inactive
-                  </option>
+                  <option value="false">Inactive</option>
                 </select>
               </div>
 
               <div className="customer-field customer-field-full">
-                <label htmlFor="customer-address">
-                  Address
-                </label>
+                <label htmlFor="customer-address">Address</label>
 
                 <div className="customer-input-icon customer-textarea-icon">
                   <FaMapMarkerAlt />
@@ -377,9 +307,7 @@ const CustomerFormModal = ({
               </div>
 
               <div className="customer-field customer-field-full">
-                <label htmlFor="customer-notes">
-                  Notes
-                </label>
+                <label htmlFor="customer-notes">Notes</label>
 
                 <textarea
                   id="customer-notes"
@@ -416,15 +344,9 @@ const CustomerFormModal = ({
                   </>
                 ) : (
                   <>
-                    {editingCustomer ? (
-                      <FaCheck />
-                    ) : (
-                      <FaUserPlus />
-                    )}
+                    {editingCustomer ? <FaCheck /> : <FaUserPlus />}
 
-                    {editingCustomer
-                      ? "Save Changes"
-                      : "Create Customer"}
+                    {editingCustomer ? "Save Changes" : "Create Customer"}
                   </>
                 )}
               </button>
@@ -436,15 +358,7 @@ const CustomerFormModal = ({
   );
 };
 
-/* =========================================================
-   CUSTOMER DETAILS MODAL
-========================================================= */
-
-const CustomerDetailsModal = ({
-  customer,
-  onClose,
-  onEdit,
-}) => {
+const CustomerDetailsModal = ({ customer, onClose, onEdit }) => {
   if (!customer) {
     return null;
   }
@@ -482,15 +396,10 @@ const CustomerDetailsModal = ({
         >
           <div className="customer-modal-header">
             <div className="customer-details-heading">
-              <CustomerAvatar
-                name={customer.name}
-                size="large"
-              />
+              <CustomerAvatar name={customer.name} size="large" />
 
               <div>
-                <div className="customer-modal-kicker">
-                  CUSTOMER PROFILE
-                </div>
+                <div className="customer-modal-kicker">CUSTOMER PROFILE</div>
 
                 <h2>{customer.name}</h2>
 
@@ -502,34 +411,25 @@ const CustomerDetailsModal = ({
                         : "customer-status-inactive"
                     }`}
                   >
-                    {customer.isActive ? (
-                      <FaCheck />
-                    ) : (
-                      <FaTimes />
-                    )}
+                    {customer.isActive ? <FaCheck /> : <FaTimes />}
 
-                    {customer.isActive
-                      ? "Active"
-                      : "Inactive"}
+                    {customer.isActive ? "Active" : "Inactive"}
                   </span>
 
                   <span
                     className={`customer-type-badge ${
-                      customer.customerType ===
-                      "registered"
+                      customer.customerType === "registered"
                         ? "customer-type-registered"
                         : "customer-type-walkin"
                     }`}
                   >
-                    {customer.customerType ===
-                    "registered" ? (
+                    {customer.customerType === "registered" ? (
                       <FaUserCheck />
                     ) : (
                       <FaStore />
                     )}
 
-                    {customer.customerType ===
-                    "registered"
+                    {customer.customerType === "registered"
                       ? "Registered"
                       : "Walk-in"}
                   </span>
@@ -555,9 +455,7 @@ const CustomerDetailsModal = ({
 
                 <div>
                   <span>Total Orders</span>
-                  <strong>
-                    {customer.totalOrders || 0}
-                  </strong>
+                  <strong>{customer.totalOrders || 0}</strong>
                 </div>
               </div>
 
@@ -568,11 +466,7 @@ const CustomerDetailsModal = ({
 
                 <div>
                   <span>Total Spent</span>
-                  <strong>
-                    {formatCurrency(
-                      customer.totalSpent
-                    )}
-                  </strong>
+                  <strong>{formatCurrency(customer.totalSpent)}</strong>
                 </div>
               </div>
 
@@ -583,11 +477,7 @@ const CustomerDetailsModal = ({
 
                 <div>
                   <span>Last Order</span>
-                  <strong>
-                    {formatDate(
-                      customer.lastOrderAt
-                    )}
-                  </strong>
+                  <strong>{formatDate(customer.lastOrderAt)}</strong>
                 </div>
               </div>
             </div>
@@ -601,10 +491,7 @@ const CustomerDetailsModal = ({
 
                   <div>
                     <span>Phone</span>
-                    <strong>
-                      {customer.phone ||
-                        "Not provided"}
-                    </strong>
+                    <strong>{customer.phone || "Not provided"}</strong>
                   </div>
                 </div>
 
@@ -613,10 +500,7 @@ const CustomerDetailsModal = ({
 
                   <div>
                     <span>Email</span>
-                    <strong>
-                      {customer.email ||
-                        "Not provided"}
-                    </strong>
+                    <strong>{customer.email || "Not provided"}</strong>
                   </div>
                 </div>
 
@@ -625,10 +509,7 @@ const CustomerDetailsModal = ({
 
                   <div>
                     <span>Address</span>
-                    <strong>
-                      {customer.address ||
-                        "Not provided"}
-                    </strong>
+                    <strong>{customer.address || "Not provided"}</strong>
                   </div>
                 </div>
               </div>
@@ -641,11 +522,7 @@ const CustomerDetailsModal = ({
 
                   <div>
                     <span>Customer Since</span>
-                    <strong>
-                      {formatDate(
-                        customer.createdAt
-                      )}
-                    </strong>
+                    <strong>{formatDate(customer.createdAt)}</strong>
                   </div>
                 </div>
 
@@ -655,8 +532,7 @@ const CustomerDetailsModal = ({
                   <div>
                     <span>Account Type</span>
                     <strong>
-                      {customer.customerType ===
-                      "registered"
+                      {customer.customerType === "registered"
                         ? "Registered Customer"
                         : "Walk-in Customer"}
                     </strong>
@@ -668,11 +544,7 @@ const CustomerDetailsModal = ({
 
                   <div>
                     <span>Last Updated</span>
-                    <strong>
-                      {formatDate(
-                        customer.updatedAt
-                      )}
-                    </strong>
+                    <strong>{formatDate(customer.updatedAt)}</strong>
                   </div>
                 </div>
               </div>
@@ -713,10 +585,6 @@ const CustomerDetailsModal = ({
   );
 };
 
-/* =========================================================
-   CUSTOMERS PAGE
-========================================================= */
-
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
 
@@ -733,15 +601,12 @@ const Customers = () => {
   });
 
   const [search, setSearch] = useState("");
-  const [customerType, setCustomerType] =
-    useState("");
+  const [customerType, setCustomerType] = useState("");
   const [isActive, setIsActive] = useState("");
 
-  const [sortBy, setSortBy] =
-    useState("createdAt");
+  const [sortBy, setSortBy] = useState("createdAt");
 
-  const [sortOrder, setSortOrder] =
-    useState("desc");
+  const [sortOrder, setSortOrder] = useState("desc");
 
   const [page, setPage] = useState(1);
   const perPage = 10;
@@ -755,104 +620,64 @@ const Customers = () => {
     hasPreviousPage: false,
   });
 
-  const [showFilters, setShowFilters] =
-    useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
-  const [showForm, setShowForm] =
-    useState(false);
+  const [showForm, setShowForm] = useState(false);
 
-  const [editingCustomer, setEditingCustomer] =
-    useState(null);
+  const [editingCustomer, setEditingCustomer] = useState(null);
 
-  const [showDetails, setShowDetails] =
-    useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
-  const [selectedCustomer, setSelectedCustomer] =
-    useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     ...EMPTY_FORM,
   });
 
-  const [actionLoading, setActionLoading] =
-    useState("");
+  const [actionLoading, setActionLoading] = useState("");
 
-  const [currentUser, setCurrentUser] =
-    useState(null);
-
-  /* =======================================================
-     CURRENT USER
-  ======================================================= */
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     try {
-      const storedUser =
-        localStorage.getItem(
-          "icecream_user"
-        );
+      const storedUser = localStorage.getItem("icecream_user");
 
       if (storedUser) {
-        setCurrentUser(
-          JSON.parse(storedUser)
-        );
+        setCurrentUser(JSON.parse(storedUser));
       }
     } catch (error) {
-      console.error(
-        "Unable to read current user:",
-        error
-      );
+      console.error("Unable to read current user:", error);
     }
   }, []);
 
-  const userRole =
-    currentUser?.role || "staff";
+  const userRole = currentUser?.role || "staff";
 
-  const isAdmin =
-    userRole === "admin";
+  const isAdmin = userRole === "admin";
 
-  /* =======================================================
-     FETCH STATS
-  ======================================================= */
+  const fetchStats = useCallback(async () => {
+    try {
+      const response = await api.get("/customers/stats/summary");
 
-  const fetchStats = useCallback(
-    async () => {
-      try {
-        const response =
-          await api.get(
-            "/customers/stats/summary"
-          );
-
-        if (response.data?.success) {
-          setStats(
-            response.data.stats || {
-              totalCustomers: 0,
-              activeCustomers: 0,
-              registeredCustomers: 0,
-              walkInCustomers: 0,
-              totalOrders: 0,
-              totalSpent: 0,
-            }
-          );
-        }
-      } catch (error) {
-        console.error(
-          "Customer stats error:",
-          error
+      if (response.data?.success) {
+        setStats(
+          response.data.stats || {
+            totalCustomers: 0,
+            activeCustomers: 0,
+            registeredCustomers: 0,
+            walkInCustomers: 0,
+            totalOrders: 0,
+            totalSpent: 0,
+          },
         );
       }
-    },
-    []
-  );
-
-  /* =======================================================
-     FETCH CUSTOMERS
-  ======================================================= */
+    } catch (error) {
+      console.error("Customer stats error:", error);
+    }
+  }, []);
 
   const fetchCustomers = useCallback(
-    async ({
-      showLoader = true,
-    } = {}) => {
+    async ({ showLoader = true } = {}) => {
       try {
         if (showLoader) {
           setLoading(true);
@@ -870,16 +695,10 @@ const Customers = () => {
           sortOrder,
         };
 
-        const response =
-          await api.get(
-            "/customers",
-            { params }
-          );
+        const response = await api.get("/customers", { params });
 
         if (response.data?.success) {
-          setCustomers(
-            response.data.customers || []
-          );
+          setCustomers(response.data.customers || []);
 
           setPagination(
             response.data.pagination || {
@@ -889,32 +708,21 @@ const Customers = () => {
               totalPages: 0,
               hasNextPage: false,
               hasPreviousPage: false,
-            }
+            },
           );
         }
       } catch (error) {
-        console.error(
-          "Fetch customers error:",
-          error
-        );
+        console.error("Fetch customers error:", error);
 
         toast.error(
-          error.response?.data?.message ||
-            "Unable to load customers"
+          error.response?.data?.message || "Unable to load customers",
         );
       } finally {
         setLoading(false);
         setRefreshing(false);
       }
     },
-    [
-      search,
-      customerType,
-      isActive,
-      page,
-      sortBy,
-      sortOrder,
-    ]
+    [search, customerType, isActive, page, sortBy, sortOrder],
   );
 
   useEffect(() => {
@@ -927,10 +735,6 @@ const Customers = () => {
     fetchStats();
   }, [fetchStats]);
 
-  /* =======================================================
-     SEARCH DEBOUNCE
-  ======================================================= */
-
   useEffect(() => {
     const timer = setTimeout(() => {
       setPage(1);
@@ -939,22 +743,12 @@ const Customers = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  /* =======================================================
-     FORM HANDLERS
-  ======================================================= */
-
   const handleFormChange = (event) => {
-    const {
-      name,
-      value,
-    } = event.target;
+    const { name, value } = event.target;
 
     setForm((previous) => ({
       ...previous,
-      [name]:
-        name === "isActive"
-          ? value === "true"
-          : value,
+      [name]: name === "isActive" ? value === "true" : value,
     }));
   };
 
@@ -976,12 +770,9 @@ const Customers = () => {
       phone: customer.phone || "",
       email: customer.email || "",
       address: customer.address || "",
-      customerType:
-        customer.customerType ||
-        "walk-in",
+      customerType: customer.customerType || "walk-in",
       notes: customer.notes || "",
-      isActive:
-        customer.isActive !== false,
+      isActive: customer.isActive !== false,
     });
 
     setShowForm(true);
@@ -1000,17 +791,11 @@ const Customers = () => {
     });
   };
 
-  /* =======================================================
-     CREATE / UPDATE
-  ======================================================= */
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!form.name.trim()) {
-      toast.error(
-        "Customer name is required"
-      );
+      toast.error("Customer name is required");
       return;
     }
 
@@ -1031,27 +816,17 @@ const Customers = () => {
       }
 
       if (editingCustomer) {
-        const id = getCustomerId(
-          editingCustomer
-        );
+        const id = getCustomerId(editingCustomer);
 
         if (!id) {
-          toast.error(
-            "Invalid customer ID"
-          );
+          toast.error("Invalid customer ID");
           return;
         }
 
-        const response =
-          await api.put(
-            `/customers/${id}`,
-            payload
-          );
+        const response = await api.put(`/customers/${id}`, payload);
 
         if (response.data?.success) {
-          toast.success(
-            "Customer updated successfully"
-          );
+          toast.success("Customer updated successfully");
 
           closeFormModal();
 
@@ -1063,16 +838,10 @@ const Customers = () => {
           ]);
         }
       } else {
-        const response =
-          await api.post(
-            "/customers",
-            payload
-          );
+        const response = await api.post("/customers", payload);
 
         if (response.data?.success) {
-          toast.success(
-            "Customer created successfully"
-          );
+          toast.success("Customer created successfully");
 
           closeFormModal();
           setPage(1);
@@ -1086,31 +855,17 @@ const Customers = () => {
         }
       }
     } catch (error) {
-      console.error(
-        "Save customer error:",
-        error
-      );
+      console.error("Save customer error:", error);
 
-      toast.error(
-        error.response?.data?.message ||
-          "Unable to save customer"
-      );
+      toast.error(error.response?.data?.message || "Unable to save customer");
     } finally {
       setSaving(false);
     }
   };
 
-  /* =======================================================
-     DELETE / DEACTIVATE
-  ======================================================= */
-
-  const handleDeactivate = async (
-    customer
-  ) => {
+  const handleDeactivate = async (customer) => {
     if (!isAdmin) {
-      toast.error(
-        "Only administrators can deactivate customers"
-      );
+      toast.error("Only administrators can deactivate customers");
       return;
     }
 
@@ -1120,10 +875,7 @@ const Customers = () => {
       return;
     }
 
-    const confirmed =
-      window.confirm(
-        `Deactivate ${customer.name}?`
-      );
+    const confirmed = window.confirm(`Deactivate ${customer.name}?`);
 
     if (!confirmed) {
       return;
@@ -1132,15 +884,10 @@ const Customers = () => {
     try {
       setActionLoading(id);
 
-      const response =
-        await api.delete(
-          `/customers/${id}`
-        );
+      const response = await api.delete(`/customers/${id}`);
 
       if (response.data?.success) {
-        toast.success(
-          "Customer deactivated successfully"
-        );
+        toast.success("Customer deactivated successfully");
 
         await Promise.all([
           fetchCustomers({
@@ -1150,31 +897,19 @@ const Customers = () => {
         ]);
       }
     } catch (error) {
-      console.error(
-        "Deactivate customer error:",
-        error
-      );
+      console.error("Deactivate customer error:", error);
 
       toast.error(
-        error.response?.data?.message ||
-          "Unable to deactivate customer"
+        error.response?.data?.message || "Unable to deactivate customer",
       );
     } finally {
       setActionLoading("");
     }
   };
 
-  /* =======================================================
-     ACTIVATE
-  ======================================================= */
-
-  const handleActivate = async (
-    customer
-  ) => {
+  const handleActivate = async (customer) => {
     if (!isAdmin) {
-      toast.error(
-        "Only administrators can activate customers"
-      );
+      toast.error("Only administrators can activate customers");
       return;
     }
 
@@ -1187,15 +922,10 @@ const Customers = () => {
     try {
       setActionLoading(id);
 
-      const response =
-        await api.patch(
-          `/customers/${id}/activate`
-        );
+      const response = await api.patch(`/customers/${id}/activate`);
 
       if (response.data?.success) {
-        toast.success(
-          "Customer activated successfully"
-        );
+        toast.success("Customer activated successfully");
 
         await Promise.all([
           fetchCustomers({
@@ -1205,27 +935,17 @@ const Customers = () => {
         ]);
       }
     } catch (error) {
-      console.error(
-        "Activate customer error:",
-        error
-      );
+      console.error("Activate customer error:", error);
 
       toast.error(
-        error.response?.data?.message ||
-          "Unable to activate customer"
+        error.response?.data?.message || "Unable to activate customer",
       );
     } finally {
       setActionLoading("");
     }
   };
 
-  /* =======================================================
-     DETAILS
-  ======================================================= */
-
-  const openDetails = async (
-    customer
-  ) => {
+  const openDetails = async (customer) => {
     const id = getCustomerId(customer);
 
     if (!id) {
@@ -1233,42 +953,25 @@ const Customers = () => {
     }
 
     try {
-      const response =
-        await api.get(
-          `/customers/${id}`
-        );
+      const response = await api.get(`/customers/${id}`);
 
       if (response.data?.success) {
-        setSelectedCustomer(
-          response.data.customer
-        );
+        setSelectedCustomer(response.data.customer);
 
         setShowDetails(true);
       }
     } catch (error) {
-      console.error(
-        "Customer details error:",
-        error
-      );
+      console.error("Customer details error:", error);
 
       toast.error(
-        error.response?.data?.message ||
-          "Unable to load customer details"
+        error.response?.data?.message || "Unable to load customer details",
       );
     }
   };
 
-  /* =======================================================
-     SORT
-  ======================================================= */
-
   const toggleSort = (field) => {
     if (sortBy === field) {
-      setSortOrder((previous) =>
-        previous === "asc"
-          ? "desc"
-          : "asc"
-      );
+      setSortOrder((previous) => (previous === "asc" ? "desc" : "asc"));
     } else {
       setSortBy(field);
       setSortOrder("desc");
@@ -1276,10 +979,6 @@ const Customers = () => {
 
     setPage(1);
   };
-
-  /* =======================================================
-     RESET FILTERS
-  ======================================================= */
 
   const resetFilters = () => {
     setSearch("");
@@ -1291,43 +990,25 @@ const Customers = () => {
   };
 
   const hasActiveFilters =
-    Boolean(search.trim()) ||
-    Boolean(customerType) ||
-    Boolean(isActive);
-
-  /* =======================================================
-     DERIVED DATA
-  ======================================================= */
+    Boolean(search.trim()) || Boolean(customerType) || Boolean(isActive);
 
   const displayedRange = useMemo(() => {
     if (!pagination.totalCustomers) {
       return "0 customers";
     }
 
-    const start =
-      (pagination.currentPage - 1) *
-        pagination.perPage +
-      1;
+    const start = (pagination.currentPage - 1) * pagination.perPage + 1;
 
     const end = Math.min(
-      pagination.currentPage *
-        pagination.perPage,
-      pagination.totalCustomers
+      pagination.currentPage * pagination.perPage,
+      pagination.totalCustomers,
     );
 
     return `${start}–${end} of ${pagination.totalCustomers}`;
   }, [pagination]);
 
-  /* =======================================================
-     RENDER
-  ======================================================= */
-
   return (
     <div className="customers-page">
-      {/* ===================================================
-          BACKGROUND
-      =================================================== */}
-
       <div className="customers-background">
         <div className="customers-grid" />
 
@@ -1338,15 +1019,7 @@ const Customers = () => {
         <div className="customers-noise" />
       </div>
 
-      {/* ===================================================
-          PAGE CONTENT
-      =================================================== */}
-
       <div className="customers-content">
-        {/* =================================================
-            HEADER
-        ================================================= */}
-
         <motion.header
           className="customers-header"
           initial={{
@@ -1363,9 +1036,7 @@ const Customers = () => {
               <span className="customers-eyebrow-icon">
                 <FaUsers />
               </span>
-
               CUSTOMER MANAGEMENT
-
               <span className="customers-eyebrow-line" />
             </div>
 
@@ -1375,26 +1046,16 @@ const Customers = () => {
             </h1>
 
             <p>
-              Manage customer profiles, billing
-              history, contact information and
-              relationships from one centralized
-              workspace.
+              Manage customer profiles, billing history, contact information and
+              relationships from one centralized workspace.
             </p>
           </div>
 
           <div className="customers-header-actions">
             <div className="customers-role-badge">
-              {isAdmin ? (
-                <FaUserTie />
-              ) : (
-                <FaUsers />
-              )}
+              {isAdmin ? <FaUserTie /> : <FaUsers />}
 
-              <span>
-                {isAdmin
-                  ? "Administrator"
-                  : "Staff Access"}
-              </span>
+              <span>{isAdmin ? "Administrator" : "Staff Access"}</span>
             </div>
 
             <button
@@ -1409,14 +1070,7 @@ const Customers = () => {
               }}
               disabled={refreshing}
             >
-              <FaSyncAlt
-                className={
-                  refreshing
-                    ? "spin"
-                    : ""
-                }
-              />
-
+              <FaSyncAlt className={refreshing ? "spin" : ""} />
               Refresh
             </button>
 
@@ -1430,10 +1084,6 @@ const Customers = () => {
             </button>
           </div>
         </motion.header>
-
-        {/* =================================================
-            STATISTICS
-        ================================================= */}
 
         <motion.section
           className="customers-stats-grid"
@@ -1452,9 +1102,7 @@ const Customers = () => {
           <StatCard
             icon={<FaUsers />}
             label="Total Customers"
-            value={
-              stats.totalCustomers || 0
-            }
+            value={stats.totalCustomers || 0}
             detail={`${stats.activeCustomers || 0} active profiles`}
             className="stat-total"
           />
@@ -1462,10 +1110,7 @@ const Customers = () => {
           <StatCard
             icon={<FaUserCheck />}
             label="Registered"
-            value={
-              stats.registeredCustomers ||
-              0
-            }
+            value={stats.registeredCustomers || 0}
             detail="Linked customer accounts"
             className="stat-registered"
           />
@@ -1473,9 +1118,7 @@ const Customers = () => {
           <StatCard
             icon={<FaStore />}
             label="Walk-in"
-            value={
-              stats.walkInCustomers || 0
-            }
+            value={stats.walkInCustomers || 0}
             detail="POS customer profiles"
             className="stat-walkin"
           />
@@ -1483,17 +1126,11 @@ const Customers = () => {
           <StatCard
             icon={<FaMoneyBillWave />}
             label="Customer Revenue"
-            value={formatCurrency(
-              stats.totalSpent
-            )}
+            value={formatCurrency(stats.totalSpent)}
             detail={`${stats.totalOrders || 0} total orders`}
             className="stat-revenue"
           />
         </motion.section>
-
-        {/* =================================================
-            TOOLBAR
-        ================================================= */}
 
         <motion.section
           className="customers-toolbar"
@@ -1515,11 +1152,7 @@ const Customers = () => {
             <input
               type="search"
               value={search}
-              onChange={(event) =>
-                setSearch(
-                  event.target.value
-                )
-              }
+              onChange={(event) => setSearch(event.target.value)}
               placeholder="Search customers by name, phone or email..."
             />
 
@@ -1527,9 +1160,7 @@ const Customers = () => {
               <button
                 type="button"
                 className="customers-search-clear"
-                onClick={() =>
-                  setSearch("")
-                }
+                onClick={() => setSearch("")}
                 aria-label="Clear search"
               >
                 <FaTimesCircle />
@@ -1539,52 +1170,25 @@ const Customers = () => {
 
           <button
             type="button"
-            className={`customers-filter-toggle ${
-              showFilters
-                ? "active"
-                : ""
-            }`}
-            onClick={() =>
-              setShowFilters(
-                (previous) =>
-                  !previous
-              )
-            }
+            className={`customers-filter-toggle ${showFilters ? "active" : ""}`}
+            onClick={() => setShowFilters((previous) => !previous)}
           >
             <FaFilter />
             Filters
-
-            {hasActiveFilters && (
-              <span className="filter-dot" />
-            )}
+            {hasActiveFilters && <span className="filter-dot" />}
           </button>
 
           <div className="customers-sort">
             <button
               type="button"
-              onClick={() =>
-                toggleSort("createdAt")
-              }
-              className={
-                sortBy === "createdAt"
-                  ? "active"
-                  : ""
-              }
+              onClick={() => toggleSort("createdAt")}
+              className={sortBy === "createdAt" ? "active" : ""}
             >
-              {sortOrder === "desc" ? (
-                <FaSortAmountDown />
-              ) : (
-                <FaSortAmountUp />
-              )}
-
+              {sortOrder === "desc" ? <FaSortAmountDown /> : <FaSortAmountUp />}
               Latest
             </button>
           </div>
         </motion.section>
-
-        {/* =================================================
-            FILTER PANEL
-        ================================================= */}
 
         <AnimatePresence>
           {showFilters && (
@@ -1607,122 +1211,78 @@ const Customers = () => {
               }}
             >
               <div className="customer-filter-field">
-                <label>
-                  Customer Type
-                </label>
+                <label>Customer Type</label>
 
                 <select
                   value={customerType}
                   onChange={(event) => {
-                    setCustomerType(
-                      event.target.value
-                    );
+                    setCustomerType(event.target.value);
                     setPage(1);
                   }}
                 >
-                  <option value="">
-                    All Types
-                  </option>
+                  <option value="">All Types</option>
 
-                  <option value="registered">
-                    Registered
-                  </option>
+                  <option value="registered">Registered</option>
 
-                  <option value="walk-in">
-                    Walk-in
-                  </option>
+                  <option value="walk-in">Walk-in</option>
                 </select>
               </div>
 
               <div className="customer-filter-field">
-                <label>
-                  Account Status
-                </label>
+                <label>Account Status</label>
 
                 <select
                   value={isActive}
                   onChange={(event) => {
-                    setIsActive(
-                      event.target.value
-                    );
+                    setIsActive(event.target.value);
                     setPage(1);
                   }}
                 >
-                  <option value="">
-                    All Statuses
-                  </option>
+                  <option value="">All Statuses</option>
 
-                  <option value="true">
-                    Active
-                  </option>
+                  <option value="true">Active</option>
 
-                  <option value="false">
-                    Inactive
-                  </option>
+                  <option value="false">Inactive</option>
                 </select>
               </div>
 
               <div className="customer-filter-field">
-                <label>
-                  Sort By
-                </label>
+                <label>Sort By</label>
 
                 <select
                   value={sortBy}
                   onChange={(event) => {
-                    setSortBy(
-                      event.target.value
-                    );
+                    setSortBy(event.target.value);
                     setPage(1);
                   }}
                 >
-                  <option value="createdAt">
-                    Created Date
-                  </option>
+                  <option value="createdAt">Created Date</option>
 
-                  <option value="name">
-                    Name
-                  </option>
+                  <option value="name">Name</option>
 
-                  <option value="totalOrders">
-                    Total Orders
-                  </option>
+                  <option value="totalOrders">Total Orders</option>
 
-                  <option value="totalSpent">
-                    Total Spent
-                  </option>
+                  <option value="totalSpent">Total Spent</option>
 
-                  <option value="lastOrderAt">
-                    Last Order
-                  </option>
+                  <option value="lastOrderAt">Last Order</option>
 
-                  <option value="updatedAt">
-                    Last Updated
-                  </option>
+                  <option value="updatedAt">Last Updated</option>
                 </select>
               </div>
 
               <div className="customer-filter-field">
-                <label>
-                  Direction
-                </label>
+                <label>Direction</label>
 
                 <select
                   value={sortOrder}
                   onChange={(event) => {
-                    setSortOrder(
-                      event.target.value
-                    );
+                    setSortOrder(event.target.value);
                     setPage(1);
                   }}
                 >
-                  <option value="desc">
-                    Descending
-                  </option>
+                  <option value="desc">Descending</option>
 
-                  <option value="asc">
-                    Ascending
-                  </option>
+                  <option value="asc">Ascending</option>
                 </select>
               </div>
 
@@ -1738,19 +1298,11 @@ const Customers = () => {
           )}
         </AnimatePresence>
 
-        {/* =================================================
-            TABLE HEADER
-        ================================================= */}
-
         <div className="customers-list-heading">
           <div>
-            <span className="customers-list-title">
-              All Customers
-            </span>
+            <span className="customers-list-title">All Customers</span>
 
-            <span className="customers-list-count">
-              {displayedRange}
-            </span>
+            <span className="customers-list-count">{displayedRange}</span>
           </div>
 
           <div className="customers-list-meta">
@@ -1758,15 +1310,11 @@ const Customers = () => {
               {customerType === "registered"
                 ? "Registered only"
                 : customerType === "walk-in"
-                ? "Walk-in only"
-                : "All customer types"}
+                  ? "Walk-in only"
+                  : "All customer types"}
             </span>
           </div>
         </div>
-
-        {/* =================================================
-            CUSTOMER LIST
-        ================================================= */}
 
         <motion.section
           className="customers-table-card"
@@ -1788,14 +1336,9 @@ const Customers = () => {
                 <FaSyncAlt />
               </div>
 
-              <h3>
-                Loading customers...
-              </h3>
+              <h3>Loading customers...</h3>
 
-              <p>
-                Fetching the latest customer
-                records.
-              </p>
+              <p>Fetching the latest customer records.</p>
             </div>
           ) : customers.length === 0 ? (
             <div className="customers-empty">
@@ -1803,9 +1346,7 @@ const Customers = () => {
                 <FaUsers />
               </div>
 
-              <h3>
-                No customers found
-              </h3>
+              <h3>No customers found</h3>
 
               <p>
                 {hasActiveFilters
@@ -1835,8 +1376,6 @@ const Customers = () => {
             </div>
           ) : (
             <>
-              {/* Desktop table */}
-
               <div className="customers-table-wrapper">
                 <table className="customers-table">
                   <thead>
@@ -1853,445 +1392,310 @@ const Customers = () => {
                   </thead>
 
                   <tbody>
-                    {customers.map(
-                      (
-                        customer,
-                        index
-                      ) => {
-                        const id =
-                          getCustomerId(
-                            customer
-                          );
+                    {customers.map((customer, index) => {
+                      const id = getCustomerId(customer);
 
-                        const busy =
-                          actionLoading ===
-                          id;
+                      const busy = actionLoading === id;
 
-                        return (
-                          <motion.tr
-                            key={id}
-                            initial={{
-                              opacity: 0,
-                              y: 8,
-                            }}
-                            animate={{
-                              opacity: 1,
-                              y: 0,
-                            }}
-                            transition={{
-                              delay:
-                                index *
-                                0.025,
-                            }}
-                          >
-                            <td>
-                              <div className="customer-table-profile">
-                                <CustomerAvatar
-                                  name={
-                                    customer.name
-                                  }
-                                />
+                      return (
+                        <motion.tr
+                          key={id}
+                          initial={{
+                            opacity: 0,
+                            y: 8,
+                          }}
+                          animate={{
+                            opacity: 1,
+                            y: 0,
+                          }}
+                          transition={{
+                            delay: index * 0.025,
+                          }}
+                        >
+                          <td>
+                            <div className="customer-table-profile">
+                              <CustomerAvatar name={customer.name} />
 
-                                <div>
-                                  <strong>
-                                    {
-                                      customer.name
-                                    }
-                                  </strong>
+                              <div>
+                                <strong>{customer.name}</strong>
 
-                                  <span>
-                                    Joined{" "}
-                                    {formatDate(
-                                      customer.createdAt
+                                <span>
+                                  Joined {formatDate(customer.createdAt)}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td>
+                            <div className="customer-contact">
+                              {customer.phone && (
+                                <span>
+                                  <FaPhone />
+                                  {customer.phone}
+                                </span>
+                              )}
+
+                              {customer.email && (
+                                <span>
+                                  <FaEnvelope />
+                                  {customer.email}
+                                </span>
+                              )}
+
+                              {!customer.phone && !customer.email && (
+                                <span className="customer-muted">
+                                  No contact details
+                                </span>
+                              )}
+                            </div>
+                          </td>
+
+                          <td>
+                            <span
+                              className={`customer-type-badge ${
+                                customer.customerType === "registered"
+                                  ? "customer-type-registered"
+                                  : "customer-type-walkin"
+                              }`}
+                            >
+                              {customer.customerType === "registered" ? (
+                                <FaUserCheck />
+                              ) : (
+                                <FaStore />
+                              )}
+
+                              {customer.customerType === "registered"
+                                ? "Registered"
+                                : "Walk-in"}
+                            </span>
+                          </td>
+
+                          <td>
+                            <span className="customer-orders-value">
+                              {customer.totalOrders || 0}
+                            </span>
+                          </td>
+
+                          <td>
+                            <strong className="customer-spent-value">
+                              {formatCurrency(customer.totalSpent)}
+                            </strong>
+                          </td>
+
+                          <td>
+                            <div className="customer-date">
+                              <FaCalendarAlt />
+
+                              {formatDate(customer.lastOrderAt)}
+                            </div>
+                          </td>
+
+                          <td>
+                            <span
+                              className={`customer-status ${
+                                customer.isActive
+                                  ? "customer-status-active"
+                                  : "customer-status-inactive"
+                              }`}
+                            >
+                              {customer.isActive ? <FaCheck /> : <FaTimes />}
+
+                              {customer.isActive ? "Active" : "Inactive"}
+                            </span>
+                          </td>
+
+                          <td>
+                            <div className="customer-actions">
+                              <button
+                                type="button"
+                                className="customer-action-btn view"
+                                title="View customer"
+                                onClick={() => openDetails(customer)}
+                              >
+                                <FaEye />
+                              </button>
+
+                              <button
+                                type="button"
+                                className="customer-action-btn edit"
+                                title="Edit customer"
+                                onClick={() => openEditModal(customer)}
+                              >
+                                <FaEdit />
+                              </button>
+
+                              {isAdmin &&
+                                (customer.isActive ? (
+                                  <button
+                                    type="button"
+                                    className="customer-action-btn delete"
+                                    title="Deactivate customer"
+                                    disabled={busy}
+                                    onClick={() => handleDeactivate(customer)}
+                                  >
+                                    {busy ? (
+                                      <FaSyncAlt className="spin" />
+                                    ) : (
+                                      <FaTrash />
                                     )}
-                                  </span>
-                                </div>
-                              </div>
-                            </td>
-
-                            <td>
-                              <div className="customer-contact">
-                                {customer.phone && (
-                                  <span>
-                                    <FaPhone />
-                                    {
-                                      customer.phone
-                                    }
-                                  </span>
-                                )}
-
-                                {customer.email && (
-                                  <span>
-                                    <FaEnvelope />
-                                    {
-                                      customer.email
-                                    }
-                                  </span>
-                                )}
-
-                                {!customer.phone &&
-                                  !customer.email && (
-                                    <span className="customer-muted">
-                                      No contact
-                                      details
-                                    </span>
-                                  )}
-                              </div>
-                            </td>
-
-                            <td>
-                              <span
-                                className={`customer-type-badge ${
-                                  customer.customerType ===
-                                  "registered"
-                                    ? "customer-type-registered"
-                                    : "customer-type-walkin"
-                                }`}
-                              >
-                                {customer.customerType ===
-                                "registered" ? (
-                                  <FaUserCheck />
+                                  </button>
                                 ) : (
-                                  <FaStore />
-                                )}
-
-                                {customer.customerType ===
-                                "registered"
-                                  ? "Registered"
-                                  : "Walk-in"}
-                              </span>
-                            </td>
-
-                            <td>
-                              <span className="customer-orders-value">
-                                {customer.totalOrders ||
-                                  0}
-                              </span>
-                            </td>
-
-                            <td>
-                              <strong className="customer-spent-value">
-                                {formatCurrency(
-                                  customer.totalSpent
-                                )}
-                              </strong>
-                            </td>
-
-                            <td>
-                              <div className="customer-date">
-                                <FaCalendarAlt />
-
-                                {formatDate(
-                                  customer.lastOrderAt
-                                )}
-                              </div>
-                            </td>
-
-                            <td>
-                              <span
-                                className={`customer-status ${
-                                  customer.isActive
-                                    ? "customer-status-active"
-                                    : "customer-status-inactive"
-                                }`}
-                              >
-                                {customer.isActive ? (
-                                  <FaCheck />
-                                ) : (
-                                  <FaTimes />
-                                )}
-
-                                {customer.isActive
-                                  ? "Active"
-                                  : "Inactive"}
-                              </span>
-                            </td>
-
-                            <td>
-                              <div className="customer-actions">
-                                <button
-                                  type="button"
-                                  className="customer-action-btn view"
-                                  title="View customer"
-                                  onClick={() =>
-                                    openDetails(
-                                      customer
-                                    )
-                                  }
-                                >
-                                  <FaEye />
-                                </button>
-
-                                <button
-                                  type="button"
-                                  className="customer-action-btn edit"
-                                  title="Edit customer"
-                                  onClick={() =>
-                                    openEditModal(
-                                      customer
-                                    )
-                                  }
-                                >
-                                  <FaEdit />
-                                </button>
-
-                                {isAdmin &&
-                                  (customer.isActive ? (
-                                    <button
-                                      type="button"
-                                      className="customer-action-btn delete"
-                                      title="Deactivate customer"
-                                      disabled={
-                                        busy
-                                      }
-                                      onClick={() =>
-                                        handleDeactivate(
-                                          customer
-                                        )
-                                      }
-                                    >
-                                      {busy ? (
-                                        <FaSyncAlt className="spin" />
-                                      ) : (
-                                        <FaTrash />
-                                      )}
-                                    </button>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      className="customer-action-btn activate"
-                                      title="Activate customer"
-                                      disabled={
-                                        busy
-                                      }
-                                      onClick={() =>
-                                        handleActivate(
-                                          customer
-                                        )
-                                      }
-                                    >
-                                      {busy ? (
-                                        <FaSyncAlt className="spin" />
-                                      ) : (
-                                        <FaCheck />
-                                      )}
-                                    </button>
-                                  ))}
-                              </div>
-                            </td>
-                          </motion.tr>
-                        );
-                      }
-                    )}
+                                  <button
+                                    type="button"
+                                    className="customer-action-btn activate"
+                                    title="Activate customer"
+                                    disabled={busy}
+                                    onClick={() => handleActivate(customer)}
+                                  >
+                                    {busy ? (
+                                      <FaSyncAlt className="spin" />
+                                    ) : (
+                                      <FaCheck />
+                                    )}
+                                  </button>
+                                ))}
+                            </div>
+                          </td>
+                        </motion.tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
 
-              {/* Mobile cards */}
-
               <div className="customers-mobile-list">
-                {customers.map(
-                  (customer) => {
-                    const id =
-                      getCustomerId(
-                        customer
-                      );
+                {customers.map((customer) => {
+                  const id = getCustomerId(customer);
 
-                    const busy =
-                      actionLoading === id;
+                  const busy = actionLoading === id;
 
-                    return (
-                      <div
-                        key={id}
-                        className="customer-mobile-card"
-                      >
-                        <div className="customer-mobile-top">
-                          <div className="customer-table-profile">
-                            <CustomerAvatar
-                              name={
-                                customer.name
-                              }
-                            />
-
-                            <div>
-                              <strong>
-                                {
-                                  customer.name
-                                }
-                              </strong>
-
-                              <span>
-                                {customer.phone ||
-                                  customer.email ||
-                                  "No contact information"}
-                              </span>
-                            </div>
-                          </div>
-
-                          <span
-                            className={`customer-status ${
-                              customer.isActive
-                                ? "customer-status-active"
-                                : "customer-status-inactive"
-                            }`}
-                          >
-                            {customer.isActive ? (
-                              <FaCheck />
-                            ) : (
-                              <FaTimes />
-                            )}
-                          </span>
-                        </div>
-
-                        <div className="customer-mobile-tags">
-                          <span
-                            className={`customer-type-badge ${
-                              customer.customerType ===
-                              "registered"
-                                ? "customer-type-registered"
-                                : "customer-type-walkin"
-                            }`}
-                          >
-                            {customer.customerType ===
-                            "registered"
-                              ? "Registered"
-                              : "Walk-in"}
-                          </span>
-                        </div>
-
-                        <div className="customer-mobile-stats">
-                          <div>
-                            <span>Orders</span>
-
-                            <strong>
-                              {customer.totalOrders ||
-                                0}
-                            </strong>
-                          </div>
+                  return (
+                    <div key={id} className="customer-mobile-card">
+                      <div className="customer-mobile-top">
+                        <div className="customer-table-profile">
+                          <CustomerAvatar name={customer.name} />
 
                           <div>
-                            <span>Spent</span>
+                            <strong>{customer.name}</strong>
 
-                            <strong>
-                              {formatCurrency(
-                                customer.totalSpent
-                              )}
-                            </strong>
-                          </div>
-
-                          <div>
                             <span>
-                              Last Order
+                              {customer.phone ||
+                                customer.email ||
+                                "No contact information"}
                             </span>
-
-                            <strong>
-                              {formatDate(
-                                customer.lastOrderAt
-                              )}
-                            </strong>
                           </div>
                         </div>
 
-                        <div className="customer-mobile-actions">
-                          <button
-                            type="button"
-                            className="customer-btn customer-btn-secondary"
-                            onClick={() =>
-                              openDetails(
-                                customer
-                              )
-                            }
-                          >
-                            <FaEye />
-                            View
-                          </button>
+                        <span
+                          className={`customer-status ${
+                            customer.isActive
+                              ? "customer-status-active"
+                              : "customer-status-inactive"
+                          }`}
+                        >
+                          {customer.isActive ? <FaCheck /> : <FaTimes />}
+                        </span>
+                      </div>
 
-                          <button
-                            type="button"
-                            className="customer-btn customer-btn-secondary"
-                            onClick={() =>
-                              openEditModal(
-                                customer
-                              )
-                            }
-                          >
-                            <FaEdit />
-                            Edit
-                          </button>
+                      <div className="customer-mobile-tags">
+                        <span
+                          className={`customer-type-badge ${
+                            customer.customerType === "registered"
+                              ? "customer-type-registered"
+                              : "customer-type-walkin"
+                          }`}
+                        >
+                          {customer.customerType === "registered"
+                            ? "Registered"
+                            : "Walk-in"}
+                        </span>
+                      </div>
 
-                          {isAdmin &&
-                            (customer.isActive ? (
-                              <button
-                                type="button"
-                                className="customer-btn customer-btn-danger"
-                                disabled={
-                                  busy
-                                }
-                                onClick={() =>
-                                  handleDeactivate(
-                                    customer
-                                  )
-                                }
-                              >
-                                {busy ? (
-                                  <FaSyncAlt className="spin" />
-                                ) : (
-                                  <FaTrash />
-                                )}
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                className="customer-btn customer-btn-success"
-                                disabled={
-                                  busy
-                                }
-                                onClick={() =>
-                                  handleActivate(
-                                    customer
-                                  )
-                                }
-                              >
-                                {busy ? (
-                                  <FaSyncAlt className="spin" />
-                                ) : (
-                                  <FaCheck />
-                                )}
-                              </button>
-                            ))}
+                      <div className="customer-mobile-stats">
+                        <div>
+                          <span>Orders</span>
+
+                          <strong>{customer.totalOrders || 0}</strong>
+                        </div>
+
+                        <div>
+                          <span>Spent</span>
+
+                          <strong>{formatCurrency(customer.totalSpent)}</strong>
+                        </div>
+
+                        <div>
+                          <span>Last Order</span>
+
+                          <strong>{formatDate(customer.lastOrderAt)}</strong>
                         </div>
                       </div>
-                    );
-                  }
-                )}
+
+                      <div className="customer-mobile-actions">
+                        <button
+                          type="button"
+                          className="customer-btn customer-btn-secondary"
+                          onClick={() => openDetails(customer)}
+                        >
+                          <FaEye />
+                          View
+                        </button>
+
+                        <button
+                          type="button"
+                          className="customer-btn customer-btn-secondary"
+                          onClick={() => openEditModal(customer)}
+                        >
+                          <FaEdit />
+                          Edit
+                        </button>
+
+                        {isAdmin &&
+                          (customer.isActive ? (
+                            <button
+                              type="button"
+                              className="customer-btn customer-btn-danger"
+                              disabled={busy}
+                              onClick={() => handleDeactivate(customer)}
+                            >
+                              {busy ? (
+                                <FaSyncAlt className="spin" />
+                              ) : (
+                                <FaTrash />
+                              )}
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="customer-btn customer-btn-success"
+                              disabled={busy}
+                              onClick={() => handleActivate(customer)}
+                            >
+                              {busy ? (
+                                <FaSyncAlt className="spin" />
+                              ) : (
+                                <FaCheck />
+                              )}
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
-              {/* Pagination */}
-
-              {pagination.totalPages >
-                0 && (
+              {pagination.totalPages > 0 && (
                 <div className="customers-pagination">
                   <div className="pagination-summary">
-                    Showing{" "}
-                    <strong>
-                      {displayedRange}
-                    </strong>
+                    Showing <strong>{displayedRange}</strong>
                   </div>
 
                   <div className="pagination-controls">
                     <button
                       type="button"
-                      disabled={
-                        !pagination.hasPreviousPage
-                      }
+                      disabled={!pagination.hasPreviousPage}
                       onClick={() =>
-                        setPage(
-                          (previous) =>
-                            Math.max(
-                              previous - 1,
-                              1
-                            )
-                        )
+                        setPage((previous) => Math.max(previous - 1, 1))
                       }
                     >
                       <FaChevronLeft />
@@ -2301,9 +1705,7 @@ const Customers = () => {
                       {pagination.currentPage}
                     </span>
 
-                    <span className="pagination-of">
-                      of
-                    </span>
+                    <span className="pagination-of">of</span>
 
                     <span className="pagination-total">
                       {pagination.totalPages}
@@ -2311,15 +1713,8 @@ const Customers = () => {
 
                     <button
                       type="button"
-                      disabled={
-                        !pagination.hasNextPage
-                      }
-                      onClick={() =>
-                        setPage(
-                          (previous) =>
-                            previous + 1
-                        )
-                      }
+                      disabled={!pagination.hasNextPage}
+                      onClick={() => setPage((previous) => previous + 1)}
                     >
                       <FaChevronRight />
                     </button>
@@ -2331,10 +1726,6 @@ const Customers = () => {
         </motion.section>
       </div>
 
-      {/* ===================================================
-          FORM MODAL
-      =================================================== */}
-
       <CustomerFormModal
         open={showForm}
         editingCustomer={editingCustomer}
@@ -2345,16 +1736,8 @@ const Customers = () => {
         onSubmit={handleSubmit}
       />
 
-      {/* ===================================================
-          DETAILS MODAL
-      =================================================== */}
-
       <CustomerDetailsModal
-        customer={
-          showDetails
-            ? selectedCustomer
-            : null
-        }
+        customer={showDetails ? selectedCustomer : null}
         onClose={() => {
           setShowDetails(false);
           setSelectedCustomer(null);

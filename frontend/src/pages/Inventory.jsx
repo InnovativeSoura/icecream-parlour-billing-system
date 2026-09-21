@@ -471,7 +471,7 @@ const Inventory = () => {
       </div>
 
       <div className="inventory-container">
-        {/* Header */}
+        
         <header className="inventory-header">
           <div className="inventory-heading">
             <div className="inventory-heading-icon">
@@ -500,7 +500,7 @@ const Inventory = () => {
           </div>
         </header>
 
-        {/* Statistics */}
+        
         <section className="inventory-stats">
           <div className="inventory-stat-card">
             <div className="inventory-stat-icon">
@@ -571,7 +571,7 @@ const Inventory = () => {
           </div>
         </section>
 
-        {/* Summary strip */}
+        
         <section className="inventory-summary-strip">
           <div className="inventory-summary-item">
             <span>Total Units</span>
@@ -624,7 +624,7 @@ const Inventory = () => {
           </div>
         </section>
 
-        {/* Toolbar */}
+        
         <section className="inventory-toolbar">
           <div className="inventory-search">
             <FaSearch />
@@ -692,7 +692,7 @@ const Inventory = () => {
           </div>
         </section>
 
-        {/* Inventory table */}
+        
         <section className="inventory-table-card">
           <div className="inventory-table-header">
             <div>
@@ -918,7 +918,7 @@ const Inventory = () => {
           )}
         </section>
 
-        {/* Mobile cards */}
+        
         {!loading &&
           filteredInventory.length > 0 && (
             <section className="inventory-mobile-list">
@@ -1041,9 +1041,7 @@ const Inventory = () => {
           )}
       </div>
 
-      {/* =========================
-          ADJUST STOCK MODAL
-      ========================== */}
+      
 
       {showAdjustModal &&
         selectedProduct && (
@@ -1270,9 +1268,7 @@ const Inventory = () => {
           </div>
         )}
 
-      {/* =========================
-          MOVEMENT HISTORY MODAL
-      ========================== */}
+      
 
       {showMovementsModal &&
         selectedProduct && (

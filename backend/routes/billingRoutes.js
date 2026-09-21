@@ -10,29 +10,14 @@ const {
   downloadInvoice,
 } = require("../controllers/billingController");
 
-// Create Invoice
-router.post(
-  "/",
-  auth,
-  authorizeRoles("cashier", "admin"),
-  createInvoice
-);
+router.post("/", auth, authorizeRoles("cashier", "admin"), createInvoice);
 
-// Get All Invoices
 router.get(
   "/",
   auth,
-  authorizeRoles(
-    "admin",
-    "cashier",
-    "accountant"
-  ),
-  getInvoices
+  authorizeRoles("admin", "cashier", "accountant"),
+  getInvoices,
 );
-router.get(
-  "/invoice/:id",
-  auth,
-  downloadInvoice
-);
+router.get("/invoice/:id", auth, downloadInvoice);
 
 module.exports = router;

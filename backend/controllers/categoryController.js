@@ -1,10 +1,5 @@
 import Category from "../models/Category.js";
 
-/*
- * @desc    Get all categories
- * @route   GET /api/categories
- * @access  Admin / Staff
- */
 export const getCategories = async (req, res) => {
   try {
     const categories = await Category.find()
@@ -29,11 +24,6 @@ export const getCategories = async (req, res) => {
   }
 };
 
-/*
- * @desc    Get active categories
- * @route   GET /api/categories/active
- * @access  Public
- */
 export const getActiveCategories = async (req, res) => {
   try {
     const categories = await Category.find({
@@ -60,11 +50,6 @@ export const getActiveCategories = async (req, res) => {
   }
 };
 
-/*
- * @desc    Get single category
- * @route   GET /api/categories/:id
- * @access  Admin / Staff
- */
 export const getCategoryById = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
@@ -90,20 +75,9 @@ export const getCategoryById = async (req, res) => {
   }
 };
 
-/*
- * @desc    Create category
- * @route   POST /api/categories
- * @access  Admin
- */
 export const createCategory = async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      image,
-      isActive,
-      sortOrder,
-    } = req.body;
+    const { name, description, image, isActive, sortOrder } = req.body;
 
     if (!name || !name.trim()) {
       return res.status(400).json({
@@ -132,14 +106,8 @@ export const createCategory = async (req, res) => {
       name: normalizedName,
       description: description || "",
       image: image || "",
-      isActive:
-        typeof isActive === "boolean"
-          ? isActive
-          : true,
-      sortOrder:
-        typeof sortOrder === "number"
-          ? sortOrder
-          : 0,
+      isActive: typeof isActive === "boolean" ? isActive : true,
+      sortOrder: typeof sortOrder === "number" ? sortOrder : 0,
     });
 
     res.status(201).json({
@@ -164,24 +132,11 @@ export const createCategory = async (req, res) => {
   }
 };
 
-/*
- * @desc    Update category
- * @route   PUT /api/categories/:id
- * @access  Admin
- */
 export const updateCategory = async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      image,
-      isActive,
-      sortOrder,
-    } = req.body;
+    const { name, description, image, isActive, sortOrder } = req.body;
 
-    const category = await Category.findById(
-      req.params.id
-    );
+    const category = await Category.findById(req.params.id);
 
     if (!category) {
       return res.status(404).json({
@@ -200,22 +155,20 @@ export const updateCategory = async (req, res) => {
         });
       }
 
-      const duplicateCategory =
-        await Category.findOne({
-          name: {
-            $regex: `^${normalizedName}$`,
-            $options: "i",
-          },
-          _id: {
-            $ne: category._id,
-          },
-        });
+      const duplicateCategory = await Category.findOne({
+        name: {
+          $regex: `^${normalizedName}$`,
+          $options: "i",
+        },
+        _id: {
+          $ne: category._id,
+        },
+      });
 
       if (duplicateCategory) {
         return res.status(409).json({
           success: false,
-          message:
-            "Another category with this name already exists",
+          message: "Another category with this name already exists",
         });
       }
 
@@ -255,16 +208,9 @@ export const updateCategory = async (req, res) => {
   }
 };
 
-/*
- * @desc    Delete category
- * @route   DELETE /api/categories/:id
- * @access  Admin
- */
 export const deleteCategory = async (req, res) => {
   try {
-    const category = await Category.findById(
-      req.params.id
-    );
+    const category = await Category.findById(req.params.id);
 
     if (!category) {
       return res.status(404).json({

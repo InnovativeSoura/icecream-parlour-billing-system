@@ -29,16 +29,7 @@ const inventorySchema = new mongoose.Schema(
 
     unit: {
       type: String,
-      enum: [
-        "piece",
-        "scoop",
-        "cup",
-        "cone",
-        "pack",
-        "ml",
-        "gram",
-        "kg",
-      ],
+      enum: ["piece", "scoop", "cup", "cone", "pack", "ml", "gram", "kg"],
       default: "piece",
     },
 
@@ -54,44 +45,25 @@ const inventorySchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-inventorySchema.virtual("availableStock").get(
-  function () {
-    return Math.max(
-      0,
-      this.currentStock - this.reservedStock
-    );
-  }
-);
+inventorySchema.virtual("availableStock").get(function () {
+  return Math.max(0, this.currentStock - this.reservedStock);
+});
 
-inventorySchema.virtual("isLowStock").get(
-  function () {
-    return (
-      this.currentStock <=
-      this.lowStockThreshold
-    );
-  }
-);
+inventorySchema.virtual("isLowStock").get(function () {
+  return this.currentStock <= this.lowStockThreshold;
+});
 
-inventorySchema.set(
-  "toJSON",
-  {
-    virtuals: true,
-  }
-);
+inventorySchema.set("toJSON", {
+  virtuals: true,
+});
 
-inventorySchema.set(
-  "toObject",
-  {
-    virtuals: true,
-  }
-);
+inventorySchema.set("toObject", {
+  virtuals: true,
+});
 
-const Inventory = mongoose.model(
-  "Inventory",
-  inventorySchema
-);
+const Inventory = mongoose.model("Inventory", inventorySchema);
 
 export default Inventory;

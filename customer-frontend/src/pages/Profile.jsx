@@ -57,10 +57,7 @@ const Profile = () => {
     try {
       setLoading(true);
 
-      /*
-       * Connect this endpoint to your customer/user profile
-       * update controller when the backend profile API is ready.
-       */
+      
       await api.put("/auth/profile", {
         name: form.name.trim(),
         phone: form.phone.trim(),
@@ -95,7 +92,6 @@ const Profile = () => {
 
   return (
     <div className="customer-profile-page">
-      {/* HEADER */}
       <motion.div
         className="profile-page-header"
         initial={{ opacity: 0, y: 18 }}
@@ -120,9 +116,9 @@ const Profile = () => {
         </div>
       </motion.div>
 
-      {/* PROFILE LAYOUT */}
+      
       <div className="profile-layout">
-        {/* LEFT PROFILE CARD */}
+        
         <motion.aside
           className="profile-overview-card"
           initial={{ opacity: 0, x: -20 }}
@@ -157,7 +153,7 @@ const Profile = () => {
           </div>
         </motion.aside>
 
-        {/* RIGHT FORM */}
+        
         <motion.section
           className="profile-form-card"
           initial={{ opacity: 0, x: 20 }}
@@ -179,7 +175,7 @@ const Profile = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="profile-form-grid">
-              {/* NAME */}
+              
               <div className="profile-field">
                 <label htmlFor="name">
                   Full Name
@@ -199,7 +195,7 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* EMAIL */}
+              
               <div className="profile-field">
                 <label htmlFor="email">
                   Email Address
@@ -223,7 +219,7 @@ const Profile = () => {
                 </small>
               </div>
 
-              {/* PHONE */}
+              
               <div className="profile-field">
                 <label htmlFor="phone">
                   Phone Number
@@ -243,7 +239,7 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* ROLE */}
+              
               <div className="profile-field">
                 <label htmlFor="role">
                   Account Role
@@ -261,7 +257,7 @@ const Profile = () => {
                 </div>
               </div>
 
-              {/* ADDRESS */}
+              
               <div className="profile-field full-width">
                 <label htmlFor="address">
                   Delivery Address

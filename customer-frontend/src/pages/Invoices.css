@@ -1,7 +1,3 @@
-/* ============================================================
-   CUSTOMER INVOICES PAGE
-============================================================ */
-
 .customer-invoices-page {
   min-height: 100%;
   padding: 34px 38px 50px;
@@ -16,17 +12,8 @@
       rgba(236, 72, 153, 0.07),
       transparent 26%
     ),
-    linear-gradient(
-      135deg,
-      #f8f9fd 0%,
-      #fbfaff 50%,
-      #f8f9fd 100%
-    );
+    linear-gradient(135deg, #f8f9fd 0%, #fbfaff 50%, #f8f9fd 100%);
 }
-
-/* ============================================================
-   HEADER
-============================================================ */
 
 .invoices-header {
   position: relative;
@@ -40,12 +27,11 @@
   overflow: hidden;
   border: 1px solid rgba(228, 225, 241, 0.9);
   border-radius: 24px;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.96),
-      rgba(249, 247, 255, 0.94)
-    );
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(249, 247, 255, 0.94)
+  );
   box-shadow:
     0 18px 45px rgba(49, 39, 94, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
@@ -126,21 +112,12 @@
   border: 1px solid rgba(216, 207, 250, 0.9);
   border-radius: 20px;
   color: #7656e8;
-  background:
-    linear-gradient(
-      145deg,
-      #f0ebff,
-      #f9eafa
-    );
+  background: linear-gradient(145deg, #f0ebff, #f9eafa);
   font-size: 25px;
   box-shadow:
     0 12px 28px rgba(112, 82, 222, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
-
-/* ============================================================
-   SUMMARY
-============================================================ */
 
 .invoice-summary-grid {
   display: grid;
@@ -221,10 +198,6 @@
   white-space: nowrap;
 }
 
-/* ============================================================
-   TOOLBAR
-============================================================ */
-
 .invoices-toolbar {
   min-height: 72px;
   margin-bottom: 14px;
@@ -258,8 +231,7 @@
 .invoice-search:focus-within {
   border-color: #cfc3fa;
   background: #ffffff;
-  box-shadow:
-    0 0 0 4px rgba(124, 58, 237, 0.07);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.07);
 }
 
 .invoice-search > svg {
@@ -297,10 +269,6 @@
   font-weight: 750;
 }
 
-/* ============================================================
-   MAIN INVOICE CARD
-============================================================ */
-
 .invoices-card {
   overflow: hidden;
   border: 1px solid rgba(231, 229, 239, 0.95);
@@ -310,10 +278,6 @@
     0 18px 45px rgba(42, 34, 79, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
-
-/* ============================================================
-   LOADING
-============================================================ */
 
 .invoice-loading {
   min-height: 360px;
@@ -349,10 +313,6 @@
   }
 }
 
-/* ============================================================
-   EMPTY
-============================================================ */
-
 .invoice-empty {
   min-height: 370px;
   padding: 55px 25px;
@@ -373,12 +333,7 @@
   border: 1px solid #e6defd;
   border-radius: 23px;
   color: #7657e8;
-  background:
-    linear-gradient(
-      145deg,
-      #f0ebff,
-      #fbeaf5
-    );
+  background: linear-gradient(145deg, #f0ebff, #fbeaf5);
   font-size: 26px;
   box-shadow: 0 14px 30px rgba(112, 82, 222, 0.1);
 }
@@ -398,10 +353,6 @@
   line-height: 1.7;
 }
 
-/* ============================================================
-   DESKTOP TABLE
-============================================================ */
-
 .invoice-table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -415,12 +366,7 @@
 }
 
 .invoice-table thead {
-  background:
-    linear-gradient(
-      180deg,
-      #faf9fe,
-      #f7f5fc
-    );
+  background: linear-gradient(180deg, #faf9fe, #f7f5fc);
 }
 
 .invoice-table th {
@@ -445,8 +391,7 @@
 }
 
 .invoice-table tbody tr {
-  transition:
-    background 0.18s ease;
+  transition: background 0.18s ease;
 }
 
 .invoice-table tbody tr:hover {
@@ -456,10 +401,6 @@
 .invoice-table tbody tr:last-child td {
   border-bottom: 0;
 }
-
-/* ============================================================
-   INVOICE NUMBER
-============================================================ */
 
 .invoice-number {
   min-width: 150px;
@@ -504,10 +445,6 @@
   font-weight: 600;
 }
 
-/* ============================================================
-   DATE
-============================================================ */
-
 .invoice-date {
   min-width: 95px;
 }
@@ -526,10 +463,6 @@
   font-size: 9px;
 }
 
-/* ============================================================
-   ITEM COUNT
-============================================================ */
-
 .item-count {
   display: inline-flex;
   min-height: 26px;
@@ -541,10 +474,6 @@
   font-size: 9px;
   font-weight: 750;
 }
-
-/* ============================================================
-   PAYMENT METHOD
-============================================================ */
 
 .payment-method {
   display: inline-flex;
@@ -563,10 +492,6 @@
   font-size: 10px;
   font-weight: 650;
 }
-
-/* ============================================================
-   STATUS
-============================================================ */
 
 .invoice-status {
   min-height: 27px;
@@ -600,20 +525,12 @@
   background: #ffedf1;
 }
 
-/* ============================================================
-   TOTAL
-============================================================ */
-
 .invoice-total {
   color: #2d3044;
   font-size: 12px;
   font-weight: 850;
   white-space: nowrap;
 }
-
-/* ============================================================
-   ACTIONS
-============================================================ */
 
 .invoice-actions {
   display: flex;
@@ -661,10 +578,6 @@
   background: #effcf6;
   box-shadow: 0 7px 17px rgba(19, 137, 91, 0.1);
 }
-
-/* ============================================================
-   MOBILE LIST
-============================================================ */
 
 .invoice-mobile-list {
   display: none;
@@ -778,10 +691,6 @@
   font-size: 10px;
 }
 
-/* ============================================================
-   MODAL
-============================================================ */
-
 .invoice-modal-overlay {
   position: fixed;
   inset: 0;
@@ -825,12 +734,7 @@
   justify-content: space-between;
   gap: 15px;
   border-bottom: 1px solid #efedf4;
-  background:
-    linear-gradient(
-      135deg,
-      #ffffff,
-      #faf8ff
-    );
+  background: linear-gradient(135deg, #ffffff, #faf8ff);
 }
 
 .invoice-modal-header span {
@@ -871,10 +775,6 @@
   background: #fff6f8;
   transform: rotate(3deg);
 }
-
-/* ============================================================
-   MODAL META
-============================================================ */
 
 .invoice-modal-meta {
   display: grid;
@@ -920,10 +820,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-/* ============================================================
-   MODAL ITEMS
-============================================================ */
 
 .invoice-modal-items {
   padding: 20px;
@@ -980,10 +876,6 @@
   font-weight: 850;
 }
 
-/* ============================================================
-   MODAL TOTAL
-============================================================ */
-
 .invoice-modal-total {
   margin: 0 20px;
   padding: 16px 0;
@@ -1005,10 +897,6 @@
   font-size: 20px;
   font-weight: 900;
 }
-
-/* ============================================================
-   MODAL FOOTER
-============================================================ */
 
 .invoice-modal-footer {
   padding: 15px 20px 20px;
@@ -1036,20 +924,13 @@
 .modal-download {
   border: 0;
   color: #ffffff;
-  background:
-    linear-gradient(
-      135deg,
-      #7655eb,
-      #a157dc
-    );
-  box-shadow:
-    0 9px 20px rgba(118, 85, 235, 0.2);
+  background: linear-gradient(135deg, #7655eb, #a157dc);
+  box-shadow: 0 9px 20px rgba(118, 85, 235, 0.2);
 }
 
 .modal-download:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 13px 27px rgba(118, 85, 235, 0.25);
+  box-shadow: 0 13px 27px rgba(118, 85, 235, 0.25);
 }
 
 .modal-close {
@@ -1062,10 +943,6 @@
   border-color: #dcd8e7;
   background: #f8f7fb;
 }
-
-/* ============================================================
-   RESPONSIVE — 1100px
-============================================================ */
 
 @media (max-width: 1100px) {
   .customer-invoices-page {
@@ -1082,10 +959,6 @@
     padding-right: 13px;
   }
 }
-
-/* ============================================================
-   RESPONSIVE — 850px
-============================================================ */
 
 @media (max-width: 850px) {
   .customer-invoices-page {
@@ -1112,10 +985,6 @@
     grid-template-columns: 1fr;
   }
 }
-
-/* ============================================================
-   RESPONSIVE — 760px
-============================================================ */
 
 @media (max-width: 760px) {
   .customer-invoices-page {
@@ -1212,10 +1081,6 @@
     padding: 13px 15px 15px;
   }
 }
-
-/* ============================================================
-   RESPONSIVE — 520px
-============================================================ */
 
 @media (max-width: 520px) {
   .customer-invoices-page {
@@ -1316,10 +1181,6 @@
   }
 }
 
-/* ============================================================
-   RESPONSIVE — 380px
-============================================================ */
-
 @media (max-width: 380px) {
   .invoices-header {
     align-items: flex-start;
@@ -1363,10 +1224,6 @@
   }
 }
 
-/* ============================================================
-   ACCESSIBILITY
-============================================================ */
-
 .invoice-action:focus-visible,
 .invoice-modal-header button:focus-visible,
 .invoice-modal-footer button:focus-visible,
@@ -1378,10 +1235,6 @@
 .invoice-search input:focus-visible {
   outline: none;
 }
-
-/* ============================================================
-   REDUCED MOTION
-============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
   .invoice-spinner {

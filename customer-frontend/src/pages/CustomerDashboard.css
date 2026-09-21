@@ -1,8 +1,3 @@
-/* =========================================================
-   CUSTOMER DASHBOARD
-   Premium Light / Enlarged Content Layout
-   ========================================================= */
-
 .customer-dashboard-page {
   position: relative;
   width: 100%;
@@ -29,11 +24,6 @@
 
   color: #211d35;
 }
-
-
-/* =========================================================
-   BACKGROUND GLOWS
-   ========================================================= */
 
 .customer-dashboard-glow {
   position: absolute;
@@ -67,11 +57,6 @@
   background: rgba(99, 102, 241, 0.04);
 }
 
-
-/* =========================================================
-   MAIN CONTENT
-   ========================================================= */
-
 .customer-dashboard-container {
   position: relative;
   z-index: 2;
@@ -82,11 +67,6 @@
 
   padding: 34px 0 50px;
 }
-
-
-/* =========================================================
-   HERO
-   ========================================================= */
 
 .customer-dashboard-hero {
   position: relative;
@@ -112,12 +92,7 @@
       rgba(255, 255, 255, 0.07),
       transparent 28%
     ),
-    linear-gradient(
-      135deg,
-      #6543ef 0%,
-      #7942e9 45%,
-      #a64fd2 100%
-    );
+    linear-gradient(135deg, #6543ef 0%, #7942e9 45%, #a64fd2 100%);
 
   box-shadow:
     0 24px 60px rgba(91, 62, 190, 0.18),
@@ -161,11 +136,6 @@
 
   pointer-events: none;
 }
-
-
-/* =========================================================
-   HERO CONTENT
-   ========================================================= */
 
 .hero-content {
   position: relative;
@@ -227,11 +197,6 @@
   line-height: 1.7;
 }
 
-
-/* =========================================================
-   HERO BUTTON
-   ========================================================= */
-
 .hero-primary-button {
   display: inline-flex;
   align-items: center;
@@ -259,8 +224,7 @@
 
   cursor: pointer;
 
-  box-shadow:
-    0 10px 25px rgba(45, 25, 104, 0.18);
+  box-shadow: 0 10px 25px rgba(45, 25, 104, 0.18);
 
   transition:
     background 0.2s ease,
@@ -271,8 +235,7 @@
 .hero-primary-button:hover {
   background: #faf9ff;
 
-  box-shadow:
-    0 13px 30px rgba(45, 25, 104, 0.25);
+  box-shadow: 0 13px 30px rgba(45, 25, 104, 0.25);
 
   transform: translateY(-1px);
 }
@@ -284,11 +247,6 @@
 .hero-primary-button svg:last-child {
   font-size: 9px;
 }
-
-
-/* =========================================================
-   HERO VISUAL
-   ========================================================= */
 
 .hero-visual {
   position: relative;
@@ -393,11 +351,6 @@
   bottom: 41px;
 }
 
-
-/* =========================================================
-   SECTION HEADINGS
-   ========================================================= */
-
 .dashboard-section-heading {
   display: flex;
   align-items: flex-end;
@@ -487,11 +440,6 @@
   letter-spacing: -0.5px;
 }
 
-
-/* =========================================================
-   VIEW ALL
-   ========================================================= */
-
 .view-all-button {
   display: inline-flex;
   align-items: center;
@@ -532,16 +480,10 @@
   transform: translateX(3px);
 }
 
-
-/* =========================================================
-   ACTIVITY STATS
-   ========================================================= */
-
 .customer-stats-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
   gap: 14px;
 }
@@ -671,16 +613,10 @@
   background: #f7f5ff;
 }
 
-
-/* =========================================================
-   QUICK ACCESS
-   ========================================================= */
-
 .customer-quick-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
   gap: 14px;
 }
@@ -709,8 +645,7 @@
 
   font-family: inherit;
 
-  box-shadow:
-    0 7px 23px rgba(40, 34, 75, 0.04);
+  box-shadow: 0 7px 23px rgba(40, 34, 75, 0.04);
 
   cursor: pointer;
 
@@ -723,8 +658,7 @@
 .customer-quick-card:hover {
   border-color: #ddd5fa;
 
-  box-shadow:
-    0 13px 30px rgba(76, 55, 154, 0.085);
+  box-shadow: 0 13px 30px rgba(76, 55, 154, 0.085);
 
   transform: translateY(-2px);
 }
@@ -829,11 +763,6 @@
   transform: translateX(3px);
 }
 
-
-/* =========================================================
-   RECENT ORDERS CARD
-   ========================================================= */
-
 .recent-orders-card {
   position: relative;
 
@@ -864,11 +793,6 @@
     0 14px 35px rgba(70, 73, 110, 0.065),
     0 3px 8px rgba(70, 73, 110, 0.025);
 }
-
-
-/* =========================================================
-   EMPTY RECENT ORDERS STATE
-   ========================================================= */
 
 .recent-orders-card.is-empty {
   align-items: center;
@@ -913,19 +837,13 @@
 
   border-radius: 16px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #f0eaff,
-      #f8efff
-    );
+  background: linear-gradient(135deg, #f0eaff, #f8efff);
 
   color: #7654e8;
 
   font-size: 19px;
 
-  box-shadow:
-    0 8px 20px rgba(118, 84, 232, 0.1);
+  box-shadow: 0 8px 20px rgba(118, 84, 232, 0.1);
 }
 
 .recent-empty-label {
@@ -987,12 +905,6 @@
   text-align: center;
 }
 
-
-/* =========================================================
-   START SHOPPING BUTTON
-   Slightly lower than previous version
-   ========================================================= */
-
 .start-shopping-button {
   position: relative;
   z-index: 2;
@@ -1013,12 +925,7 @@
 
   border-radius: 11px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #7650e8,
-      #a34cdb
-    );
+  background: linear-gradient(135deg, #7650e8, #a34cdb);
 
   color: #ffffff;
 
@@ -1032,8 +939,7 @@
 
   cursor: pointer;
 
-  box-shadow:
-    0 9px 20px rgba(119, 80, 225, 0.22);
+  box-shadow: 0 9px 20px rgba(119, 80, 225, 0.22);
 
   transition:
     transform 0.2s ease,
@@ -1046,8 +952,7 @@
 
   filter: brightness(1.03);
 
-  box-shadow:
-    0 13px 27px rgba(119, 80, 225, 0.3);
+  box-shadow: 0 13px 27px rgba(119, 80, 225, 0.3);
 }
 
 .start-shopping-button:active {
@@ -1057,11 +962,6 @@
 .start-shopping-button svg {
   font-size: 8px;
 }
-
-
-/* =========================================================
-   RECENT ORDERS LIST
-   ========================================================= */
 
 .recent-orders-list {
   position: relative;
@@ -1097,7 +997,7 @@
 
   border: 0;
 
-  border-bottom: 1px solid #eeeeF4;
+  border-bottom: 1px solid #eeeef4;
 
   outline: none;
 
@@ -1124,8 +1024,7 @@
 .recent-order-row:hover {
   background: #fcfbff;
 
-  box-shadow:
-    inset 3px 0 0 #7650e9;
+  box-shadow: inset 3px 0 0 #7650e9;
 }
 
 .recent-order-row:focus-visible {
@@ -1133,11 +1032,6 @@
     inset 3px 0 0 #7650e9,
     inset 0 0 0 1px #ddd3fb;
 }
-
-
-/* =========================================================
-   ORDER ICON
-   ========================================================= */
 
 .recent-order-icon {
   display: grid;
@@ -1156,11 +1050,6 @@
 
   font-size: 13px;
 }
-
-
-/* =========================================================
-   ORDER INFORMATION
-   ========================================================= */
 
 .recent-order-info {
   display: flex;
@@ -1207,11 +1096,6 @@
   white-space: nowrap;
 }
 
-
-/* =========================================================
-   ORDER TOTAL
-   ========================================================= */
-
 .recent-order-total {
   color: #29253b;
 
@@ -1223,11 +1107,6 @@
 
   white-space: nowrap;
 }
-
-
-/* =========================================================
-   ORDER STATUS
-   ========================================================= */
 
 .recent-order-status {
   display: inline-flex;
@@ -1283,11 +1162,6 @@
   color: #d95353;
 }
 
-
-/* =========================================================
-   ORDER ARROW
-   ========================================================= */
-
 .recent-order-arrow {
   display: grid;
   place-items: center;
@@ -1317,11 +1191,6 @@
   transform: translateX(3px);
 }
 
-
-/* =========================================================
-   LOADING
-   ========================================================= */
-
 .recent-empty-icon .spin,
 .spin {
   animation: spin 0.9s linear infinite;
@@ -1332,11 +1201,6 @@
     transform: rotate(360deg);
   }
 }
-
-
-/* =========================================================
-   CART NOTICE
-   ========================================================= */
 
 .dashboard-cart-notice {
   display: flex;
@@ -1356,12 +1220,7 @@
 
   border-radius: 15px;
 
-  background:
-    linear-gradient(
-      90deg,
-      #f8f4ff 0%,
-      #fffaff 100%
-    );
+  background: linear-gradient(90deg, #f8f4ff 0%, #fffaff 100%);
 
   color: inherit;
 
@@ -1371,8 +1230,7 @@
 
   cursor: pointer;
 
-  box-shadow:
-    0 7px 23px rgba(90, 56, 173, 0.045);
+  box-shadow: 0 7px 23px rgba(90, 56, 173, 0.045);
 
   transition:
     border-color 0.2s ease,
@@ -1383,8 +1241,7 @@
 .dashboard-cart-notice:hover {
   border-color: #d7c7fa;
 
-  box-shadow:
-    0 11px 28px rgba(90, 56, 173, 0.08);
+  box-shadow: 0 11px 28px rgba(90, 56, 173, 0.08);
 
   transform: translateY(-1px);
 }
@@ -1459,11 +1316,6 @@
   transform: translateX(4px);
 }
 
-
-/* =========================================================
-   1200px
-   ========================================================= */
-
 @media (max-width: 1200px) {
   .customer-dashboard-container {
     width: min(100% - 42px, 1120px);
@@ -1514,19 +1366,13 @@
   }
 }
 
-
-/* =========================================================
-   1000px
-   ========================================================= */
-
 @media (max-width: 1000px) {
   .customer-dashboard-container {
     width: min(100% - 32px, 940px);
   }
 
   .customer-stats-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .customer-quick-grid {
@@ -1581,11 +1427,6 @@
   }
 }
 
-
-/* =========================================================
-   800px
-   ========================================================= */
-
 @media (max-width: 800px) {
   .customer-dashboard-container {
     width: calc(100% - 26px);
@@ -1627,11 +1468,6 @@
     display: none;
   }
 }
-
-
-/* =========================================================
-   620px
-   ========================================================= */
 
 @media (max-width: 620px) {
   .customer-dashboard-container {
@@ -1848,11 +1684,6 @@
   }
 }
 
-
-/* =========================================================
-   440px
-   ========================================================= */
-
 @media (max-width: 440px) {
   .customer-dashboard-container {
     width: calc(100% - 14px);
@@ -1961,11 +1792,6 @@
     height: 20px;
   }
 }
-
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
   .customer-stat-card,

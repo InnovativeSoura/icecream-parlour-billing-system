@@ -4,7 +4,7 @@ const API_URL = import.meta.env.RENDER_API_URL;
 
 if (!API_URL) {
   console.error(
-    "RENDER_API_URL is not configured. Check your frontend environment variables."
+    "RENDER_API_URL is not configured. Check your frontend environment variables.",
   );
 }
 
@@ -15,7 +15,6 @@ const api = axios.create({
   },
 });
 
-// Attach JWT automatically
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("icecream_token");
@@ -26,10 +25,9 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
-// Handle expired/invalid authentication
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -39,16 +37,13 @@ api.interceptors.response.use(
       localStorage.removeItem("icecream_token");
       localStorage.removeItem("icecream_user");
 
-      if (
-        currentPath !== "/login" &&
-        currentPath !== "/register"
-      ) {
+      if (currentPath !== "/login" && currentPath !== "/register") {
         window.location.href = "/login";
       }
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

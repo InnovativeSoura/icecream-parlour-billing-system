@@ -1,8 +1,3 @@
-/* =========================================================
-   STAFF CUSTOMERS
-   Premium light customer-management interface
-   ========================================================= */
-
 .staff-customers-page {
   width: 100%;
   max-width: 1600px;
@@ -10,10 +5,6 @@
   padding: 6px 4px 36px;
   color: #17213d;
 }
-
-/* =========================================================
-   HEADER
-   ========================================================= */
 
 .staff-customers-header {
   display: flex;
@@ -89,10 +80,6 @@
   opacity: 0.65;
 }
 
-/* =========================================================
-   STAT CARDS
-   ========================================================= */
-
 .staff-customers-stat-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -108,11 +95,7 @@
   padding: 20px;
   border: 1px solid #eceaf4;
   border-radius: 18px;
-  background: linear-gradient(
-    145deg,
-    #ffffff 0%,
-    #fcfbff 100%
-  );
+  background: linear-gradient(145deg, #ffffff 0%, #fcfbff 100%);
   box-shadow:
     0 7px 25px rgba(43, 33, 85, 0.055),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
@@ -181,10 +164,6 @@
   white-space: nowrap;
 }
 
-/* =========================================================
-   MAIN PANEL
-   ========================================================= */
-
 .staff-customers-panel {
   overflow: hidden;
   border: 1px solid #ebe9f3;
@@ -194,10 +173,6 @@
     0 9px 32px rgba(43, 33, 85, 0.055),
     0 1px 2px rgba(20, 20, 40, 0.025);
 }
-
-/* =========================================================
-   TOOLBAR
-   ========================================================= */
 
 .staff-customers-toolbar {
   display: flex;
@@ -346,10 +321,6 @@
   cursor: pointer;
 }
 
-/* =========================================================
-   FILTERS
-   ========================================================= */
-
 .staff-customers-filters {
   display: flex;
   align-items: flex-end;
@@ -429,10 +400,6 @@
   background: #e4ddf3;
 }
 
-/* =========================================================
-   RESULT BAR
-   ========================================================= */
-
 .staff-customers-result-bar {
   display: flex;
   align-items: center;
@@ -465,10 +432,6 @@
   color: #7950d0;
   font-size: 10px;
 }
-
-/* =========================================================
-   TABLE
-   ========================================================= */
 
 .staff-customers-table-wrapper {
   width: 100%;
@@ -529,10 +492,6 @@
   vertical-align: middle;
 }
 
-/* =========================================================
-   CUSTOMER NAME
-   ========================================================= */
-
 .staff-customer-name-cell {
   display: flex;
   align-items: center;
@@ -577,10 +536,6 @@
   font-weight: 650;
 }
 
-/* =========================================================
-   CONTACT
-   ========================================================= */
-
 .staff-customer-contact {
   display: flex;
   min-width: 190px;
@@ -605,10 +560,6 @@
   color: #9572d4;
   font-size: 8px;
 }
-
-/* =========================================================
-   CUSTOMER TYPE
-   ========================================================= */
 
 .staff-customer-type {
   display: inline-flex;
@@ -636,10 +587,6 @@
 .staff-customer-type svg {
   font-size: 9px;
 }
-
-/* =========================================================
-   ORDERS / SPENDING
-   ========================================================= */
 
 .staff-customer-orders-count {
   display: inline-grid;
@@ -676,10 +623,6 @@
   font-size: 9px;
 }
 
-/* =========================================================
-   STATUS
-   ========================================================= */
-
 .staff-customer-status {
   display: inline-flex;
   align-items: center;
@@ -708,10 +651,6 @@
   border-radius: 50%;
   background: currentColor;
 }
-
-/* =========================================================
-   VIEW BUTTON
-   ========================================================= */
 
 .staff-view-customer-btn {
   display: inline-flex;
@@ -743,10 +682,6 @@
   font-size: 10px;
 }
 
-/* =========================================================
-   LOADING
-   ========================================================= */
-
 .staff-customers-loading {
   display: flex;
   min-height: 400px;
@@ -762,10 +697,6 @@
   color: #7441d5;
   font-size: 18px;
 }
-
-/* =========================================================
-   EMPTY
-   ========================================================= */
 
 .staff-customers-empty {
   display: flex;
@@ -815,10 +746,6 @@
   font-weight: 800;
   cursor: pointer;
 }
-
-/* =========================================================
-   PAGINATION
-   ========================================================= */
 
 .staff-customers-pagination {
   display: flex;
@@ -880,17 +807,9 @@
   opacity: 0.4;
 }
 
-/* =========================================================
-   MOBILE CUSTOMER LIST
-   ========================================================= */
-
 .staff-customers-mobile-list {
   display: none;
 }
-
-/* =========================================================
-   MOBILE CUSTOMER CARD
-   ========================================================= */
 
 .staff-mobile-customer-card {
   border: 1px solid #ebe8f2;
@@ -1004,10 +923,6 @@
   cursor: pointer;
 }
 
-/* =========================================================
-   CUSTOMER MODAL
-   ========================================================= */
-
 .staff-customer-modal-overlay {
   position: fixed;
   z-index: 1200;
@@ -1025,11 +940,7 @@
   overflow-y: auto;
   border: 1px solid rgba(255, 255, 255, 0.75);
   border-radius: 22px;
-  background: linear-gradient(
-    145deg,
-    #ffffff 0%,
-    #fcfbff 100%
-  );
+  background: linear-gradient(145deg, #ffffff 0%, #fcfbff 100%);
   box-shadow:
     0 30px 80px rgba(27, 19, 53, 0.2),
     0 8px 25px rgba(27, 19, 53, 0.08);
@@ -1049,10 +960,6 @@
   border-radius: 10px;
   background: #d7d0e9;
 }
-
-/* =========================================================
-   MODAL HEADER
-   ========================================================= */
 
 .staff-customer-modal-header {
   display: flex;
@@ -1109,10 +1016,6 @@
   color: #613bb4;
 }
 
-/* =========================================================
-   PROFILE SUMMARY
-   ========================================================= */
-
 .staff-customer-profile-summary {
   display: flex;
   align-items: center;
@@ -1165,10 +1068,6 @@
   font-size: 8px;
 }
 
-/* =========================================================
-   MODAL STATS
-   ========================================================= */
-
 .staff-customer-detail-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1208,10 +1107,6 @@
   white-space: nowrap;
 }
 
-/* =========================================================
-   MODAL SECTION
-   ========================================================= */
-
 .staff-customer-modal-section {
   padding: 19px 24px;
 }
@@ -1230,10 +1125,6 @@
   color: #7844d7;
   font-size: 11px;
 }
-
-/* =========================================================
-   ORDER HISTORY
-   ========================================================= */
 
 .staff-customer-order-list {
   display: flex;
@@ -1368,10 +1259,6 @@
   white-space: nowrap;
 }
 
-/* =========================================================
-   ORDERS LOADING / EMPTY
-   ========================================================= */
-
 .staff-customer-orders-loading {
   display: flex;
   min-height: 130px;
@@ -1422,10 +1309,6 @@
   font-size: 9px;
 }
 
-/* =========================================================
-   MODAL FOOTER
-   ========================================================= */
-
 .staff-customer-modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -1449,10 +1332,6 @@
   background: #f8f6fb;
 }
 
-/* =========================================================
-   ANIMATION
-   ========================================================= */
-
 .spin {
   animation: staffCustomersSpin 0.9s linear infinite;
 }
@@ -1463,23 +1342,12 @@
   }
 }
 
-/* =========================================================
-   ACCESSIBILITY
-   ========================================================= */
-
-.staff-customers-page
-  button:focus-visible,
-.staff-customers-page
-  select:focus-visible,
-.staff-customers-page
-  input:focus-visible {
+.staff-customers-page button:focus-visible,
+.staff-customers-page select:focus-visible,
+.staff-customers-page input:focus-visible {
   outline: 3px solid rgba(124, 58, 237, 0.2);
   outline-offset: 2px;
 }
-
-/* =========================================================
-   1300px
-   ========================================================= */
 
 @media (max-width: 1300px) {
   .staff-customers-stat-grid {
@@ -1490,10 +1358,6 @@
     min-width: 1050px;
   }
 }
-
-/* =========================================================
-   1050px
-   ========================================================= */
 
 @media (max-width: 1050px) {
   .staff-customers-header {
@@ -1522,10 +1386,6 @@
     align-items: flex-start;
   }
 }
-
-/* =========================================================
-   760px
-   ========================================================= */
 
 @media (max-width: 760px) {
   .staff-customers-page {
@@ -1631,10 +1491,6 @@
     padding: 14px 16px;
   }
 }
-
-/* =========================================================
-   560px
-   ========================================================= */
 
 @media (max-width: 560px) {
   .staff-customers-header p {

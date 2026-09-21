@@ -1,10 +1,5 @@
 import { useMemo, useState } from "react";
-import {
-  NavLink,
-  Outlet,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import {
   FaBars,
@@ -25,15 +20,10 @@ import { useAuth } from "../context/AuthContext";
 
 import "./CustomerLayout.css";
 
-/* =========================================================
-   HELPERS
-========================================================= */
+
 
 const getInitials = (name = "Customer") => {
-  const words = String(name)
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
+  const words = String(name).trim().split(/\s+/).filter(Boolean);
 
   if (words.length === 0) {
     return "CU";
@@ -55,9 +45,7 @@ const formatToday = () => {
   }).format(new Date());
 };
 
-/* =========================================================
-   NAVIGATION
-========================================================= */
+
 
 const MAIN_NAVIGATION = [
   {
@@ -95,10 +83,6 @@ const ACCOUNT_NAVIGATION = [
   },
 ];
 
-/* =========================================================
-   CUSTOMER LAYOUT
-========================================================= */
-
 const CustomerLayout = () => {
   const { user, logout } = useAuth();
 
@@ -110,10 +94,6 @@ const CustomerLayout = () => {
 
   const customerName = user?.name || "Customer";
   const initials = getInitials(customerName);
-
-  /* =======================================================
-     CURRENT PAGE
-  ======================================================= */
 
   const currentPage = useMemo(() => {
     const pathname = location.pathname;
@@ -159,10 +139,6 @@ const CustomerLayout = () => {
     };
   }, [location.pathname]);
 
-  /* =======================================================
-     SIDEBAR
-  ======================================================= */
-
   const toggleSidebar = () => {
     setSidebarCollapsed((previous) => !previous);
   };
@@ -174,10 +150,6 @@ const CustomerLayout = () => {
   const closeMobileSidebar = () => {
     setMobileSidebarOpen(false);
   };
-
-  /* =======================================================
-     LOGOUT
-  ======================================================= */
 
   const handleLogout = async () => {
     closeMobileSidebar();
@@ -193,17 +165,9 @@ const CustomerLayout = () => {
     navigate("/", { replace: true });
   };
 
-  /* =======================================================
-     NAVIGATION
-  ======================================================= */
-
   const handleNavigation = () => {
     closeMobileSidebar();
   };
-
-  /* =======================================================
-     RENDER
-  ======================================================= */
 
   return (
     <div
@@ -211,19 +175,11 @@ const CustomerLayout = () => {
         sidebarCollapsed ? "customer-sidebar-is-collapsed" : ""
       }`}
     >
-      {/* =====================================================
-          SIDEBAR
-      ===================================================== */}
-
       <aside
         className={`customer-sidebar ${
           mobileSidebarOpen ? "customer-mobile-sidebar-open" : ""
         }`}
       >
-        {/* ===================================================
-            BRAND
-        =================================================== */}
-
         <div className="customer-brand">
           <button
             type="button"
@@ -249,17 +205,9 @@ const CustomerLayout = () => {
           </button>
         </div>
 
-        {/* ===================================================
-            NAVIGATION
-        =================================================== */}
-
         <nav className="customer-sidebar-navigation">
-          {/* MAIN MENU */}
-
           <div className="customer-nav-group">
-            <div className="customer-nav-group-title">
-              Main Menu
-            </div>
+            <div className="customer-nav-group-title">Main Menu</div>
 
             <div className="customer-nav-list">
               {MAIN_NAVIGATION.map((item) => {
@@ -272,18 +220,14 @@ const CustomerLayout = () => {
                     end={item.path === "/dashboard"}
                     onClick={handleNavigation}
                     className={({ isActive }) =>
-                      `customer-nav-item ${
-                        isActive ? "active" : ""
-                      }`
+                      `customer-nav-item ${isActive ? "active" : ""}`
                     }
                   >
                     <span className="customer-nav-icon">
                       <Icon />
                     </span>
 
-                    <span className="customer-nav-label">
-                      {item.label}
-                    </span>
+                    <span className="customer-nav-label">{item.label}</span>
 
                     <span className="customer-nav-arrow">
                       <FaChevronRight />
@@ -294,12 +238,8 @@ const CustomerLayout = () => {
             </div>
           </div>
 
-          {/* ACCOUNT */}
-
           <div className="customer-nav-group">
-            <div className="customer-nav-group-title">
-              Account
-            </div>
+            <div className="customer-nav-group-title">Account</div>
 
             <div className="customer-nav-list">
               {ACCOUNT_NAVIGATION.map((item) => {
@@ -311,18 +251,14 @@ const CustomerLayout = () => {
                     to={item.path}
                     onClick={handleNavigation}
                     className={({ isActive }) =>
-                      `customer-nav-item ${
-                        isActive ? "active" : ""
-                      }`
+                      `customer-nav-item ${isActive ? "active" : ""}`
                     }
                   >
                     <span className="customer-nav-icon">
                       <Icon />
                     </span>
 
-                    <span className="customer-nav-label">
-                      {item.label}
-                    </span>
+                    <span className="customer-nav-label">{item.label}</span>
 
                     <span className="customer-nav-arrow">
                       <FaChevronRight />
@@ -333,10 +269,6 @@ const CustomerLayout = () => {
             </div>
           </div>
         </nav>
-
-        {/* ===================================================
-            SIDEBAR BOTTOM
-        =================================================== */}
 
         <div className="customer-sidebar-bottom">
           <div className="customer-sidebar-profile">
@@ -357,42 +289,20 @@ const CustomerLayout = () => {
           >
             <FaSignOutAlt />
 
-            <span className="customer-logout-label">
-              Logout
-            </span>
+            <span className="customer-logout-label">Logout</span>
           </button>
         </div>
-
-        {/* ===================================================
-            COLLAPSE BUTTON
-        =================================================== */}
 
         <button
           type="button"
           className="customer-sidebar-collapse"
           onClick={toggleSidebar}
-          aria-label={
-            sidebarCollapsed
-              ? "Expand sidebar"
-              : "Collapse sidebar"
-          }
-          title={
-            sidebarCollapsed
-              ? "Expand sidebar"
-              : "Collapse sidebar"
-          }
+          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {sidebarCollapsed ? (
-            <FaChevronRight />
-          ) : (
-            <FaChevronLeft />
-          )}
+          {sidebarCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
         </button>
       </aside>
-
-      {/* =====================================================
-          MOBILE OVERLAY
-      ===================================================== */}
 
       {mobileSidebarOpen && (
         <button
@@ -403,15 +313,7 @@ const CustomerLayout = () => {
         />
       )}
 
-      {/* =====================================================
-          MAIN
-      ===================================================== */}
-
       <div className="customer-main">
-        {/* ===================================================
-            TOPBAR
-        =================================================== */}
-
         <header className="customer-topbar">
           <div className="customer-topbar-left">
             <button
@@ -432,13 +334,7 @@ const CustomerLayout = () => {
             </div>
           </div>
 
-          {/* =================================================
-              TOPBAR RIGHT
-          ================================================= */}
-
           <div className="customer-topbar-right">
-            {/* DATE */}
-
             <div className="customer-date">
               <div className="customer-date-icon">
                 <FaCalendarAlt />
@@ -451,8 +347,6 @@ const CustomerLayout = () => {
             </div>
 
             <div className="customer-topbar-divider" />
-
-            {/* PROFILE */}
 
             <button
               type="button"
@@ -472,10 +366,6 @@ const CustomerLayout = () => {
             </button>
           </div>
         </header>
-
-        {/* ===================================================
-            PAGE CONTENT
-        =================================================== */}
 
         <main className="customer-content">
           <Outlet />

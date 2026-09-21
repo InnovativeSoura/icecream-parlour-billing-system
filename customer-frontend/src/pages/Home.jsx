@@ -32,8 +32,7 @@ const CustomerHome = () => {
 
   const [mode, setMode] = useState("login");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
@@ -44,18 +43,10 @@ const CustomerHome = () => {
     confirmPassword: "",
   });
 
-  /* ========================================================
-     REDIRECT ALREADY AUTHENTICATED CUSTOMER
-     ======================================================== */
-
   if (!loading && user?.role === "customer") {
     navigate("/customer/dashboard", { replace: true });
     return null;
   }
-
-  /* ========================================================
-     FORM CHANGE
-     ======================================================== */
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -65,10 +56,6 @@ const CustomerHome = () => {
       [name]: value,
     }));
   };
-
-  /* ========================================================
-     SWITCH LOGIN / REGISTER
-     ======================================================== */
 
   const switchMode = (nextMode) => {
     setMode(nextMode);
@@ -85,10 +72,6 @@ const CustomerHome = () => {
     });
   };
 
-  /* ========================================================
-     LOGIN
-     ======================================================== */
-
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -100,14 +83,11 @@ const CustomerHome = () => {
     setSubmitting(true);
 
     try {
-      const loggedInUser = await login(
-        form.email.trim(),
-        form.password
-      );
+      const loggedInUser = await login(form.email.trim(), form.password);
 
       if (loggedInUser?.role !== "customer") {
         toast.error(
-          "This customer portal is only available for customer accounts."
+          "This customer portal is only available for customer accounts.",
         );
 
         return;
@@ -124,16 +104,12 @@ const CustomerHome = () => {
       toast.error(
         error?.response?.data?.message ||
           error?.message ||
-          "Unable to sign in."
+          "Unable to sign in.",
       );
     } finally {
       setSubmitting(false);
     }
   };
-
-  /* ========================================================
-     REGISTER
-     ======================================================== */
 
   const handleRegister = async (event) => {
     event.preventDefault();
@@ -153,9 +129,7 @@ const CustomerHome = () => {
     }
 
     if (form.password.length < 6) {
-      toast.error(
-        "Password must contain at least 6 characters."
-      );
+      toast.error("Password must contain at least 6 characters.");
       return;
     }
 
@@ -167,14 +141,6 @@ const CustomerHome = () => {
     setSubmitting(true);
 
     try {
-      /*
-       * IMPORTANT:
-       * No role is selected here.
-       *
-       * AuthContext defaults registration to:
-       * role = "customer"
-       */
-
       const registeredUser = await register({
         name,
         email,
@@ -184,45 +150,30 @@ const CustomerHome = () => {
       });
 
       if (registeredUser?.role !== "customer") {
-        toast.error(
-          "Customer registration could not be completed."
-        );
+        toast.error("Customer registration could not be completed.");
         return;
       }
 
-      toast.success(
-        "Customer account created successfully!"
-      );
+      toast.success("Customer account created successfully!");
 
       navigate("/customer/dashboard", {
         replace: true,
       });
     } catch (error) {
-      console.error(
-        "Customer registration failed:",
-        error
-      );
+      console.error("Customer registration failed:", error);
 
       toast.error(
         error?.response?.data?.message ||
           error?.message ||
-          "Unable to create your account."
+          "Unable to create your account.",
       );
     } finally {
       setSubmitting(false);
     }
   };
 
-  /* ========================================================
-     RENDER
-     ======================================================== */
-
   return (
     <div className="customer-home">
-      {/* ====================================================
-          NAVBAR
-          ==================================================== */}
-
       <header className="customer-navbar">
         <div className="customer-brand">
           <div className="customer-brand-icon">
@@ -239,9 +190,7 @@ const CustomerHome = () => {
           <button
             type="button"
             className={
-              mode === "login"
-                ? "customer-nav-btn active"
-                : "customer-nav-btn"
+              mode === "login" ? "customer-nav-btn active" : "customer-nav-btn"
             }
             onClick={() => switchMode("login")}
           >
@@ -261,10 +210,6 @@ const CustomerHome = () => {
           </button>
         </div>
       </header>
-
-      {/* ====================================================
-          HERO
-          ==================================================== */}
 
       <main className="customer-home-main">
         <section className="customer-hero">
@@ -286,9 +231,8 @@ const CustomerHome = () => {
             </h1>
 
             <p>
-              Browse delicious flavours, place your order,
-              make secure payments and keep track of every
-              order from one simple customer account.
+              Browse delicious flavours, place your order, make secure payments
+              and keep track of every order from one simple customer account.
             </p>
 
             <div className="customer-hero-actions">
@@ -341,10 +285,6 @@ const CustomerHome = () => {
             </div>
           </motion.div>
 
-          {/* ==================================================
-              AUTH CARD
-              ================================================== */}
-
           <motion.div
             className="customer-auth-wrapper"
             initial={{ opacity: 0, scale: 0.96, y: 20 }}
@@ -357,53 +297,31 @@ const CustomerHome = () => {
             <div className="customer-auth-card">
               <div className="customer-auth-top">
                 <div className="customer-auth-icon">
-                  {mode === "login" ? (
-                    <FaSignInAlt />
-                  ) : (
-                    <FaUserPlus />
-                  )}
+                  {mode === "login" ? <FaSignInAlt /> : <FaUserPlus />}
                 </div>
 
                 <div>
-                  <span>
-                    CUSTOMER PORTAL
-                  </span>
+                  <span>CUSTOMER PORTAL</span>
 
                   <strong>
-                    {mode === "login"
-                      ? "Welcome back"
-                      : "Create your account"}
+                    {mode === "login" ? "Welcome back" : "Create your account"}
                   </strong>
                 </div>
               </div>
 
-              {/* TOGGLE */}
-
               <div className="customer-auth-toggle">
                 <button
                   type="button"
-                  className={
-                    mode === "login"
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() =>
-                    switchMode("login")
-                  }
+                  className={mode === "login" ? "active" : ""}
+                  onClick={() => switchMode("login")}
                 >
                   Sign In
                 </button>
 
                 <button
                   type="button"
-                  className={
-                    mode === "register"
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() =>
-                    switchMode("register")
-                  }
+                  className={mode === "register" ? "active" : ""}
+                  onClick={() => switchMode("register")}
                 >
                   Register
                 </button>
@@ -434,10 +352,7 @@ const CustomerHome = () => {
                     <div className="customer-form-heading">
                       <h2>Sign in to your account</h2>
 
-                      <p>
-                        Access your orders, cart and
-                        invoices.
-                      </p>
+                      <p>Access your orders, cart and invoices.</p>
                     </div>
 
                     <div className="customer-form-group">
@@ -465,11 +380,7 @@ const CustomerHome = () => {
                         <FaLock />
 
                         <input
-                          type={
-                            showPassword
-                              ? "text"
-                              : "password"
-                          }
+                          type={showPassword ? "text" : "password"}
                           name="password"
                           value={form.password}
                           onChange={handleChange}
@@ -482,17 +393,10 @@ const CustomerHome = () => {
                           type="button"
                           className="password-toggle"
                           onClick={() =>
-                            setShowPassword(
-                              (previous) =>
-                                !previous
-                            )
+                            setShowPassword((previous) => !previous)
                           }
                         >
-                          {showPassword ? (
-                            <FaEyeSlash />
-                          ) : (
-                            <FaEye />
-                          )}
+                          {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>
                       </div>
                     </div>
@@ -500,17 +404,13 @@ const CustomerHome = () => {
                     <div className="customer-login-options">
                       <label>
                         <input type="checkbox" />
-                        <span>
-                          Remember me
-                        </span>
+                        <span>Remember me</span>
                       </label>
 
                       <button
                         type="button"
                         onClick={() =>
-                          toast.info(
-                            "Password reset will be connected here."
-                          )
+                          toast.info("Password reset will be connected here.")
                         }
                       >
                         Forgot password?
@@ -522,20 +422,15 @@ const CustomerHome = () => {
                       className="customer-submit"
                       disabled={submitting}
                     >
-                      {submitting
-                        ? "Signing in..."
-                        : "Sign In"}
+                      {submitting ? "Signing in..." : "Sign In"}
                       <FaArrowRight />
                     </button>
 
                     <div className="customer-form-footer">
                       Don't have an account?
-
                       <button
                         type="button"
-                        onClick={() =>
-                          switchMode("register")
-                        }
+                        onClick={() => switchMode("register")}
                       >
                         Create one
                       </button>
@@ -565,10 +460,7 @@ const CustomerHome = () => {
                     <div className="customer-form-heading">
                       <h2>Create your account</h2>
 
-                      <p>
-                        Join the IceCream Parlour
-                        customer portal.
-                      </p>
+                      <p>Join the IceCream Parlour customer portal.</p>
                     </div>
 
                     <div className="customer-form-group">
@@ -635,11 +527,7 @@ const CustomerHome = () => {
                           <FaLock />
 
                           <input
-                            type={
-                              showPassword
-                                ? "text"
-                                : "password"
-                            }
+                            type={showPassword ? "text" : "password"}
                             name="password"
                             value={form.password}
                             onChange={handleChange}
@@ -652,39 +540,24 @@ const CustomerHome = () => {
                             type="button"
                             className="password-toggle"
                             onClick={() =>
-                              setShowPassword(
-                                (previous) =>
-                                  !previous
-                              )
+                              setShowPassword((previous) => !previous)
                             }
                           >
-                            {showPassword ? (
-                              <FaEyeSlash />
-                            ) : (
-                              <FaEye />
-                            )}
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
                           </button>
                         </div>
                       </div>
 
                       <div className="customer-form-group">
-                        <label>
-                          Confirm password
-                        </label>
+                        <label>Confirm password</label>
 
                         <div className="customer-input-wrapper">
                           <FaLock />
 
                           <input
-                            type={
-                              showConfirmPassword
-                                ? "text"
-                                : "password"
-                            }
+                            type={showConfirmPassword ? "text" : "password"}
                             name="confirmPassword"
-                            value={
-                              form.confirmPassword
-                            }
+                            value={form.confirmPassword}
                             onChange={handleChange}
                             placeholder="Repeat password"
                             autoComplete="new-password"
@@ -695,17 +568,10 @@ const CustomerHome = () => {
                             type="button"
                             className="password-toggle"
                             onClick={() =>
-                              setShowConfirmPassword(
-                                (previous) =>
-                                  !previous
-                              )
+                              setShowConfirmPassword((previous) => !previous)
                             }
                           >
-                            {showConfirmPassword ? (
-                              <FaEyeSlash />
-                            ) : (
-                              <FaEye />
-                            )}
+                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                           </button>
                         </div>
                       </div>
@@ -715,8 +581,7 @@ const CustomerHome = () => {
                       <FaCheckCircle />
 
                       <span>
-                        Your account will automatically
-                        be created as a{" "}
+                        Your account will automatically be created as a{" "}
                         <strong>Customer</strong>.
                       </span>
                     </div>
@@ -735,13 +600,7 @@ const CustomerHome = () => {
 
                     <div className="customer-form-footer">
                       Already have an account?
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          switchMode("login")
-                        }
-                      >
+                      <button type="button" onClick={() => switchMode("login")}>
                         Sign in
                       </button>
                     </div>
@@ -752,21 +611,15 @@ const CustomerHome = () => {
           </motion.div>
         </section>
 
-        {/* ==================================================
-            FEATURES
-            ================================================== */}
-
         <section className="customer-features">
           <div className="customer-section-heading">
             <span>WHY ORDER WITH US</span>
 
-            <h2>
-              Everything you need in one place.
-            </h2>
+            <h2>Everything you need in one place.</h2>
 
             <p>
-              Your customer account keeps ordering,
-              payments and order history organized.
+              Your customer account keeps ordering, payments and order history
+              organized.
             </p>
           </div>
 
@@ -797,37 +650,21 @@ const CustomerHome = () => {
           </div>
         </section>
 
-        {/* ==================================================
-            FOOTER
-            ================================================== */}
-
         <footer className="customer-footer">
           <div className="customer-footer-brand">
             <FaIceCream />
 
-            <span>
-              IceCream Parlour Billing System
-            </span>
+            <span>IceCream Parlour Billing System</span>
           </div>
 
-          <span>
-            Customer Ordering Portal
-          </span>
+          <span>Customer Ordering Portal</span>
         </footer>
       </main>
     </div>
   );
 };
 
-/* =========================================================
-   FEATURE CARD
-   ========================================================= */
-
-const FeatureCard = ({
-  icon,
-  title,
-  text,
-}) => {
+const FeatureCard = ({ icon, title, text }) => {
   return (
     <motion.div
       className="customer-feature-card"
@@ -838,9 +675,7 @@ const FeatureCard = ({
         duration: 0.2,
       }}
     >
-      <div className="customer-feature-icon">
-        {icon}
-      </div>
+      <div className="customer-feature-icon">{icon}</div>
 
       <h3>{title}</h3>
 

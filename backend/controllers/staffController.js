@@ -1,5 +1,3 @@
-// backend/controllers/staffController.js
-
 import mongoose from "mongoose";
 
 import User from "../models/User.js";
@@ -7,12 +5,6 @@ import Order from "../models/Order.js";
 import Customer from "../models/Customer.js";
 import Product from "../models/Product.js";
 import Payment from "../models/Payment.js";
-
-/*
-|--------------------------------------------------------------------------
-| Helpers
-|--------------------------------------------------------------------------
-*/
 
 const roundMoney = (value) => {
   return Math.round((Number(value) || 0) * 100) / 100;
@@ -55,12 +47,6 @@ const isValidObjectId = (id) => {
   return mongoose.Types.ObjectId.isValid(id);
 };
 
-/*
-|--------------------------------------------------------------------------
-| Format order for Staff UI
-|--------------------------------------------------------------------------
-*/
-
 const formatStaffOrder = (order) => {
   if (!order) {
     return null;
@@ -82,79 +68,44 @@ const formatStaffOrder = (order) => {
       address: "",
     },
 
-    items: Array.isArray(order.items)
-      ? order.items
-      : [],
+    items: Array.isArray(order.items) ? order.items : [],
 
     subtotal: roundMoney(order.subtotal),
 
-    discountAmount: roundMoney(
-      order.discountAmount
-    ),
+    discountAmount: roundMoney(order.discountAmount),
 
-    taxAmount: roundMoney(
-      order.taxAmount
-    ),
+    taxAmount: roundMoney(order.taxAmount),
 
-    totalAmount: roundMoney(
-      order.totalAmount
-    ),
+    totalAmount: roundMoney(order.totalAmount),
 
-    paymentStatus:
-      order.paymentStatus || "pending",
+    paymentStatus: order.paymentStatus || "pending",
 
-    paymentMethod:
-      order.paymentMethod || "unpaid",
+    paymentMethod: order.paymentMethod || "unpaid",
 
-    status:
-      order.status || "pending",
+    status: order.status || "pending",
 
-    orderType:
-      order.orderType || "pos",
+    orderType: order.orderType || "pos",
 
-    notes:
-      order.notes || "",
+    notes: order.notes || "",
 
-    createdBy:
-      order.createdBy || null,
+    createdBy: order.createdBy || null,
 
-    paidAt:
-      order.paidAt || null,
+    paidAt: order.paidAt || null,
 
-    completedAt:
-      order.completedAt || null,
+    completedAt: order.completedAt || null,
 
-    cancelledAt:
-      order.cancelledAt || null,
+    cancelledAt: order.cancelledAt || null,
 
-    createdAt:
-      order.createdAt,
+    createdAt: order.createdAt,
 
-    updatedAt:
-      order.updatedAt,
+    updatedAt: order.updatedAt,
   };
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET STAFF PROFILE
-|--------------------------------------------------------------------------
-|
-| GET /api/staff/profile
-|
-| Staff only.
-|--------------------------------------------------------------------------
-*/
-
-export const getStaffProfile = async (
-  req,
-  res
-) => {
+export const getStaffProfile = async (req, res) => {
   try {
-    const staff = await User.findById(
-      req.user._id
-    ).select(
-      "_id name email phone avatar role isActive lastLogin createdAt"
+    const staff = await User.findById(req.user._id).select(
+      "_id name email phone avatar role isActive lastLogin createdAt",
     );
 
     if (!staff) {
@@ -169,10 +120,7 @@ export const getStaffProfile = async (
       staff,
     });
   } catch (error) {
-    console.error(
-      "Get staff profile error:",
-      error
-    );
+    console.error("Get staff profile error:", error);
 
     return res.status(500).json({
       success: false,
@@ -181,39 +129,15 @@ export const getStaffProfile = async (
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET STAFF DASHBOARD
-|--------------------------------------------------------------------------
-|
-| GET /api/staff/dashboard
-|
-| Returns everything required for the Staff Dashboard.
-|--------------------------------------------------------------------------
-*/
-
-export const getStaffDashboard = async (
-  req,
-  res
-) => {
+export const getStaffDashboard = async (req, res) => {
   try {
-    const todayStart =
-      getStartOfDay();
+    const todayStart = getStartOfDay();
 
-    const todayEnd =
-      getEndOfDay();
+    const todayEnd = getEndOfDay();
 
-    const previousDayStart =
-      getStartOfPreviousDay();
+    const previousDayStart = getStartOfPreviousDay();
 
-    const previousDayEnd =
-      new Date(todayStart.getTime() - 1);
-
-    /*
-    |--------------------------------------------------------------------------
-    | TODAY ORDERS
-    |--------------------------------------------------------------------------
-    */
+    const previousDayEnd = new Date(todayStart.getTime() - 1);
 
     const todayFilter = {
       createdAt: {
@@ -222,24 +146,12 @@ export const getStaffDashboard = async (
       },
     };
 
-    /*
-    |--------------------------------------------------------------------------
-    | PREVIOUS DAY
-    |--------------------------------------------------------------------------
-    */
-
     const previousDayFilter = {
       createdAt: {
         $gte: previousDayStart,
         $lte: previousDayEnd,
       },
     };
-
-    /*
-    |--------------------------------------------------------------------------
-    | Parallel dashboard queries
-    |--------------------------------------------------------------------------
-    */
 
     const [
       todayOrders,
@@ -257,18 +169,9 @@ export const getStaffDashboard = async (
       recentPayments,
     ] = await Promise.all([
       Order.find(todayFilter)
-        .populate(
-          "customer",
-          "name phone email customerType"
-        )
-        .populate(
-          "createdBy",
-          "name email role"
-        )
-        .populate(
-          "items.product",
-          "name image sku price unit"
-        )
+        .populate("customer", "name phone email customerType")
+        .populate("createdBy", "name email role")
+        .populate("items.product", "name image sku price unit")
         .sort({
           createdAt: -1,
         })
@@ -276,9 +179,7 @@ export const getStaffDashboard = async (
         .lean(),
 
       Order.find(previousDayFilter)
-        .select(
-          "totalAmount paymentStatus status"
-        )
+        .select("totalAmount paymentStatus status")
         .lean(),
 
       Customer.countDocuments(),
@@ -299,11 +200,7 @@ export const getStaffDashboard = async (
       Order.countDocuments({
         ...todayFilter,
         status: {
-          $in: [
-            "pending",
-            "confirmed",
-            "processing",
-          ],
+          $in: ["pending", "confirmed", "processing"],
         },
       }),
 
@@ -364,18 +261,9 @@ export const getStaffDashboard = async (
       ]),
 
       Order.find()
-        .populate(
-          "customer",
-          "name phone email customerType"
-        )
-        .populate(
-          "createdBy",
-          "name email role"
-        )
-        .populate(
-          "items.product",
-          "name image sku price unit"
-        )
+        .populate("customer", "name phone email customerType")
+        .populate("createdBy", "name email role")
+        .populate("items.product", "name image sku price unit")
         .sort({
           createdAt: -1,
         })
@@ -383,14 +271,8 @@ export const getStaffDashboard = async (
         .lean(),
 
       Payment.find()
-        .populate(
-          "order",
-          "orderNumber totalAmount status paymentStatus"
-        )
-        .populate(
-          "customer",
-          "name phone email"
-        )
+        .populate("order", "orderNumber totalAmount status paymentStatus")
+        .populate("customer", "name phone email")
         .sort({
           createdAt: -1,
         })
@@ -398,106 +280,42 @@ export const getStaffDashboard = async (
         .lean(),
     ]);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Revenue
-    |--------------------------------------------------------------------------
-    */
+    const todayRevenue = roundMoney(todayRevenueResult[0]?.revenue || 0);
 
-    const todayRevenue = roundMoney(
-      todayRevenueResult[0]?.revenue || 0
-    );
+    const todayTax = roundMoney(todayRevenueResult[0]?.tax || 0);
 
-    const todayTax = roundMoney(
-      todayRevenueResult[0]?.tax || 0
-    );
+    const todayDiscount = roundMoney(todayRevenueResult[0]?.discount || 0);
 
-    const todayDiscount = roundMoney(
-      todayRevenueResult[0]?.discount || 0
-    );
-
-    const previousRevenue = roundMoney(
-      previousRevenueResult[0]?.revenue || 0
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | Average order value
-    |--------------------------------------------------------------------------
-    */
+    const previousRevenue = roundMoney(previousRevenueResult[0]?.revenue || 0);
 
     const averageOrderValue =
-      paidToday > 0
-        ? roundMoney(
-            todayRevenue / paidToday
-          )
-        : 0;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Revenue change
-    |--------------------------------------------------------------------------
-    */
+      paidToday > 0 ? roundMoney(todayRevenue / paidToday) : 0;
 
     let revenueChange = 0;
 
     if (previousRevenue > 0) {
       revenueChange = roundMoney(
-        ((todayRevenue - previousRevenue) /
-          previousRevenue) *
-          100
+        ((todayRevenue - previousRevenue) / previousRevenue) * 100,
       );
     } else if (todayRevenue > 0) {
       revenueChange = 100;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Previous order count
-    |--------------------------------------------------------------------------
-    */
-
-    const previousPaidOrders =
-      previousDayOrders.filter(
-        (order) =>
-          order.paymentStatus === "paid"
-      ).length;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Order change
-    |--------------------------------------------------------------------------
-    */
+    const previousPaidOrders = previousDayOrders.filter(
+      (order) => order.paymentStatus === "paid",
+    ).length;
 
     let orderChange = 0;
 
     if (previousPaidOrders > 0) {
       orderChange = roundMoney(
-        ((paidToday -
-          previousPaidOrders) /
-          previousPaidOrders) *
-          100
+        ((paidToday - previousPaidOrders) / previousPaidOrders) * 100,
       );
     } else if (paidToday > 0) {
       orderChange = 100;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Recent orders
-    |--------------------------------------------------------------------------
-    */
-
-    const formattedRecentOrders =
-      recentOrders.map(
-        formatStaffOrder
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | Response
-    |--------------------------------------------------------------------------
-    */
+    const formattedRecentOrders = recentOrders.map(formatStaffOrder);
 
     return res.status(200).json({
       success: true,
@@ -514,19 +332,15 @@ export const getStaffDashboard = async (
 
         todayRevenue,
 
-        todayOrders:
-          todayOrders.length,
+        todayOrders: todayOrders.length,
 
         paidOrders: paidToday,
 
-        pendingOrders:
-          pendingToday,
+        pendingOrders: pendingToday,
 
-        completedOrders:
-          completedToday,
+        completedOrders: completedToday,
 
-        cancelledOrders:
-          cancelledToday,
+        cancelledOrders: cancelledToday,
 
         averageOrderValue,
 
@@ -546,16 +360,11 @@ export const getStaffDashboard = async (
       },
 
       today: {
-        orders:
-          todayOrders.map(
-            formatStaffOrder
-          ),
+        orders: todayOrders.map(formatStaffOrder),
 
-        revenue:
-          todayRevenue,
+        revenue: todayRevenue,
 
-        ordersCount:
-          todayOrders.length,
+        ordersCount: todayOrders.length,
 
         paidOrders,
 
@@ -571,704 +380,417 @@ export const getStaffDashboard = async (
         orderChange,
       },
 
-      recentOrders:
-        formattedRecentOrders,
+      recentOrders: formattedRecentOrders,
 
       recentPayments,
     });
   } catch (error) {
-    console.error(
-      "Get staff dashboard error:",
-      error
-    );
+    console.error("Get staff dashboard error:", error);
 
     return res.status(500).json({
       success: false,
-      message:
-        "Unable to load staff dashboard",
+      message: "Unable to load staff dashboard",
     });
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET STAFF SALES SUMMARY
-|--------------------------------------------------------------------------
-|
-| GET /api/staff/sales-summary
-|
-| Query:
-|
-| period=today
-| period=7days
-| period=30days
-|--------------------------------------------------------------------------
-*/
+export const getStaffSalesSummary = async (req, res) => {
+  try {
+    const period = String(req.query.period || "today").toLowerCase();
 
-export const getStaffSalesSummary =
-  async (req, res) => {
-    try {
-      const period =
-        String(
-          req.query.period || "today"
-        ).toLowerCase();
+    const now = new Date();
 
-      const now = new Date();
+    let startDate;
+    let previousStartDate;
+    let previousEndDate;
 
-      let startDate;
-      let previousStartDate;
-      let previousEndDate;
+    if (period === "7days") {
+      startDate = new Date(now);
 
-      if (period === "7days") {
-        startDate = new Date(now);
+      startDate.setDate(startDate.getDate() - 6);
 
-        startDate.setDate(
-          startDate.getDate() - 6
-        );
+      startDate.setHours(0, 0, 0, 0);
 
-        startDate.setHours(
-          0,
-          0,
-          0,
-          0
-        );
+      previousEndDate = new Date(startDate);
 
-        previousEndDate =
-          new Date(startDate);
+      previousEndDate.setMilliseconds(-1);
 
-        previousEndDate.setMilliseconds(
-          -1
-        );
+      previousStartDate = new Date(previousEndDate);
 
-        previousStartDate =
-          new Date(previousEndDate);
+      previousStartDate.setDate(previousStartDate.getDate() - 6);
 
-        previousStartDate.setDate(
-          previousStartDate.getDate() - 6
-        );
+      previousStartDate.setHours(0, 0, 0, 0);
+    } else if (period === "30days") {
+      startDate = new Date(now);
 
-        previousStartDate.setHours(
-          0,
-          0,
-          0,
-          0
-        );
-      } else if (
-        period === "30days"
-      ) {
-        startDate = new Date(now);
+      startDate.setDate(startDate.getDate() - 29);
 
-        startDate.setDate(
-          startDate.getDate() - 29
-        );
+      startDate.setHours(0, 0, 0, 0);
 
-        startDate.setHours(
-          0,
-          0,
-          0,
-          0
-        );
+      previousEndDate = new Date(startDate);
 
-        previousEndDate =
-          new Date(startDate);
+      previousEndDate.setMilliseconds(-1);
 
-        previousEndDate.setMilliseconds(
-          -1
-        );
+      previousStartDate = new Date(previousEndDate);
 
-        previousStartDate =
-          new Date(previousEndDate);
+      previousStartDate.setDate(previousStartDate.getDate() - 29);
 
-        previousStartDate.setDate(
-          previousStartDate.getDate() - 29
-        );
+      previousStartDate.setHours(0, 0, 0, 0);
+    } else {
+      startDate = getStartOfDay();
 
-        previousStartDate.setHours(
-          0,
-          0,
-          0,
-          0
-        );
-      } else {
-        startDate =
-          getStartOfDay();
+      previousEndDate = new Date(startDate);
 
-        previousEndDate =
-          new Date(startDate);
+      previousEndDate.setMilliseconds(-1);
 
-        previousEndDate.setMilliseconds(
-          -1
-        );
+      previousStartDate = getStartOfPreviousDay();
+    }
 
-        previousStartDate =
-          getStartOfPreviousDay();
-      }
+    const currentOrders = await Order.find({
+      createdAt: {
+        $gte: startDate,
+        $lte: now,
+      },
+    })
+      .populate("customer", "name phone email")
+      .populate("createdBy", "name email role")
+      .populate("items.product", "name image sku price unit")
+      .sort({
+        createdAt: -1,
+      })
+      .lean();
 
-      /*
-      |--------------------------------------------------------------------------
-      | Current period
-      |--------------------------------------------------------------------------
-      */
+    const paidOrders = currentOrders.filter(
+      (order) => order.paymentStatus === "paid",
+    );
 
-      const currentOrders =
-        await Order.find({
+    const grossSales = roundMoney(
+      paidOrders.reduce(
+        (sum, order) => sum + Number(order.totalAmount || 0),
+        0,
+      ),
+    );
+
+    const previousOrders = await Order.find({
+      createdAt: {
+        $gte: previousStartDate,
+        $lte: previousEndDate,
+      },
+
+      paymentStatus: "paid",
+    })
+      .select("totalAmount")
+      .lean();
+
+    const previousSales = roundMoney(
+      previousOrders.reduce(
+        (sum, order) => sum + Number(order.totalAmount || 0),
+        0,
+      ),
+    );
+
+    let salesChange = 0;
+
+    if (previousSales > 0) {
+      salesChange = roundMoney(
+        ((grossSales - previousSales) / previousSales) * 100,
+      );
+    } else if (grossSales > 0) {
+      salesChange = 100;
+    }
+
+    const paymentMethodBreakdown = await Order.aggregate([
+      {
+        $match: {
           createdAt: {
             $gte: startDate,
             $lte: now,
           },
-        })
-          .populate(
-            "customer",
-            "name phone email"
-          )
-          .populate(
-            "createdBy",
-            "name email role"
-          )
-          .populate(
-            "items.product",
-            "name image sku price unit"
-          )
-          .sort({
-            createdAt: -1,
-          })
-          .lean();
 
-      /*
-      |--------------------------------------------------------------------------
-      | Paid orders
-      |--------------------------------------------------------------------------
-      */
+          paymentStatus: "paid",
+        },
+      },
 
-      const paidOrders =
-        currentOrders.filter(
-          (order) =>
-            order.paymentStatus ===
-            "paid"
-        );
+      {
+        $group: {
+          _id: "$paymentMethod",
 
-      /*
-      |--------------------------------------------------------------------------
-      | Revenue
-      |--------------------------------------------------------------------------
-      */
+          amount: {
+            $sum: "$totalAmount",
+          },
 
-      const grossSales =
-        roundMoney(
-          paidOrders.reduce(
-            (sum, order) =>
-              sum +
-              Number(
-                order.totalAmount || 0
-              ),
-            0
-          )
-        );
+          count: {
+            $sum: 1,
+          },
+        },
+      },
 
-      /*
-      |--------------------------------------------------------------------------
-      | Previous period
-      |--------------------------------------------------------------------------
-      */
+      {
+        $sort: {
+          amount: -1,
+        },
+      },
+    ]);
 
-      const previousOrders =
-        await Order.find({
+    const statusBreakdown = await Order.aggregate([
+      {
+        $match: {
           createdAt: {
-            $gte: previousStartDate,
-            $lte: previousEndDate,
+            $gte: startDate,
+            $lte: now,
+          },
+        },
+      },
+
+      {
+        $group: {
+          _id: "$status",
+
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+
+      {
+        $sort: {
+          count: -1,
+        },
+      },
+    ]);
+
+    const topProducts = await Order.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: startDate,
+            $lte: now,
           },
 
           paymentStatus: "paid",
+        },
+      },
+
+      {
+        $unwind: "$items",
+      },
+
+      {
+        $group: {
+          _id: "$items.product",
+
+          name: {
+            $first: "$items.name",
+          },
+
+          quantity: {
+            $sum: "$items.quantity",
+          },
+
+          revenue: {
+            $sum: "$items.total",
+          },
+        },
+      },
+
+      {
+        $sort: {
+          quantity: -1,
+        },
+      },
+
+      {
+        $limit: 10,
+      },
+    ]);
+
+    const dailySales = await Order.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: startDate,
+            $lte: now,
+          },
+
+          paymentStatus: "paid",
+        },
+      },
+
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+
+              date: "$createdAt",
+            },
+          },
+
+          sales: {
+            $sum: "$totalAmount",
+          },
+
+          orders: {
+            $sum: 1,
+          },
+        },
+      },
+
+      {
+        $sort: {
+          _id: 1,
+        },
+      },
+    ]);
+
+    const totalOrders = currentOrders.length;
+
+    const averageOrderValue = paidOrders.length
+      ? roundMoney(grossSales / paidOrders.length)
+      : 0;
+
+    const collectionRate =
+      totalOrders > 0 ? roundMoney((paidOrders.length / totalOrders) * 100) : 0;
+
+    return res.status(200).json({
+      success: true,
+
+      period,
+
+      summary: {
+        grossSales,
+
+        totalOrders,
+
+        paidOrders: paidOrders.length,
+
+        previousSales,
+
+        salesChange,
+
+        averageOrderValue,
+
+        collectionRate,
+      },
+
+      paymentMethods: paymentMethodBreakdown,
+
+      orderStatuses: statusBreakdown,
+
+      topProducts,
+
+      dailySales,
+
+      orders: currentOrders.map(formatStaffOrder),
+    });
+  } catch (error) {
+    console.error("Staff sales summary error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to generate sales summary",
+    });
+  }
+};
+
+export const getStaffRecentOrders = async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 50);
+
+    const orders = await Order.find()
+      .populate("customer", "name phone email customerType")
+      .populate("createdBy", "name email role")
+      .populate("items.product", "name image sku price unit")
+      .sort({
+        createdAt: -1,
+      })
+      .limit(limit)
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+
+      count: orders.length,
+
+      orders: orders.map(formatStaffOrder),
+    });
+  } catch (error) {
+    console.error("Get staff recent orders error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load recent orders",
+    });
+  }
+};
+
+export const getStaffMySales = async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+
+    const currentPage = Math.max(Number(page) || 1, 1);
+
+    const perPage = Math.min(Math.max(Number(limit) || 20, 1), 100);
+
+    const skip = (currentPage - 1) * perPage;
+
+    const filter = {
+      createdBy: req.user._id,
+    };
+
+    const [orders, total] = await Promise.all([
+      Order.find(filter)
+        .populate("customer", "name phone email customerType")
+        .populate("createdBy", "name email role")
+        .populate("items.product", "name image sku price unit")
+        .sort({
+          createdAt: -1,
         })
-          .select(
-            "totalAmount"
-          )
-          .lean();
+        .skip(skip)
+        .limit(perPage)
+        .lean(),
 
-      const previousSales =
-        roundMoney(
-          previousOrders.reduce(
-            (sum, order) =>
-              sum +
-              Number(
-                order.totalAmount || 0
-              ),
-            0
-          )
-        );
+      Order.countDocuments(filter),
+    ]);
 
-      /*
-      |--------------------------------------------------------------------------
-      | Comparison
-      |--------------------------------------------------------------------------
-      */
+    const paidOrders = orders.filter((order) => order.paymentStatus === "paid");
 
-      let salesChange = 0;
+    const revenue = roundMoney(
+      paidOrders.reduce(
+        (sum, order) => sum + Number(order.totalAmount || 0),
+        0,
+      ),
+    );
 
-      if (previousSales > 0) {
-        salesChange = roundMoney(
-          ((grossSales -
-            previousSales) /
-            previousSales) *
-            100
-        );
-      } else if (grossSales > 0) {
-        salesChange = 100;
-      }
+    return res.status(200).json({
+      success: true,
 
-      /*
-      |--------------------------------------------------------------------------
-      | Payment method breakdown
-      |--------------------------------------------------------------------------
-      */
+      orders: orders.map(formatStaffOrder),
 
-      const paymentMethodBreakdown =
-        await Order.aggregate([
-          {
-            $match: {
-              createdAt: {
-                $gte: startDate,
-                $lte: now,
-              },
+      summary: {
+        totalOrders: total,
 
-              paymentStatus:
-                "paid",
-            },
-          },
+        paidOrders: paidOrders.length,
 
-          {
-            $group: {
-              _id:
-                "$paymentMethod",
+        revenue,
+      },
 
-              amount: {
-                $sum:
-                  "$totalAmount",
-              },
+      pagination: {
+        page: currentPage,
 
-              count: {
-                $sum: 1,
-              },
-            },
-          },
+        limit: perPage,
 
-          {
-            $sort: {
-              amount: -1,
-            },
-          },
-        ]);
-
-      /*
-      |--------------------------------------------------------------------------
-      | Status breakdown
-      |--------------------------------------------------------------------------
-      */
-
-      const statusBreakdown =
-        await Order.aggregate([
-          {
-            $match: {
-              createdAt: {
-                $gte: startDate,
-                $lte: now,
-              },
-            },
-          },
-
-          {
-            $group: {
-              _id: "$status",
-
-              count: {
-                $sum: 1,
-              },
-            },
-          },
-
-          {
-            $sort: {
-              count: -1,
-            },
-          },
-        ]);
-
-      /*
-      |--------------------------------------------------------------------------
-      | Top selling products
-      |--------------------------------------------------------------------------
-      */
-
-      const topProducts =
-        await Order.aggregate([
-          {
-            $match: {
-              createdAt: {
-                $gte: startDate,
-                $lte: now,
-              },
-
-              paymentStatus:
-                "paid",
-            },
-          },
-
-          {
-            $unwind:
-              "$items",
-          },
-
-          {
-            $group: {
-              _id:
-                "$items.product",
-
-              name: {
-                $first:
-                  "$items.name",
-              },
-
-              quantity: {
-                $sum:
-                  "$items.quantity",
-              },
-
-              revenue: {
-                $sum:
-                  "$items.total",
-              },
-            },
-          },
-
-          {
-            $sort: {
-              quantity: -1,
-            },
-          },
-
-          {
-            $limit: 10,
-          },
-        ]);
-
-      /*
-      |--------------------------------------------------------------------------
-      | Daily sales trend
-      |--------------------------------------------------------------------------
-      */
-
-      const dailySales =
-        await Order.aggregate([
-          {
-            $match: {
-              createdAt: {
-                $gte: startDate,
-                $lte: now,
-              },
-
-              paymentStatus:
-                "paid",
-            },
-          },
-
-          {
-            $group: {
-              _id: {
-                $dateToString: {
-                  format:
-                    "%Y-%m-%d",
-
-                  date:
-                    "$createdAt",
-                },
-              },
-
-              sales: {
-                $sum:
-                  "$totalAmount",
-              },
-
-              orders: {
-                $sum: 1,
-              },
-            },
-          },
-
-          {
-            $sort: {
-              _id: 1,
-            },
-          },
-        ]);
-
-      const totalOrders =
-        currentOrders.length;
-
-      const averageOrderValue =
-        paidOrders.length
-          ? roundMoney(
-              grossSales /
-                paidOrders.length
-            )
-          : 0;
-
-      const collectionRate =
-        totalOrders > 0
-          ? roundMoney(
-              (paidOrders.length /
-                totalOrders) *
-                100
-            )
-          : 0;
-
-      return res.status(200).json({
-        success: true,
-
-        period,
-
-        summary: {
-          grossSales,
-
-          totalOrders,
-
-          paidOrders:
-            paidOrders.length,
-
-          previousSales,
-
-          salesChange,
-
-          averageOrderValue,
-
-          collectionRate,
-        },
-
-        paymentMethods:
-          paymentMethodBreakdown,
-
-        orderStatuses:
-          statusBreakdown,
-
-        topProducts,
-
-        dailySales,
-
-        orders:
-          currentOrders.map(
-            formatStaffOrder
-          ),
-      });
-    } catch (error) {
-      console.error(
-        "Staff sales summary error:",
-        error
-      );
-
-      return res.status(500).json({
-        success: false,
-        message:
-          "Unable to generate sales summary",
-      });
-    }
-  };
-
-/*
-|--------------------------------------------------------------------------
-| GET STAFF RECENT ORDERS
-|--------------------------------------------------------------------------
-|
-| GET /api/staff/recent-orders
-|--------------------------------------------------------------------------
-*/
-
-export const getStaffRecentOrders =
-  async (req, res) => {
-    try {
-      const limit = Math.min(
-        Math.max(
-          Number(req.query.limit) ||
-            10,
-          1
-        ),
-        50
-      );
-
-      const orders =
-        await Order.find()
-          .populate(
-            "customer",
-            "name phone email customerType"
-          )
-          .populate(
-            "createdBy",
-            "name email role"
-          )
-          .populate(
-            "items.product",
-            "name image sku price unit"
-          )
-          .sort({
-            createdAt: -1,
-          })
-          .limit(limit)
-          .lean();
-
-      return res.status(200).json({
-        success: true,
-
-        count: orders.length,
-
-        orders:
-          orders.map(
-            formatStaffOrder
-          ),
-      });
-    } catch (error) {
-      console.error(
-        "Get staff recent orders error:",
-        error
-      );
-
-      return res.status(500).json({
-        success: false,
-        message:
-          "Unable to load recent orders",
-      });
-    }
-  };
-
-/*
-|--------------------------------------------------------------------------
-| GET STAFF SALES
-|--------------------------------------------------------------------------
-|
-| GET /api/staff/my-sales
-|
-| Returns sales created by the currently
-| authenticated staff member.
-|--------------------------------------------------------------------------
-*/
-
-export const getStaffMySales =
-  async (req, res) => {
-    try {
-      const {
-        page = 1,
-        limit = 20,
-      } = req.query;
-
-      const currentPage =
-        Math.max(
-          Number(page) || 1,
-          1
-        );
-
-      const perPage = Math.min(
-        Math.max(
-          Number(limit) || 20,
-          1
-        ),
-        100
-      );
-
-      const skip =
-        (currentPage - 1) *
-        perPage;
-
-      const filter = {
-        createdBy: req.user._id,
-      };
-
-      const [
-        orders,
         total,
-      ] = await Promise.all([
-        Order.find(filter)
-          .populate(
-            "customer",
-            "name phone email customerType"
-          )
-          .populate(
-            "createdBy",
-            "name email role"
-          )
-          .populate(
-            "items.product",
-            "name image sku price unit"
-          )
-          .sort({
-            createdAt: -1,
-          })
-          .skip(skip)
-          .limit(perPage)
-          .lean(),
 
-        Order.countDocuments(
-          filter
-        ),
-      ]);
+        pages: Math.ceil(total / perPage),
+      },
+    });
+  } catch (error) {
+    console.error("Get staff sales error:", error);
 
-      const paidOrders =
-        orders.filter(
-          (order) =>
-            order.paymentStatus ===
-            "paid"
-        );
-
-      const revenue =
-        roundMoney(
-          paidOrders.reduce(
-            (sum, order) =>
-              sum +
-              Number(
-                order.totalAmount || 0
-              ),
-            0
-          )
-        );
-
-      return res.status(200).json({
-        success: true,
-
-        orders:
-          orders.map(
-            formatStaffOrder
-          ),
-
-        summary: {
-          totalOrders: total,
-
-          paidOrders:
-            paidOrders.length,
-
-          revenue,
-        },
-
-        pagination: {
-          page:
-            currentPage,
-
-          limit:
-            perPage,
-
-          total,
-
-          pages:
-            Math.ceil(
-              total / perPage
-            ),
-        },
-      });
-    } catch (error) {
-      console.error(
-        "Get staff sales error:",
-        error
-      );
-
-      return res.status(500).json({
-        success: false,
-        message:
-          "Unable to load staff sales",
-      });
-    }
-  };
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load staff sales",
+    });
+  }
+};

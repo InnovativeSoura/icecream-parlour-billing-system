@@ -15,9 +15,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // --------------------------------------------------
-  // Restore logged-in customer session
-  // --------------------------------------------------
   const restoreSession = useCallback(async () => {
     const token = localStorage.getItem("token");
 
@@ -32,7 +29,6 @@ export const AuthProvider = ({ children }) => {
 
       const currentUser = response?.data?.user;
 
-      // Customer frontend accepts customers only
       if (currentUser?.role !== "customer") {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -45,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error(
         "Session restoration failed:",
-        error?.response?.data?.message || error.message
+        error?.response?.data?.message || error.message,
       );
 
       localStorage.removeItem("token");
@@ -60,9 +56,6 @@ export const AuthProvider = ({ children }) => {
     restoreSession();
   }, [restoreSession]);
 
-  // --------------------------------------------------
-  // Customer Login
-  // --------------------------------------------------
   const login = useCallback(async (email, password) => {
     try {
       const response = await api.post("/auth/login", {
@@ -77,8 +70,6 @@ export const AuthProvider = ({ children }) => {
         throw new Error("Invalid login response from server.");
       }
 
-      // Prevent admin/staff accounts from entering
-      // the customer frontend.
       if (responseUser.role !== "customer") {
         return {
           success: false,
@@ -100,7 +91,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error(
         "Customer login failed:",
-        error?.response?.data?.message || error.message
+        error?.response?.data?.message || error.message,
       );
 
       return {
@@ -112,9 +103,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // --------------------------------------------------
-  // Customer Registration
-  // --------------------------------------------------
   const register = useCallback(
     async ({ name, email, phone = "", password }) => {
       try {
@@ -155,8 +143,6 @@ export const AuthProvider = ({ children }) => {
           email: normalizedEmail,
           phone: normalizedPhone,
 
-          // IMPORTANT:
-          // Customer frontend always registers as customer.
           role: "customer",
 
           password,
@@ -169,7 +155,6 @@ export const AuthProvider = ({ children }) => {
           throw new Error("Invalid registration response from server.");
         }
 
-        // Extra safety check
         if (responseUser.role !== "customer") {
           return {
             success: false,
@@ -190,7 +175,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         console.error(
           "Customer registration failed:",
-          error?.response?.data?.message || error.message
+          error?.response?.data?.message || error.message,
         );
 
         return {
@@ -201,25 +186,18 @@ export const AuthProvider = ({ children }) => {
         };
       }
     },
-    []
+    [],
   );
 
-  // --------------------------------------------------
-  // Logout
-  // --------------------------------------------------
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
     setUser(null);
 
-    // Customer website homepage
     window.location.href = "/";
   }, []);
 
-  // --------------------------------------------------
-  // Update local user information
-  // --------------------------------------------------
   const updateUser = useCallback((updatedUser) => {
     if (!updatedUser) {
       return;
@@ -233,9 +211,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(updatedUser));
   }, []);
 
-  // --------------------------------------------------
-  // Authentication states
-  // --------------------------------------------------
   const isAuthenticated = Boolean(user);
   const isCustomer = user?.role === "customer";
 
@@ -263,26 +238,17 @@ export const AuthProvider = ({ children }) => {
       logout,
       updateUser,
       restoreSession,
-    ]
+    ],
   );
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// --------------------------------------------------
-// Custom Hook
-// --------------------------------------------------
 export const useAuth = () => {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error(
-      "useAuth must be used inside an AuthProvider."
-    );
+    throw new Error("useAuth must be used inside an AuthProvider.");
   }
 
   return context;
